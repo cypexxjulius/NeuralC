@@ -7,7 +7,6 @@
 #include "window.h"
 #include "error.h"
 #include "../events/event.h"
-#include "../events/keycode.h"
 
 extern n_Window* n_createWindow(int width, int height, char *title)
 {
@@ -53,6 +52,7 @@ extern n_Window* n_createWindow(int width, int height, char *title)
 
     n_initError(window);
 
+    n_initEvent(window);
 
     return window;
 }

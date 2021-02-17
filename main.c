@@ -20,10 +20,6 @@ int main()
 {
     n_Window *window = n_createWindow(1200, 800, "Test Window");
 
-   
-
-    n_initEvent(window);
-
     n_printSystemInformation();
 
     float positions[] = {
@@ -56,8 +52,17 @@ int main()
 
     n_createShader(window, "res/shader/vertexShader.vs", "res/shader/fragmentShader.fs");
 
-
+    // Bind shader
     glUseProgram(window->shader);
+
+    int location = glGetUniformLocation(window->shader, "u_Color");
+    if(location != -1)
+    {
+        glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f);
+    }
+
+    float r = 0.0f;
+    float increment = 0.05f;
 
     while(!window->shouldClose)
     {
@@ -68,11 +73,27 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT);
 
+        if(location != -1)
+            glUniform4f(location, r, 0.3f, 0.8f, 1.0f);
+        
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
         
+        if(r > 1.0)
+            increment = -0.05f;
+        else if(r < 0)
+            increment = 0.05f;
+
+        r += increment;
+
         // Swap Buffers 
         glfwSwapBuffers(window->windowHandle);
         glfwPollEvents();
+
+        GLenum errorID;
+        while((errorID = glGetError()) != GL_NO_ERROR) 
+        { 
+            fprintf(stderr, "%s %d\n","[OPENGL ERROR]", errorID);
+        };
 
     }
     glDeleteProgram(window->shader);
