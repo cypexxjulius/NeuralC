@@ -7,6 +7,7 @@
 #include "window.h"
 #include "error.h"
 #include "../events/event.h"
+#include "../events/keycode.h"
 
 extern n_Window* n_createWindow(int width, int height, char *title)
 {
@@ -47,10 +48,21 @@ extern n_Window* n_createWindow(int width, int height, char *title)
         ASSERT(0, "Failed to initialize GLEW");
     }
 
-    window->eventQueue = newVector(MAX_EVENTS - 1, sizeof(n_EventDispatcher *), VECTOR_POINTER);
     glfwSetWindowUserPointer(window->windowHandle, window);
+    glfwSwapInterval(1);
 
     n_initError(window);
 
+
     return window;
+}
+
+extern n_Position n_getMousePosition(n_Window* window)
+{
+    return window->mouse.position;
+}
+
+extern int n_isButtonPressed(n_Window* window, char key)
+{
+    return window->keyboard.keys[(int)key].down;
 }

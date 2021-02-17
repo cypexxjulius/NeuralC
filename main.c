@@ -10,8 +10,11 @@
 #include "src/core/error.h"
 #include "src/events/event.h"
 
+#include "src/core/opengl.h"
 #include "src/shader/shader.h"
 
+
+#include "src/events/keycode.h"
 
 int main()
 {
@@ -58,6 +61,13 @@ int main()
 
     while(!window->shouldClose)
     {
+
+        
+        if(n_isButtonPressed(window, NL_KEY_W))
+            puts("Key W Pressed");
+
+        
+
         glClear(GL_COLOR_BUFFER_BIT);
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
@@ -65,6 +75,7 @@ int main()
         // Swap Buffers 
         glfwSwapBuffers(window->windowHandle);
         glfwPollEvents();
+
     }
     glDeleteProgram(window->shader);
     glfwTerminate();

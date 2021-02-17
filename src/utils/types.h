@@ -1,6 +1,10 @@
 #ifndef __TYPES_H_
 #define __TYPES_H_
 
+typedef struct n_Position
+{
+    int x, y;
+}n_Position;
 typedef enum vector_type
 {
     VECTOR_POINTER = 4, VECTOR_FREE = 8
