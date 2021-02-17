@@ -13,11 +13,4 @@ typedef struct
 }pos2D;
 
 
-enum 
-{
-    false, true
-} n_bool;
-
-
-
 #endif // __N_TYPES_H_

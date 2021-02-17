@@ -70,7 +70,7 @@ void deleteVector(vector *this)
     if(this->flags & VECTOR_FREE)
     {
         void **temp = this->data;
-        for(int i= 0; i < this->used; i++)
+        for(unsigned int i= 0; i < this->used; i++)
             free(temp[i]);
     }
     free(this->data);

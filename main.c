@@ -4,21 +4,22 @@
 
 #include <stdio.h>
 
-#include "src/core/opengl.h"
 #include "src/core/window.h"
 #include "src/core/system.h"
 #include "src/utils/fileio.h"
-#include "src/utils/types.h"
 #include "src/core/error.h"
+#include "src/events/event.h"
 
 #include "src/shader/shader.h"
 
 
 int main()
 {
-    n_window *window = n_createWindow(1200, 800, "Test Window");
+    n_Window *window = n_createWindow(1200, 800, "Test Window");
 
-    n_initError();
+   
+
+    n_initEvent(window);
 
     n_printSystemInformation();
 
@@ -55,11 +56,11 @@ int main()
 
     glUseProgram(window->shader);
 
-    while(!glfwWindowShouldClose(window->windowHandle))
+    while(!window->shouldClose)
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glDrawElements(GL_TRIANGLES, 6, GL_INT, NULL);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
         
         // Swap Buffers 
         glfwSwapBuffers(window->windowHandle);

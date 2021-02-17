@@ -1,11 +1,17 @@
-#ifndef __WINDOW_H_
-#define __WINDOW_H_
+#ifndef _CORE_WINDOW_H_
+#define _CORE_WINDOW_H_
 
 
 #include "opengl.h"
-#include "../events/event.h"
+#include "../events/eventStructs.h"
+#include "../utils/types.h"
 
-typedef struct 
+struct n_Mouse
+{
+    float pos[2];
+};
+
+typedef struct n_Window
 {
     GLFWwindow* windowHandle;
     char *title;
@@ -13,12 +19,13 @@ typedef struct
     unsigned int height;
     unsigned char shouldClose;
     unsigned int shader;
+    struct n_Mouse mouse;
 
     // Events
-    n_Event events;
+    vector* eventQueue;
 
 } n_Window;
 
 extern n_Window* n_createWindow(int width, int height, char *title);
 
-#endif // __WINDOW_H_
+#endif // _CORE_WINDOW_H_

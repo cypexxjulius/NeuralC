@@ -1,5 +1,9 @@
 #include "error.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include "opengl.h"
+
 
 void APIENTRY errorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
@@ -16,7 +20,7 @@ void APIENTRY errorCallback(GLenum source, GLenum type, GLuint id, GLenum severi
 
 static void glfwErrorCallback(int error, const char *description)
 {
-    fprintf(stderr, "[GLFW ERROR] %i\n%d", error, description);
+    fprintf(stderr, "[GLFW ERROR] %i\n%s", error, description);
 }
 
 void n_initError()
@@ -26,4 +30,9 @@ void n_initError()
     GLuint unusedIds = 0;
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0,&unusedIds,1);
     glfwSetErrorCallback(glfwErrorCallback);
+}
+
+extern void printAssertMessageAndExit(char *message)
+{
+    fprintf(stderr, "[ERROR] %s %d\n%s\n", __FILE__, __LINE__, (message)); exit(1);
 }

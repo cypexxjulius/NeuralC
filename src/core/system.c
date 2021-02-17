@@ -11,6 +11,5 @@ extern void n_printSystemInformation()
     puts("System Information:");
     printf("    Vendor:   %s\n", glGetString(GL_VENDOR));
     printf("    Version:  %s\n", glGetString(GL_VERSION));
-    printf("    Renderer: %s\n", glGetString(GL_RENDER));
 
 }

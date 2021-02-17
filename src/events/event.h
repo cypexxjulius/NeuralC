@@ -1,43 +1,23 @@
 #ifndef __EVENT_H_
 #define __EVENT_H_
 
-#include "../core/window.h"
-#include "../n_types.h"
+struct n_Window;
 
-typedef struct
+enum n_EVENT_TYP
 {
-    byte handled;
-    pos2D pos;
-} n_PosEvent;
-
-typedef struct
-{
-    byte handled;
-    uint width;
-    uint height;
-} n_WindowResize;
-
-typedef struct
-{
-    uint keyCode;
-    byte handled;
-    byte action;
-}n_ButtonEvent;
+    NO_EVENT,
+    SCROLL_EVENT,
+    WINDOW_RESIZE_EVENT,
+    WINDOW_CLOSE_EVENT,
+    KEY_CALLBACK_EVENT,
+    CHAR_CALLBACK_EVENT,
+    MOUSE_BUTTON_EVENT,
+    MOUSE_MOVED_EVENT,
+    MAX_EVENTS
+};
 
 
-typedef struct 
-{
-
-    n_PosEvent windowEvent;
-    n_PosEvent mouseMoveEvent;
-    n_ButtonEvent keyEvent;
-    n_ButtonEvent mouseButtonEvent;
-    n_ButtonEvent charEvent;
-    n_PosEvent scollEvent;
-} n_Event;
-
-
-void n_createEvent(n_Window* this);
+void n_initEvent(struct n_Window* this);
 
 
 #endif // __EVENT_H_

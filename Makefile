@@ -3,7 +3,7 @@
 
 VPATH = src/
 CC=gcc
-FLAGS= -Wall -Wextra -g 
+FLAGS= -Wall -Wextra -g -Wno-unused-parameter
 LIBS= -lGL -lGLEW -lglfw3 -ldl -lX11 -lpthread -lm
 
 SRC  = $(wildcard *.c src/*c src/**/*.c src/**/**/*.c src/**/**/**/*.c)
@@ -16,9 +16,12 @@ FOO := $(patsubst %OS,%,$(FOO))
 
 .PHONY: compile
 
-%.o: %.c
+%.o: %.c **/*.h
 	@$(CC) -o $@ -c $< $(FLAGS)
 
 game: $(OBJ)
 	@$(CC) -o program $^ $(FLAGS) $(LIBS)
 	@./program
+
+clean:
+	rm $(OBJ)

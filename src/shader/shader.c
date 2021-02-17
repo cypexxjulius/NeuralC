@@ -4,8 +4,7 @@
 #include "../core/error.h"
 
 #include <stdlib.h>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <stdio.h>
 
 static unsigned int n_compileShader(char *shaderSrc, n_ShaderType type)
 {
@@ -35,7 +34,7 @@ static unsigned int n_compileShader(char *shaderSrc, n_ShaderType type)
     return id;
 }
 
-extern void n_createShader(n_window* window, char* vertexShaderPath, char* fragmentShaderPath)
+extern void n_createShader(n_Window* window, char* vertexShaderPath, char* fragmentShaderPath)
 {
     char *vertexShader    = n_readFile(vertexShaderPath);
     char *fragmentShader  = n_readFile(fragmentShaderPath);    

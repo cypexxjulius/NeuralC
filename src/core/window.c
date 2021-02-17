@@ -6,6 +6,7 @@
 
 #include "window.h"
 #include "error.h"
+#include "../events/event.h"
 
 extern n_Window* n_createWindow(int width, int height, char *title)
 {
@@ -21,6 +22,8 @@ extern n_Window* n_createWindow(int width, int height, char *title)
     // Storing the title
     window->title = malloc(strlen(title) + 1);
     memcpy(window->title, title, strlen(title) + 1);
+
+    // Initializing event queue
 
 
     if(!glfwInit())
@@ -44,7 +47,10 @@ extern n_Window* n_createWindow(int width, int height, char *title)
         ASSERT(0, "Failed to initialize GLEW");
     }
 
+    window->eventQueue = newVector(MAX_EVENTS - 1, sizeof(n_EventDispatcher *), VECTOR_POINTER);
     glfwSetWindowUserPointer(window->windowHandle, window);
-    setVSync(1);
+
+    n_initError(window);
+
     return window;
 }
