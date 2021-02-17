@@ -10,6 +10,8 @@
 #include "src/core/error.h"
 #include "src/events/event.h"
 
+#include "src/renderer/renderer.h"
+
 #include "src/core/opengl.h"
 #include "src/shader/shader.h"
 
@@ -38,21 +40,13 @@ int main()
     glGenVertexArrays(1, &vertexArrayObject);
     glBindVertexArray(vertexArrayObject);
 
-    unsigned int vertexBuffer;
-    glGenBuffers(1, &vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+    n_VertexBuffer vertexBuffer = newVertexBuffer(positions, sizeof(positions));
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
 
 
-    unsigned int indexBuffer;
-    glGenBuffers(1, &indexBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    n_IndexBuffer* indexBuffer = newIndexBuffer(indices, sizeof(indices) / sizeof(unsigned int));
 
     n_createShader(window, "res/shader/vertexShader.vs", "res/shader/fragmentShader.fs");
 
@@ -69,8 +63,8 @@ int main()
     float increment = 0.05f;
 
     glUseProgram(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    unbindVertexBuffer();
+    unbindIndexBuffer();
 
     while(!window->shouldClose)
     {
@@ -83,7 +77,7 @@ int main()
         glUseProgram(window->shader);
 
         glEnableVertexAttribArray(vertexArrayObject);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer->id);
 
 
         if(location != -1)
@@ -108,6 +102,10 @@ int main()
         };
 
     }
+    
+    deleteIndexBuffer(indexBuffer);
+    deleteVertexBuffer(vertexBuffer);
+
     glDeleteProgram(window->shader);
     glfwTerminate();
     return 0;
