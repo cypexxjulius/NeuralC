@@ -13,12 +13,12 @@ extern n_VertexBuffer newVertexBuffer(void *data, unsigned int size)
     return this;
 }
 
-extern void bindVertexBuffer(n_VertexBuffer this)
+extern void vertexBufferBind(n_VertexBuffer this)
 {
     glBindBuffer(GL_ARRAY_BUFFER, this);
 }
 
-extern void unbindVertexBuffer()
+extern void vertexBufferUnbind()
 {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -42,12 +42,12 @@ extern n_IndexBuffer* newIndexBuffer(unsigned int *data, unsigned int count)
     return this;
 }
 
-extern void bindIndexBuffer(n_IndexBuffer* this)
+extern void indexBufferBind(n_IndexBuffer* this)
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
 }
 
-extern void unbindIndexBuffer()
+extern void indexBufferUnbind()
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

@@ -36,14 +36,18 @@ int main()
         2, 3, 0
     };
 
-    unsigned int vertexArrayObject;
-    glGenVertexArrays(1, &vertexArrayObject);
-    glBindVertexArray(vertexArrayObject);
+
+    n_VertexArray* vertexArray = newVertexArray();
+
 
     n_VertexBuffer vertexBuffer = newVertexBuffer(positions, sizeof(positions));
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
+    n_VertexBufferLayout* layout = newVertexBufferLayout();
+
+    vertexBufferLayoutPush(layout, GL_FLOAT, 2);
+
+    vertexArrayAddBuffer(vertexArray, &vertexBuffer, layout);
+
 
 
     n_IndexBuffer* indexBuffer = newIndexBuffer(indices, sizeof(indices) / sizeof(unsigned int));
@@ -63,8 +67,8 @@ int main()
     float increment = 0.05f;
 
     glUseProgram(0);
-    unbindVertexBuffer();
-    unbindIndexBuffer();
+    vertexBufferUnbind();
+    indexBufferUnbind();
 
     while(!window->shouldClose)
     {
@@ -76,8 +80,8 @@ int main()
 
         glUseProgram(window->shader);
 
-        glEnableVertexAttribArray(vertexArrayObject);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer->id);
+        vertexArrayBind(vertexArray);
+        indexBufferBind(indexBuffer);
 
 
         if(location != -1)
@@ -105,6 +109,8 @@ int main()
     
     deleteIndexBuffer(indexBuffer);
     deleteVertexBuffer(vertexBuffer);
+    deleteVertexBufferLayout(layout);
+    deleteVertexArray(vertexArray);
 
     glDeleteProgram(window->shader);
     glfwTerminate();

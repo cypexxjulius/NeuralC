@@ -8,9 +8,9 @@ typedef unsigned int n_VertexBuffer;
 
 extern n_VertexBuffer newVertexBuffer(void *data, unsigned int size); 
 
-extern void bindVertexBuffer(n_VertexBuffer this);
+extern void vertexBufferBind(n_VertexBuffer this);
 
-extern void unbindVertexBuffer();
+extern void vertexBufferUnbind();
 
 extern void deleteVertexBuffer(n_VertexBuffer this);
 
@@ -27,9 +27,9 @@ typedef struct
 
 extern n_IndexBuffer* newIndexBuffer(unsigned int *data, unsigned int count); 
 
-extern void bindIndexBuffer(n_IndexBuffer* this);
+extern void indexBufferBind(n_IndexBuffer* this);
 
-extern void unbindIndexBuffer();
+extern void indexBufferUnbind();
 
 extern void deleteIndexBuffer(n_IndexBuffer* this);
 
