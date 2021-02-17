@@ -9,7 +9,8 @@ extern void n_printSystemInformation()
 
     // Printing system informations
     puts("System Information:");
-    printf("    Vendor:   %s\n", glGetString(GL_VENDOR));
-    printf("    Version:  %s\n", glGetString(GL_VERSION));
+    printf("    GPU:                %s\n", glGetString(GL_RENDERER));
+    printf("    Vendor:             %s\n", glGetString(GL_VENDOR));
+    printf("    OpenGL Version:     %s\n", glGetString(GL_VERSION));
 
 }

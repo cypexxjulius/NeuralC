@@ -34,6 +34,10 @@ int main()
         2, 3, 0
     };
 
+    unsigned int vertexArrayObject;
+    glGenVertexArrays(1, &vertexArrayObject);
+    glBindVertexArray(vertexArrayObject);
+
     unsigned int vertexBuffer;
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -64,14 +68,23 @@ int main()
     float r = 0.0f;
     float increment = 0.05f;
 
+    glUseProgram(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
     while(!window->shouldClose)
     {
         if(n_isButtonPressed(window, NL_KEY_W))
-            puts("Key W Pressed");
-
-        
+            r += increment;
+            
 
         glClear(GL_COLOR_BUFFER_BIT);
+
+        glUseProgram(window->shader);
+
+        glEnableVertexAttribArray(vertexArrayObject);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+
 
         if(location != -1)
             glUniform4f(location, r, 0.3f, 0.8f, 1.0f);
@@ -83,7 +96,6 @@ int main()
         else if(r < 0)
             increment = 0.05f;
 
-        r += increment;
 
         // Swap Buffers 
         glfwSwapBuffers(window->windowHandle);

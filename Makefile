@@ -17,6 +17,7 @@ FOO := $(patsubst %OS,%,$(FOO))
 .PHONY: compile
 
 %.o: %.c **/*.h
+	@echo $<
 	@$(CC) -o $@ -c $< $(FLAGS)
 
 game: $(OBJ)

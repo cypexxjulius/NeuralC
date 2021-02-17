@@ -31,6 +31,10 @@ extern n_Window* n_createWindow(int width, int height, char *title)
         ASSERT(0, "Failed to initialize GLFW");
     }
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     window->windowHandle = glfwCreateWindow(width, height, title, NULL, NULL);
 
     if(!window->windowHandle)
@@ -53,6 +57,8 @@ extern n_Window* n_createWindow(int width, int height, char *title)
     n_initError(window);
 
     n_initEvent(window);
+
+
 
     return window;
 }

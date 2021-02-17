@@ -26,7 +26,7 @@ static void keyCallback(GLFWwindow* glWindow, int key, int scancode, int action,
 
     n_Window* window = glfwGetWindowUserPointer(glWindow);
 
-    window->keyboard.keys[key].down = action == GLFW_PRESS ? 1 : 0;
+    window->keyboard.keys[key].down = (action == GLFW_PRESS) ? 1 : (action == GLFW_REPEAT) ? 2 : 0;
 }
 
 static void charCallback(GLFWwindow* glWindow, unsigned int key)
