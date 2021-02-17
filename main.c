@@ -61,8 +61,6 @@ int main()
 
     while(!window->shouldClose)
     {
-
-        
         if(n_isButtonPressed(window, NL_KEY_W))
             puts("Key W Pressed");
 
