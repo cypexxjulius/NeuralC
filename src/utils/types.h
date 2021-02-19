@@ -60,4 +60,30 @@ Returns the length of the vector.
 */
 unsigned int vectorLength(vector *this);
 
+/*
+
+TODO implement hash Table
+
+Basic hash-table implementation
+
+
+typedef struct HashTable
+{
+    unsigned int size;
+    int* table
+}HashTable;
+
+HashTable* newHashTable(unsigned int size);
+
+extern void hashTableStore
+(HashTable* this, void *accessData, unsigned int accessDataLength, unsigned int data);
+
+extern unsigned int hashTableGet
+(HashTable* this, void *accessData, unsigned int accessDataLength);
+
+extern void deleteHashTable(HashTable* this);
+
+*/
+
+
 #endif // __TYPES_H_

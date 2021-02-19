@@ -2,11 +2,19 @@
 
 #include "../utils/fileio.h"
 #include "../core/error.h"
+#include "../core/window.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 
-static unsigned int n_compileShader(char *shaderSrc, n_ShaderType type)
+typedef enum ShaderType 
+{
+    VertexShaderType = 2,
+    FragmentShaderType = 3
+} n_ShaderType;
+
+
+static unsigned int compileShader(char *shaderSrc, n_ShaderType type)
 {
     GLenum glType = (type == 2) ? GL_VERTEX_SHADER : (type == 3) ? GL_FRAGMENT_SHADER : GL_FALSE;
 
@@ -23,7 +31,7 @@ static unsigned int n_compileShader(char *shaderSrc, n_ShaderType type)
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 
         char *message = calloc(length, sizeof(char));
-        printf("Shader: %s\n", type == 2 ? "Vertex shader" : "Fragement shader");
+        printf("Shader: %s\n", (type == VertexShaderType) ? "Vertex shader" : "Fragement shader");
         glGetShaderInfoLog(id, length, &length, message);
 
         ASSERT(0, message);
@@ -34,15 +42,15 @@ static unsigned int n_compileShader(char *shaderSrc, n_ShaderType type)
     return id;
 }
 
-extern void n_createShader(n_Window* window, char* vertexShaderPath, char* fragmentShaderPath)
+extern void newShader(struct n_Window* window, char* vertexShaderPath, char* fragmentShaderPath)
 {
     char *vertexShader    = n_readFile(vertexShaderPath);
     char *fragmentShader  = n_readFile(fragmentShaderPath);    
 
     unsigned int program = glCreateProgram();
 
-    unsigned int vertexShaderID     = n_compileShader(vertexShader, VertexShaderType);
-    unsigned int fragmentShaderID  = n_compileShader(fragmentShader, FragmentShaderType);
+    unsigned int vertexShaderID     = compileShader(vertexShader, VertexShaderType);
+    unsigned int fragmentShaderID   = compileShader(fragmentShader, FragmentShaderType);
 
 
     free(vertexShader);
@@ -59,8 +67,52 @@ extern void n_createShader(n_Window* window, char* vertexShaderPath, char* fragm
 
     glValidateProgram(program);
 
+
     glDeleteShader(vertexShaderID);
     glDeleteShader(fragmentShaderID);
 
     window->shader = program;
+}
+
+extern void shaderBind(struct n_Window* window)
+{   
+    if(!window->shader)
+    {
+        ASSERT(0, "No shader created before binding");
+        return;
+    }
+
+    glUseProgram(window->shader);
+}   
+
+extern void shaderUnbind()
+{
+    glUseProgram(0);
+}
+
+extern void deleteShader(struct n_Window* window)
+{
+    glDeleteProgram(window->shader);
+}
+
+static inline int getUniform(n_Window* window, char *name)
+{
+
+    unsigned int location = glGetUniformLocation(window->shader, name);
+    ASSERT(location != -1, "Uniform not found Error");
+    return location;
+}
+/*
+Uniform upload
+*/
+
+extern void shaderUploadUniform1m4(struct n_Window* window, char* name, float floatarray[4])
+{
+    glUniform4f(getUniform(window, name), floatarray[0], floatarray[1], floatarray[2], floatarray[3]);
+}
+
+
+extern void shaderUploadUniform1f(struct n_Window* window, char* name, float float0)
+{
+    glUniform1f(getUniform(window, name), float0);
 }

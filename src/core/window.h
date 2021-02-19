@@ -41,7 +41,10 @@ typedef struct n_Window
 
 } n_Window;
 
+
 extern n_Window* n_createWindow(int width, int height, char *title);
+
+extern void deleteWindow(n_Window* window);
 
 extern n_Position n_getMousePosition(n_Window* window);
 

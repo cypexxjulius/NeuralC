@@ -3,7 +3,7 @@
 
 VPATH = src/
 CC=gcc
-FLAGS= -Wall -Wextra -g -Wno-int-to-pointer-cast -Wno-unused-parameter
+FLAGS= -Wall -Wextra -g -Wno-unused-parameter -Wno-int-to-pointer-cast
 LIBS= -lGL -lGLEW -lglfw3 -ldl -lX11 -lpthread -lm
 
 SRC  = $(wildcard *.c src/*c src/**/*.c src/**/**/*.c src/**/**/**/*.c)
@@ -17,7 +17,7 @@ FOO := $(patsubst %OS,%,$(FOO))
 .PHONY: compile
 
 %.o: %.c **/*.h
-	@echo $<
+	@echo $< 
 	@$(CC) -o $@ -c $< $(FLAGS)
 
 game: $(OBJ)

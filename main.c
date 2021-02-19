@@ -3,6 +3,7 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "src/core/window.h"
 #include "src/core/system.h"
@@ -52,21 +53,17 @@ int main()
 
     n_IndexBuffer* indexBuffer = newIndexBuffer(indices, sizeof(indices) / sizeof(unsigned int));
 
-    n_createShader(window, "res/shader/vertexShader.vs", "res/shader/fragmentShader.fs");
+    newShader(window, "res/shader/vertexShader.vs", "res/shader/fragmentShader.fs");
+    
+    shaderBind(window);
 
-    // Bind shader
-    glUseProgram(window->shader);
-
-    int location = glGetUniformLocation(window->shader, "u_Color");
-    if(location != -1)
-    {
-        glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f);
-    }
+    
+    shaderUploadUniform1f(window, "u_Color", 0.0f);
 
     float r = 0.0f;
     float increment = 0.05f;
 
-    glUseProgram(0);
+    shaderUnbind();
     vertexBufferUnbind();
     indexBufferUnbind();
 
@@ -78,21 +75,21 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(window->shader);
-
+        
+        shaderBind(window);
         vertexArrayBind(vertexArray);
         indexBufferBind(indexBuffer);
 
 
-        if(location != -1)
-            glUniform4f(location, r, 0.3f, 0.8f, 1.0f);
         
+        shaderUploadUniform1f(window, "u_Color", r);
+
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
         
-        if(r > 1.0)
-            increment = -0.05f;
-        else if(r < 0)
-            increment = 0.05f;
+        if(r > 0.2)
+            increment = -0.03f;
+        else if(r < 0.2)
+            increment = 0.03f;
 
 
         // Swap Buffers 
@@ -112,7 +109,6 @@ int main()
     deleteVertexBufferLayout(layout);
     deleteVertexArray(vertexArray);
 
-    glDeleteProgram(window->shader);
-    glfwTerminate();
+    deleteWindow(window);
     return 0;
 }

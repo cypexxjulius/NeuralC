@@ -82,3 +82,58 @@ unsigned int vectorLength(vector *this)
 {
     return this->used;
 }
+
+/*
+#
+# 
+Hash Table implementation
+#
+#
+*/
+/*
+HashTable* newHashTable(unsigned int size)
+{
+    if(size < 0)
+        return NULL;
+    
+    HashTable* this = calloc(1, sizeof(HashTable));
+    this->size = size;
+    this->table = calloc(size, sizeof(unsigned int));
+    return this;
+}
+
+static unsigned int hashFunction(void *data, unsigned int count, unsigned int max)
+{
+    unsigned int temp = 0;
+
+    for(int i = 0; i < count; i++)
+    {
+        temp ^= ((unsigned char *)data)[i];
+        temp *= (count << i);
+    }
+
+    return temp % max;
+}
+
+extern void hashTableStore
+(HashTable* this, void *accessData, unsigned int accessDataLength, unsigned int data)
+{
+    unsigned int hashValue = hashFunction(accessData, accessDataLength, this->size);
+    while(this->table[hashValue % this->size] != 0)
+        hashValue++;
+    
+    this->table[hashValue] = data;
+}
+
+extern unsigned int hashTableGet
+(HashTable* this, void *accessData, unsigned int accessDataLength)
+{
+    unsigned int hashValue = hashFunction(accessData, accessDataLength, this->size);
+    while(this->table[hashValue % this->size] != 0)
+        hashValue++;
+    
+    this->table[hashValue] = data;
+}
+
+extern void deleteHashTable(HashTable* this);
+*/

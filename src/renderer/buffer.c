@@ -55,5 +55,6 @@ extern void indexBufferUnbind()
 extern void deleteIndexBuffer(n_IndexBuffer* this)
 {
     glDeleteBuffers(1, &this->id);
+    free(this);
 }
 

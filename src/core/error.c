@@ -12,9 +12,9 @@ void APIENTRY errorCallback(GLenum source, GLenum type, GLuint id, GLenum severi
     userParam = userParam;
     id = id;
     fprintf(stderr, "[OPENGL ERROR]:\n" 
-                    "Source     : %x\n"
-                    "Type       : %x\n"
-                    "Severity   : %x\n"
+                    "Source     : 0x%x\n"
+                    "Type       : 0x%x\n"
+                    "Severity   : 0x%x\n"
                     "ERROR:\n%s\n", source, type, severity, message);
 }
 

@@ -7,6 +7,7 @@
 #include "window.h"
 #include "error.h"
 #include "../events/event.h"
+#include "../shader/shader.h"
 
 extern n_Window* n_createWindow(int width, int height, char *title)
 {
@@ -61,6 +62,15 @@ extern n_Window* n_createWindow(int width, int height, char *title)
 
 
     return window;
+}
+
+extern void deleteWindow(n_Window* window)
+{
+    deleteShader(window);
+
+    glfwTerminate();
+    free(window->title);
+    free(window);
 }
 
 extern n_Position n_getMousePosition(n_Window* window)
