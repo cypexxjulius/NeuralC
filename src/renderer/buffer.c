@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <GL/glew.h>
+#include "../platform/memory.h"
 
 extern n_VertexBuffer newVertexBuffer(void *data, unsigned int size)
 {
@@ -34,7 +35,7 @@ IndexBuffer
 
 extern n_IndexBuffer* newIndexBuffer(unsigned int *data, unsigned int count)
 {
-    n_IndexBuffer* this = calloc(1, sizeof(n_IndexBuffer));
+    n_IndexBuffer* this = nl_malloc(1 * sizeof(n_IndexBuffer));
     glGenBuffers(1, &this->id);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), data, GL_STATIC_DRAW);
@@ -55,6 +56,6 @@ extern void indexBufferUnbind()
 extern void deleteIndexBuffer(n_IndexBuffer* this)
 {
     glDeleteBuffers(1, &this->id);
-    free(this);
+    nl_free(this);
 }
 

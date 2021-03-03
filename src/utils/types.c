@@ -1,10 +1,12 @@
 #include "types.h"
 #include <stdlib.h>
+
+#include "../platform/memory.h"
 #include <string.h>
 
 vector *newVector(unsigned int count, unsigned int type_size, VECTOR_FLAGS flags)
 {
-    vector* this = malloc(sizeof(vector));
+    vector* this = nl_malloc(sizeof(vector));
 
     this->capacity = count;
     this->used = 0;
@@ -12,7 +14,7 @@ vector *newVector(unsigned int count, unsigned int type_size, VECTOR_FLAGS flags
     this->type_size = (flags & VECTOR_POINTER) ? sizeof(void *) : type_size;
     this->flags = flags;
 
-    this->data = malloc(type_size * count);
+    this->data = nl_malloc(type_size * count);
 
     return this;
 }
@@ -21,7 +23,7 @@ void vectorAdd(vector* this, void *element)
 {
     if(this->capacity == this->used)
     {
-        this->data = realloc(this->data, this->type_size * (this->capacity + 1));
+        this->data = nl_realloc(this->data, this->type_size * (this->capacity + 1));
         this->capacity++;
     }
 
@@ -45,7 +47,7 @@ void vectorRemove(vector* this, unsigned int indices)
     if(this->flags & VECTOR_FREE)
     {
         void **temp = this->data;
-        free(temp[indices]);
+        nl_free(temp[indices]);
     }
     memcpy(this->data + indices * this->type_size, this->data + (indices +1) * this->type_size, this->type_size * (this->used - indices - 1));
     this->used--;
@@ -73,9 +75,9 @@ void deleteVector(vector *this)
         for(unsigned int i= 0; i < this->used; i++)
             free(temp[i]);
     }
-    free(this->data);
+    nl_free(this->data);
 
-    free(this);
+    nl_free(this);
 }
 
 unsigned int vectorLength(vector *this)

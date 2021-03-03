@@ -7,7 +7,7 @@
 #include "../utils/types.h"
 
 struct Button {
-    uint down, last, last_tick, pressed, pressed_tick;
+    ui16 down, last, last_tick, pressed, pressed_tick;
 };
 
 struct n_Mouse {
@@ -21,7 +21,7 @@ struct n_Keyboard {
 };
 
 struct n_Char {
-    uint key[256];
+    ui16 key[256];
 };
 
 typedef struct n_Window
@@ -48,8 +48,8 @@ extern void deleteWindow(n_Window* window);
 
 extern n_Position n_getMousePosition(n_Window* window);
 
-extern int n_isButtonPressed(n_Window* window, char key);
+extern int isButtonPressed(n_Window* window, int key);
 
-
+extern void setMouseGrabbed(n_Window* window, int8_t grabbed);
 
 #endif // _CORE_WINDOW_H_

@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 
 #include "fileio.h"
+#include "../platform/memory.h"
 #include "../core/error.h"
 
 extern char* n_readFile(char *filepath)
@@ -18,7 +19,7 @@ extern char* n_readFile(char *filepath)
     unsigned int length = ftell(fp);
     rewind(fp);
 
-    char *file = calloc(length, sizeof(char));
+    char *file = nl_malloc(length * sizeof(char));
 
     if(!file)
     {

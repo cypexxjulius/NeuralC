@@ -3,8 +3,11 @@
 #include "../utils/fileio.h"
 #include "../core/error.h"
 #include "../core/window.h"
+#include "../platform/memory.h"
 
-#include <stdlib.h>
+
+#include "cglm/common.h"
+
 #include <stdio.h>
 
 typedef enum ShaderType 
@@ -30,13 +33,13 @@ static unsigned int compileShader(char *shaderSrc, n_ShaderType type)
         int length;
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 
-        char *message = calloc(length, sizeof(char));
+        char *message = nl_malloc(length * sizeof(char));
         printf("Shader: %s\n", (type == VertexShaderType) ? "Vertex shader" : "Fragement shader");
         glGetShaderInfoLog(id, length, &length, message);
 
         ASSERT(0, message);
 
-        free(message);
+        nl_free(message);
     }   
 
     return id;
@@ -53,8 +56,8 @@ extern void newShader(struct n_Window* window, char* vertexShaderPath, char* fra
     unsigned int fragmentShaderID   = compileShader(fragmentShader, FragmentShaderType);
 
 
-    free(vertexShader);
-    free(fragmentShader);
+    nl_free(vertexShader);
+    nl_free(fragmentShader);
 
     glAttachShader(program, vertexShaderID);
     glAttachShader(program, fragmentShaderID);
@@ -98,7 +101,7 @@ extern void deleteShader(struct n_Window* window)
 static inline int getUniform(n_Window* window, char *name)
 {
 
-    unsigned int location = glGetUniformLocation(window->shader, name);
+    int location = glGetUniformLocation(window->shader, name);
     ASSERT(location != -1, "Uniform not found Error");
     return location;
 }
@@ -106,11 +109,12 @@ static inline int getUniform(n_Window* window, char *name)
 Uniform upload
 */
 
-extern void shaderUploadUniform1m4(struct n_Window* window, char* name, float floatarray[4])
-{
-    glUniform4f(getUniform(window, name), floatarray[0], floatarray[1], floatarray[2], floatarray[3]);
-}
 
+
+extern void shaderUploadUniform1m4(struct n_Window* window, char* name, mat4s matrix)
+{
+    glUniformMatrix4fv(getUniform(window, name), 1, GL_FALSE, (const GLfloat *) &matrix.raw);
+}
 
 extern void shaderUploadUniform1f(struct n_Window* window, char* name, float float0)
 {

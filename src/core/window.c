@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include <string.h>
 
 #include <GL/glew.h>
@@ -8,11 +7,13 @@
 #include "error.h"
 #include "../events/event.h"
 #include "../shader/shader.h"
+#include "../platform/memory.h"
+
 
 extern n_Window* n_createWindow(int width, int height, char *title)
 {
     // Initalizing the n_window struct
-    n_Window *window = calloc(1, sizeof(n_Window));
+    n_Window *window = nl_malloc(1 * sizeof(n_Window));
     
     // Storing the width and the height of the window 
     window->height = height;
@@ -21,7 +22,7 @@ extern n_Window* n_createWindow(int width, int height, char *title)
     window->shouldClose = 0;
 
     // Storing the title
-    window->title = malloc(strlen(title) + 1);
+    window->title = nl_malloc(strlen(title) + 1);
     memcpy(window->title, title, strlen(title) + 1);
 
     // Initializing event queue
@@ -69,8 +70,8 @@ extern void deleteWindow(n_Window* window)
     deleteShader(window);
 
     glfwTerminate();
-    free(window->title);
-    free(window);
+    nl_free(window->title);
+    nl_free(window);
 }
 
 extern n_Position n_getMousePosition(n_Window* window)
@@ -78,7 +79,10 @@ extern n_Position n_getMousePosition(n_Window* window)
     return window->mouse.position;
 }
 
-extern int n_isButtonPressed(n_Window* window, char key)
+extern int isButtonPressed(n_Window* window, int key)
 {
     return window->keyboard.keys[(int)key].down;
+}
+extern void setMouseGrabbed(n_Window* window, int8_t grabbed) {
+    glfwSetInputMode(window->windowHandle, GLFW_CURSOR, grabbed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }

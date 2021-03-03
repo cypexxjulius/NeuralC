@@ -1,10 +1,16 @@
 #ifndef __N_TYPES_H_
 #define __N_TYPES_H_
 
-typedef unsigned int uint;
-typedef unsigned char byte;
+#include <stdint.h>
+#include <inttypes.h>
+
+
+typedef uint16_t ui16;
+typedef int16_t i16;
+typedef int8_t byte;
 
 typedef float float2[2]; 
+
 
 typedef struct 
 {

@@ -2,8 +2,9 @@
 
 #include "../utils/types.h"
 #include "../core/error.h"
+#include "../platform/memory.h"
+
 #include <GL/glew.h>
-#include <stdlib.h>
 
 static unsigned int convertToSize(GLenum type)
 {
@@ -20,7 +21,7 @@ static unsigned int convertToSize(GLenum type)
 
 extern n_VertexBufferLayout* newVertexBufferLayout()
 {
-    n_VertexBufferLayout* this =  calloc(1, sizeof(n_VertexBufferLayout));
+    n_VertexBufferLayout* this =  nl_calloc(1, sizeof(n_VertexBufferLayout));
     this->elements = newVector(2, sizeof(n_VertexBufferElement), 0);
     this->stride = 0;
     return this;
@@ -41,5 +42,5 @@ extern void vertexBufferLayoutPush
 extern void deleteVertexBufferLayout(n_VertexBufferLayout* this)
 {
     deleteVector(this->elements);
-    free(this);
+    nl_free(this);
 }

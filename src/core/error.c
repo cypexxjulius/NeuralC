@@ -32,7 +32,7 @@ void n_initError()
     glfwSetErrorCallback(glfwErrorCallback);
 }
 
-extern void printAssertMessageAndExit(char *message)
+extern void printAssertMessageAndExit(char *message, char * file, int line)
 {
-    fprintf(stderr, "[ERROR] %s %d\n%s\n", __FILE__, __LINE__, (message)); exit(1);
+    fprintf(stderr, "[ERROR] %s %d\n%s\n", file, line, (message)); exit(1);
 }
