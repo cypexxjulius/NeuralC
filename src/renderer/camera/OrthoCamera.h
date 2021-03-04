@@ -8,24 +8,16 @@
 #include <cglm/cglm.h>
 #include <cglm/struct.h>
 
-struct ViewProjection {
-    mat4s view, proj;
-};
+#include "Camera.h"
 
-typedef struct OrthographicCamera {
-    struct ViewProjection view_proj;
-    vec2s position;
-} OrthographicCamera;
+extern n_Camera* newOrthographicCamera(float left, float right, float top, float bottom);
 
+extern void orthographicCameraSetPosition(n_Camera* this, vec2s pos);
 
-extern OrthographicCamera* newOrthographicCamera(float left, float right, float top, float bottom);
+extern vec2s orthographicCameraGetPosition(n_Camera* this);
 
-extern void orthographicCameraSetPosition(OrthographicCamera* this, vec2s pos);
+extern void deleteOrthographicCamera(n_Camera* this);
 
-extern vec2s orthographicCameraGetPosition(OrthographicCamera* this);
-
-extern void deleteOrthographicCamera(OrthographicCamera* this);
-
-extern mat4s orthographicCameraGetViewPosMat(OrthographicCamera *this);
+extern mat4s orthographicCameraGetViewPosMat(n_Camera *this);
 
 #endif // __ORTHO_CAMERA_H_

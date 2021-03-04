@@ -31,7 +31,6 @@ typedef struct n_Window
     unsigned int width;
     unsigned int height;
     unsigned char shouldClose;
-    unsigned int shader;
 
     // State 
     struct n_Mouse mouse;

@@ -6,7 +6,6 @@
 #include "window.h"
 #include "error.h"
 #include "../events/event.h"
-#include "../shader/shader.h"
 #include "../platform/memory.h"
 
 
@@ -56,19 +55,16 @@ extern n_Window* n_createWindow(int width, int height, char *title)
     glfwSetWindowUserPointer(window->windowHandle, window);
     glfwSwapInterval(1);
 
+
     n_initError(window);
 
     n_initEvent(window);
-
-
 
     return window;
 }
 
 extern void deleteWindow(n_Window* window)
 {
-    deleteShader(window);
-
     glfwTerminate();
     nl_free(window->title);
     nl_free(window);
@@ -83,6 +79,7 @@ extern int isButtonPressed(n_Window* window, int key)
 {
     return window->keyboard.keys[(int)key].down;
 }
-extern void setMouseGrabbed(n_Window* window, int8_t grabbed) {
+extern void setMouseGrabbed(n_Window* window, int8_t grabbed) 
+{
     glfwSetInputMode(window->windowHandle, GLFW_CURSOR, grabbed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }

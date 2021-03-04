@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
+#include <string.h>
 
 #include "fileio.h"
 #include "../platform/memory.h"
@@ -19,16 +19,14 @@ extern char* n_readFile(char *filepath)
     unsigned int length = ftell(fp);
     rewind(fp);
 
-    char *file = nl_malloc(length * sizeof(char));
+    char *file = nl_calloc(length, sizeof(char));
 
     if(!file)
     {
         ASSERT(0, "Memory allocation failed");
     }
 
-    while(fread(file, length, sizeof(char), fp) != 0);
-
-
+    fread(file, length, sizeof(char), fp);
     fclose(fp);
     return file;
 }

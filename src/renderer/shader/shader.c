@@ -1,9 +1,9 @@
 #include "shader.h"
 
-#include "../utils/fileio.h"
-#include "../core/error.h"
-#include "../core/window.h"
-#include "../platform/memory.h"
+#include "../../utils/fileio.h"
+#include "../../core/error.h"
+#include "../../core/window.h"
+#include "../../platform/memory.h"
 
 
 #include "cglm/common.h"
@@ -45,7 +45,7 @@ static unsigned int compileShader(char *shaderSrc, n_ShaderType type)
     return id;
 }
 
-extern void newShader(struct n_Window* window, char* vertexShaderPath, char* fragmentShaderPath)
+extern n_Shader newShader(char* vertexShaderPath, char* fragmentShaderPath)
 {
     char *vertexShader    = n_readFile(vertexShaderPath);
     char *fragmentShader  = n_readFile(fragmentShaderPath);    
@@ -74,18 +74,12 @@ extern void newShader(struct n_Window* window, char* vertexShaderPath, char* fra
     glDeleteShader(vertexShaderID);
     glDeleteShader(fragmentShaderID);
 
-    window->shader = program;
+    return program;
 }
 
-extern void shaderBind(struct n_Window* window)
+extern void shaderBind(n_Shader this)
 {   
-    if(!window->shader)
-    {
-        ASSERT(0, "No shader created before binding");
-        return;
-    }
-
-    glUseProgram(window->shader);
+    glUseProgram(this);
 }   
 
 extern void shaderUnbind()
@@ -93,15 +87,15 @@ extern void shaderUnbind()
     glUseProgram(0);
 }
 
-extern void deleteShader(struct n_Window* window)
+extern void deleteShader(n_Shader this)
 {
-    glDeleteProgram(window->shader);
+    glDeleteProgram(this);
 }
 
-static inline int getUniform(n_Window* window, char *name)
+static inline int getUniform(n_Shader this, char *name)
 {
 
-    int location = glGetUniformLocation(window->shader, name);
+    int location = glGetUniformLocation(this, name);
     ASSERT(location != -1, "Uniform not found Error");
     return location;
 }
@@ -111,12 +105,12 @@ Uniform upload
 
 
 
-extern void shaderUploadUniform1m4(struct n_Window* window, char* name, mat4s matrix)
+extern void shaderUploadUniform1m4(n_Shader this, char* name, mat4s matrix)
 {
-    glUniformMatrix4fv(getUniform(window, name), 1, GL_FALSE, (const GLfloat *) &matrix.raw);
+    glUniformMatrix4fv(getUniform(this, name), 1, GL_FALSE, (const GLfloat *) &matrix.raw);
 }
 
-extern void shaderUploadUniform1f(struct n_Window* window, char* name, float float0)
+extern void shaderUploadUniform1f(n_Shader this, char* name, float float0)
 {
-    glUniform1f(getUniform(window, name), float0);
+    glUniform1f(getUniform(this, name), float0);
 }
