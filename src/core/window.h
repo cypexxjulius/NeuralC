@@ -2,7 +2,8 @@
 #define _CORE_WINDOW_H_
 
 
-#include "opengl.h"
+#include "../libinclude/glad.h"
+#include "../libinclude/glfw.h"
 #include "../events/eventStructs.h"
 #include "../utils/types.h"
 
@@ -12,8 +13,8 @@ struct Button {
 
 struct n_Mouse {
     struct Button buttons[GLFW_MOUSE_BUTTON_LAST];
-    n_Position position; 
-    float2 delta, scrollOffset;
+    v2 position; 
+    float delta[2], scrollOffset[2];
 };
 
 struct n_Keyboard {
@@ -45,7 +46,7 @@ extern n_Window* n_createWindow(int width, int height, char *title);
 
 extern void deleteWindow(n_Window* window);
 
-extern n_Position n_getMousePosition(n_Window* window);
+extern v2 n_getMousePosition(n_Window* window);
 
 extern int isButtonPressed(n_Window* window, int key);
 

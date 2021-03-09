@@ -1,10 +1,17 @@
 #ifndef __TYPES_H_
 #define __TYPES_H_
 
-typedef struct n_Position
-{
-    int x, y;
-}n_Position;
+#include <stdint.h>
+
+typedef uint16_t ui16;
+typedef int16_t i16;
+typedef uint8_t byte;
+
+
+typedef struct{ float x,y; }v2; 
+
+#define v2(x, y) (v2){x, y}
+
 typedef enum vector_type
 {
     VECTOR_POINTER = 4, VECTOR_FREE = 8

@@ -1,7 +1,7 @@
 #include "buffer.h"
 
 #include <stdlib.h>
-#include <GL/glew.h>
+#include "../libinclude/glad.h"
 #include "../platform/memory.h"
 
 extern n_VertexBuffer newVertexBuffer(void *data, unsigned int size)

@@ -2,6 +2,7 @@
 #define __CAMERA_H_
 
 
+#include "../../utils/types.h"
 
 struct ViewProjection {
     mat4s view, proj;
@@ -9,7 +10,7 @@ struct ViewProjection {
 
 struct OrthographicCamera {
     struct ViewProjection view_proj;
-    vec2s position;
+    v2 position;
 };
 
 

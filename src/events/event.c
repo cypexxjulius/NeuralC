@@ -1,7 +1,6 @@
 #include "event.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include "../core/window.h"
 
 static void windowSizeCallback(GLFWwindow* glWindow, int width, int height)
@@ -20,10 +19,6 @@ static void windowCloseCallback(GLFWwindow* glWindow)
 
 static void keyCallback(GLFWwindow* glWindow, int key, int scancode, int action, int mods)
 {
-    if (key < 0) {
-        return;
-    }
-
     n_Window* window = glfwGetWindowUserPointer(glWindow);
 
     window->keyboard.keys[key].down = (action == GLFW_PRESS) ? 1 : (action == GLFW_REPEAT) ? 2 : 0;
@@ -57,8 +52,7 @@ static void scrollCallback(GLFWwindow* glWindow, double xOffset, double yOffset)
 static void mouseMoveCallback(GLFWwindow* glWindow, double x, double y)
 {
     n_Window* window = glfwGetWindowUserPointer(glWindow);
-
-    window->mouse.position = (n_Position){(float)x, (float)y};
+    window->mouse.position = v2(x, y);
     
 }
 

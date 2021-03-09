@@ -2,11 +2,11 @@
 #define __EVENTSTRUCTS_H_
 
 
-#include "../n_types.h"
+#include "../utils/types.h"
 
 typedef struct
 {
-    float2 pos;
+    v2 pos;
 } n_PosEvent;
 
 typedef struct

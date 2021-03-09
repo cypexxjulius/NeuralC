@@ -3,9 +3,6 @@
 #include "../../platform/memory.h"
 #include "../../core/error.h"
 
-#include <cglm/mat4.h>
-#include <cglm/cam.h>
-
 #include <string.h>
 
 static inline void orthographicCameraRecalculate(n_Camera *this)
@@ -26,18 +23,19 @@ extern n_Camera* newOrthographicCamera(float left, float right, float top, float
     return this;
 } 
 
-extern void orthographicCameraSetPosition(n_Camera* this, vec2s pos)
+extern void orthographicCameraSetPosition(n_Camera* this, v2 pos)
 {
     ASSERT(this->camType == OrthographicCameraType, "Wrong camera type");  
     this->orthoCam.position = pos;
     orthographicCameraRecalculate(this);
 }
 
-extern vec2s orthographicCameraGetPosition(n_Camera* this)
+extern v2 orthographicCameraGetPosition(n_Camera* this)
 {
     ASSERT(this->camType == OrthographicCameraType, "Wrong camera type");  
     return this->orthoCam.position;
 }
+
 
 extern mat4s orthographicCameraGetViewPosMat(n_Camera *this)
 {

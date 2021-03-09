@@ -1,7 +1,6 @@
 #include "system.h"
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include "../libinclude/glad.h"
 #include <stdio.h>
 
 extern void n_printSystemInformation()

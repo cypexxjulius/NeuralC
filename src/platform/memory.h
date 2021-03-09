@@ -1,7 +1,7 @@
 #ifndef __MEMORY_H_
 #define __MEMORY_H_
 
-#include "../n_types.h"
+#include "../utils/types.h"
 
 #include <stdlib.h>
 #include <stdio.h>

@@ -1,5 +1,5 @@
 #include "renderer.h"
-#include "../core/opengl.h"
+#include <glad/glad.h>
 #include "../core/window.h"
 #include "../core/error.h"
 

@@ -2,7 +2,7 @@
 #include "buffer.h"
 #include "../utils/types.h"
 #include "../platform/memory.h"
-#include <GL/glew.h>
+#include "../libinclude/glad.h"
 
 extern n_VertexArray* newVertexArray()
 {

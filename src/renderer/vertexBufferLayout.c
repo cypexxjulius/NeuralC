@@ -4,7 +4,7 @@
 #include "../core/error.h"
 #include "../platform/memory.h"
 
-#include <GL/glew.h>
+#include "../libinclude/glad.h"
 
 static unsigned int convertToSize(GLenum type)
 {

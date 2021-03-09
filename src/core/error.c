@@ -2,7 +2,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "opengl.h"
+#include "../libinclude/glad.h"
+#include "../libinclude/glfw.h"
 
 
 void APIENTRY errorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
@@ -16,9 +17,6 @@ void APIENTRY errorCallback(GLenum source, GLenum type, GLuint id, GLenum severi
                     "Type       : 0x%x\n"
                     "Severity   : 0x%x\n"
                     "ERROR:\n%s\n", source, type, severity, message);
-
-    if (severity >= 0x9146)
-        exit(1);
 }
 
 static void glfwErrorCallback(int error, const char *description)

@@ -92,6 +92,11 @@ extern void deleteShader(n_Shader this)
     glDeleteProgram(this);
 }
 
+
+/*
+Uniforms
+*/
+
 static inline int getUniform(n_Shader this, char *name)
 {
 
@@ -99,10 +104,6 @@ static inline int getUniform(n_Shader this, char *name)
     ASSERT(location != -1, "Uniform not found Error");
     return location;
 }
-/*
-Uniform upload
-*/
-
 
 
 extern void shaderUploadUniform1m4(n_Shader this, char* name, mat4s matrix)
@@ -113,4 +114,9 @@ extern void shaderUploadUniform1m4(n_Shader this, char* name, mat4s matrix)
 extern void shaderUploadUniform1f(n_Shader this, char* name, float float0)
 {
     glUniform1f(getUniform(this, name), float0);
+}
+
+extern void shaderUploadUniform1i(n_Shader this, char* name, int number)
+{
+    glUniform1i(getUniform(this, name), number);
 }

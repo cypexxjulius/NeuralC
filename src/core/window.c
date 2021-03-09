@@ -1,7 +1,7 @@
 #include <string.h>
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include "../libinclude/glad.h"
+#include "../libinclude/glfw.h"
 
 #include "window.h"
 #include "error.h"
@@ -47,9 +47,11 @@ extern n_Window* n_createWindow(int width, int height, char *title)
     glfwMakeContextCurrent(window->windowHandle);
 
 
-    if(glewInit() != GLEW_OK)
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
-        ASSERT(0, "Failed to initialize GLEW");
+        fprintf(stderr, "%s",  "error initializing GLAD\n");
+        glfwTerminate();
+        exit(1);
     }
 
     glfwSetWindowUserPointer(window->windowHandle, window);
@@ -70,7 +72,7 @@ extern void deleteWindow(n_Window* window)
     nl_free(window);
 }
 
-extern n_Position n_getMousePosition(n_Window* window)
+extern v2 n_getMousePosition(n_Window* window)
 {
     return window->mouse.position;
 }

@@ -2,8 +2,7 @@
 #define __SHADER_H_
 
 
-#include <cglm/cglm.h>
-#include <cglm/struct.h>
+#include "../../libinclude/cglm.h"
 
 struct n_Window;
 
@@ -26,5 +25,7 @@ extern void shaderUploadUniform1m4(n_Shader this, char* name, mat4s matrix);
 
 
 extern void shaderUploadUniform1f(n_Shader this, char* name, float float0);
+
+extern void shaderUploadUniform1i(n_Shader this, char* name, int number);
 
 #endif // __SHADER_H_

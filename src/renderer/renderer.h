@@ -6,6 +6,7 @@
 #include "timestep.h"
 #include "shader/shader.h"
 #include "camera/Camera.h"
+#include "textures/texture.h"
 
 struct n_Window;
 

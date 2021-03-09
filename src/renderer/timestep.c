@@ -1,6 +1,6 @@
 #include "timestep.h"
 
-#include <GLFW/glfw3.h>
+#include "../libinclude/glfw.h"
 
 static float last_time;
 
