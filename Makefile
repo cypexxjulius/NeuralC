@@ -12,7 +12,13 @@ LIBS += -lpthread -ldl
 endif 
 
 
+ifeq ($(OS), Windows_NT)
+VENDOR_LIBS = lib/glfw/src/libglfw3.lib lib/glad/src/glad.o lib/cglm/libcglm.lib
+endif 
+
+ifeq ($(OS), Linux)
 VENDOR_LIBS = lib/glfw/src/libglfw3.a lib/glad/src/glad.o lib/cglm/libcglm.a
+endif 
 
 SRC  = $(wildcard *.c src/*c src/**/*.c src/**/**/*.c src/**/**/**/*.c)
 OBJ  = $(SRC:.c=.o)
@@ -34,7 +40,7 @@ lib/cglm/libcglm.lib:
 
 # glfw
 lib/glfw/src/libglfw3.lib:
-	@cd lib/glfw && cmake . && make
+	@cd lib/glfw && cmake -G "MinGW Makefiles" -S . -B build && make
 endif
 
 
