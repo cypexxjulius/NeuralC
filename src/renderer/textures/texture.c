@@ -1,9 +1,9 @@
 #include "texture.h"
-#include "../../platform/memory.h"
-#include "../../libinclude/glad.h"
+#include "src/platform/memory.h"
+#include <glad/glad.h>
 #include <string.h>
 
-#include "../../../lib/stb/stb_image.h"
+#include <stb_image.h>
 
 extern n_Texture* newTexture(char *filepath)
 {

@@ -2,11 +2,14 @@
 #define __TYPES_H_
 
 #include <stdint.h>
+#include <cglm/struct.h>
 
 typedef uint16_t ui16;
 typedef int16_t i16;
 typedef uint8_t byte;
 
+
+void mat4print(mat4s mat);
 
 typedef struct{ float x,y; }v2; 
 
@@ -19,11 +22,11 @@ typedef enum vector_type
 
 typedef struct vector
 {  
-    void *data;
     unsigned int capacity;
     unsigned int type_size;
     unsigned int used;
     char flags;
+    void *data;
 } vector;
 
 

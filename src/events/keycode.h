@@ -1,6 +1,7 @@
 #ifndef __KEYCODE_H_
 #define __KEYCODE_H_
 
+
 #define NL_KEY_UNKNOWN            -1
 
 /* Printable keys */

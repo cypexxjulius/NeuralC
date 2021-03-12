@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include "fileio.h"
-#include "../platform/memory.h"
-#include "../core/error.h"
+#include "src/platform/memory.h"
+#include "src/core/error.h"
 
 extern char* n_readFile(char *filepath)
 {

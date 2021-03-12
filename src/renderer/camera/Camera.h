@@ -2,7 +2,7 @@
 #define __CAMERA_H_
 
 
-#include "../../utils/types.h"
+#include "src/utils/types.h"
 
 struct ViewProjection {
     mat4s view, proj;

@@ -1,9 +1,9 @@
 #include "shader.h"
 
-#include "../../utils/fileio.h"
-#include "../../core/error.h"
-#include "../../core/window.h"
-#include "../../platform/memory.h"
+#include "src/utils/fileio.h"
+#include "src/core/error.h"
+#include "src/core/window.h"
+#include "src/platform/memory.h"
 
 
 #include "cglm/common.h"

@@ -1,7 +1,7 @@
 #include "OrthoCamera.h"
 
-#include "../../platform/memory.h"
-#include "../../core/error.h"
+#include "src/platform/memory.h"
+#include "src/core/error.h"
 
 #include <string.h>
 
@@ -25,7 +25,13 @@ extern n_Camera* newOrthographicCamera(float left, float right, float top, float
 
 extern void orthographicCameraSetPosition(n_Camera* this, v2 pos)
 {
+
     ASSERT(this->camType == OrthographicCameraType, "Wrong camera type");  
+    if(pos.x == this->orthoCam.position.x && pos.y == this->orthoCam.position.y)
+    {
+        return 0;
+    }
+    
     this->orthoCam.position = pos;
     orthographicCameraRecalculate(this);
 }

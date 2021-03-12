@@ -1,8 +1,22 @@
 #include "types.h"
 #include <stdlib.h>
 
-#include "../platform/memory.h"
+#include "src/platform/memory.h"
 #include <string.h>
+
+void mat4print(mat4s mat)
+{
+    for(int i = 0; i < 4; i++)
+    {
+        for(int k = 0; k < 4; k++)
+        {
+            printf("%f ", mat.raw[i][k]);
+        }
+        puts("");
+    }
+    puts("\n");
+}
+
 
 vector *newVector(unsigned int count, unsigned int type_size, VECTOR_FLAGS flags)
 {
@@ -34,7 +48,7 @@ void vectorAdd(vector* this, void *element)
     }
     else 
     {
-        memcpy(this->data + this->type_size * this->used, element, this->type_size);
+        memcpy((byte*)this->data + this->type_size * this->used, element, this->type_size);
     }
 
     this->used++;
@@ -49,7 +63,7 @@ void vectorRemove(vector* this, unsigned int indices)
         void **temp = this->data;
         nl_free(temp[indices]);
     }
-    memcpy(this->data + indices * this->type_size, this->data + (indices +1) * this->type_size, this->type_size * (this->used - indices - 1));
+    memcpy((byte*)this->data + indices * this->type_size, (byte*)this->data + (indices +1) * this->type_size, this->type_size * (this->used - indices - 1));
     this->used--;
 }
 
@@ -64,7 +78,7 @@ void* vectorGet(vector* this, unsigned int indices)
         return temp[indices];
     }
 
-    return this->data + indices * this->type_size;
+    return (byte*)this->data + indices * this->type_size;
 }
 
 void deleteVector(vector *this)

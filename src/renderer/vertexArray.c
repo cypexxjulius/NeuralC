@@ -1,8 +1,8 @@
 #include "vertexArray.h"
 #include "buffer.h"
-#include "../utils/types.h"
-#include "../platform/memory.h"
-#include "../libinclude/glad.h"
+#include "src/utils/types.h"
+#include "src/platform/memory.h"
+#include <glad/glad.h>
 
 extern n_VertexArray* newVertexArray()
 {

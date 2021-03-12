@@ -2,7 +2,9 @@
 #define __SHADER_H_
 
 
-#include "../../libinclude/cglm.h"
+#include <cglm/cglm.h>
+#include <cglm/mat4.h>
+#include <cglm/struct.h>
 
 struct n_Window;
 

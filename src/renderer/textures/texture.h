@@ -1,7 +1,7 @@
 #ifndef __TEXTURE_H_
 #define __TEXTURE_H_
 
-#include "../../utils/types.h"
+#include "src/utils/types.h"
 
 typedef struct n_Texture
 {

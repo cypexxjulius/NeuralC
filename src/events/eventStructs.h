@@ -2,7 +2,7 @@
 #define __EVENTSTRUCTS_H_
 
 
-#include "../utils/types.h"
+#include "src/utils/types.h"
 
 typedef struct
 {

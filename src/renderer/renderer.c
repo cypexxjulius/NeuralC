@@ -1,7 +1,7 @@
 #include "renderer.h"
 #include <glad/glad.h>
-#include "../core/window.h"
-#include "../core/error.h"
+#include "src/core/window.h"
+#include "src/core/error.h"
 
 extern void rendererClearScreen()
 {
@@ -24,6 +24,8 @@ extern void rendererDraw
     indexBufferBind(ib);
     shaderBind(shader);
 
+    if(cam != NULL)
+    {
 
     // Upload cameraViewPosMat to shader
     if (cam->camType == OrthographicCameraType)
@@ -31,7 +33,7 @@ extern void rendererDraw
 
     else 
         ASSERT(0, "Wrong Camera type")
-
+    }
 
     // Draw Elements
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);

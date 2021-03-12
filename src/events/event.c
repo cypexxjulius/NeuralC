@@ -1,7 +1,7 @@
 #include "event.h"
 
 #include <stdio.h>
-#include "../core/window.h"
+#include "src/core/window.h"
 
 static void windowSizeCallback(GLFWwindow* glWindow, int width, int height)
 {
@@ -20,7 +20,7 @@ static void windowCloseCallback(GLFWwindow* glWindow)
 static void keyCallback(GLFWwindow* glWindow, int key, int scancode, int action, int mods)
 {
     n_Window* window = glfwGetWindowUserPointer(glWindow);
-
+    printf("%c %i\n", (char)key, action);
     window->keyboard.keys[key].down = (action == GLFW_PRESS) ? 1 : (action == GLFW_REPEAT) ? 2 : 0;
 }
 

@@ -1,10 +1,10 @@
 #include "vertexBufferLayout.h"
 
-#include "../utils/types.h"
-#include "../core/error.h"
-#include "../platform/memory.h"
+#include "src/utils/types.h"
+#include "src/core/error.h"
+#include "src/platform/memory.h"
 
-#include "../libinclude/glad.h"
+#include <glad/glad.h>
 
 static unsigned int convertToSize(GLenum type)
 {

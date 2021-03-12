@@ -47,24 +47,26 @@ int main()
     n_Texture* texture = newTexture("res/textures/firstImage.jpg");
     textureBind(texture, 0);
     shaderUploadUniform1i(shader, "u_Texture", 0);
-
+    
 
     float speed = 5.0f;
- 
- 
+    
+    
+
     while(!window->shouldClose)
     {
         float deltaTime = getDeltaTime();
 
+        v2 pos = orthographicCameraGetPosition(cam);
 
         if(isButtonPressed(window, NL_KEY_ESCAPE))
             window->shouldClose = 1;
-
-        v2 pos = orthographicCameraGetPosition(cam);
-
+        
+        
         if(isButtonPressed(window, NL_KEY_W))
             pos.y -= speed * deltaTime;
         
+
         else if(isButtonPressed(window, NL_KEY_S))
             pos.y += speed * deltaTime;
         
@@ -82,8 +84,9 @@ int main()
         rendererDraw(window, vertexArray, indexBuffer, shader, cam);
 
         rendererSwapBuffers(window);
-    
     }
+
+    
     
     deleteIndexBuffer(indexBuffer);
     deleteVertexBuffer(vertexBuffer);
@@ -91,11 +94,8 @@ int main()
     deleteVertexArray(vertexArray);
     deleteOrthographicCamera(cam);
     deleteShader(shader);
-    deleteTexture(texture);
+    //deleteTexture(texture);
     
     deleteWindow(window);
-
-    printf("Memory Count : %i \n", getMemoryCount());
-
     return 0;
 }

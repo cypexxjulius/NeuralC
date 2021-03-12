@@ -1,7 +1,9 @@
 #ifndef __ORTHO_CAMERA_H_
 #define __ORTHO_CAMERA_H_
 
-#include "../../libinclude/cglm.h"
+#include <cglm/cglm.h>
+#include <cglm/mat4.h>
+#include <cglm/struct.h>
 
 #include "Camera.h"
 

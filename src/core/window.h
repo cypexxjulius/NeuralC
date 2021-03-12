@@ -2,10 +2,10 @@
 #define _CORE_WINDOW_H_
 
 
-#include "../libinclude/glad.h"
-#include "../libinclude/glfw.h"
-#include "../events/eventStructs.h"
-#include "../utils/types.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include "src/events/eventStructs.h"
+#include "src/utils/types.h"
 
 struct Button {
     ui16 down, last, last_tick, pressed, pressed_tick;

@@ -7,7 +7,7 @@ out vec2 v_texCoord;
 uniform mat4 u_viewProj;
 
 void main()
-{
+{ 
     gl_Position = u_viewProj * a_Position;
     v_texCoord = texCoord;
 }

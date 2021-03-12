@@ -1,6 +1,6 @@
 #include "system.h"
 
-#include "../libinclude/glad.h"
+#include <glad/glad.h>
 #include <stdio.h>
 
 extern void n_printSystemInformation()
