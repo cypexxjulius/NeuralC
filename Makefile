@@ -18,7 +18,7 @@ LIBS = -lpthread -ldl -lm
 FLAGS += -Wextra -Wno-unused-parameter -Wno-int-to-pointer-cast -g -std=c11 
 VENDOR_LIBS = NeuralEngine/lib/glfw/src/libglfw3.a NeuralEngine/lib/glad/src/glad.o NeuralEngine/lib/cglm/libcglm.a
 NAMEPROGRAM = -o program
-INCLUDE = -isystem NeuralEngine/lib/cglm/include -isystem NeuralEngine/lib/glad/include -isystem NeuralEngine/lib/glfw/include -isystem NeuralEngine/lib/stb -I NeuralEngine/
+INCLUDE = -isystem NeuralEngine/lib/cglm/include -isystem NeuralEngine/lib/glad/include -isystem NeuralEngine/lib/glfw/include -isystem NeuralEngine/lib/stb -I  NeuralEngine/
 
 
 endif 
@@ -116,7 +116,7 @@ else
 
 Sandbox/program: NeuralEngine/bin/NeuralEngine.a Sandbox/main.c
 	$(info Compiling Sandbox program)
-	@$(CC) -o Sandbox/program Sandbox/main.c -L NeuralEngine/bin/ -l:NeuralEngine.a $(LIBS) $(FLAGS)
+	@$(CC) -o Sandbox/program Sandbox/main.c -isystem NeuralEngine/src -L NeuralEngine/bin/ -l:NeuralEngine.a $(LIBS) $(FLAGS)
 
 
 clean:

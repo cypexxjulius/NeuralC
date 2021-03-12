@@ -3,10 +3,13 @@
 
 #include <stdint.h>
 #include <cglm/struct.h>
+#include <stdbool.h>
 
-typedef uint16_t ui16;
+typedef uint32_t u32;
+typedef uint16_t u16;
 typedef int16_t i16;
 typedef uint8_t byte;
+typedef uint8_t u8;
 
 
 void mat4print(mat4s mat);

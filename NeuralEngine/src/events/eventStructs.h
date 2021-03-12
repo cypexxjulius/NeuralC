@@ -11,13 +11,13 @@ typedef struct
 
 typedef struct
 {
-    ui16 width;
-    ui16 height;
+    u32 width;
+    u32 height;
 } n_WindowResizeEvent;
 
 typedef struct
 {
-    ui16 keyCode;
+    u32 keyCode;
     byte action;
 }n_ButtonEvent;
 
