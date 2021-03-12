@@ -26,7 +26,7 @@ ifeq ($(OS), Windows_NT)
 
 CC=cl
 FLAGS += /W 0 /MDd
-VENDOR_LIBS = NeuralEngine/lib/glfw/src/Debug/glfw3.lib NeuralEngine/lib/cglm/Debug/cglm.lib NeuralEngine/lib/glad/glad.obj
+VENDOR_LIBS = NeuralEngine/lib/glfw/build/src/Debug/glfw3.lib NeuralEngine/lib/cglm/build/Debug/cglm.lib NeuralEngine/lib/glad/glad.obj
 LIBS = kernel32.lib user32.lib gdi32.lib shell32.lib
 
 endif 
@@ -63,12 +63,12 @@ NeuralEngine/lib/glad/glad.obj:
 	@cd NeuralEngine/lib/glad && $(CC) -Iinclude -c src/glad.c /MD
 
 # cglm
-NeuralEngine/lib/cglm/Debug/cglm.lib:
-	@cd NeuralEngine/lib/cglm && cmake . -DCGLM_STATIC=ON -B build && msbuild ALL_BUILD.vcxproj -property:Platform=x64
+NeuralEngine/lib/cglm/build/Debug/cglm.lib:
+	@cd NeuralEngine/lib/cglm && cmake . -DCGLM_STATIC=ON -B build && cd build && msbuild ALL_BUILD.vcxproj -property:Platform=x64
 
 # glfw
-NeuralEngine/lib/glfw/src/Debug/glfw3.lib:
-	@cd NeuralEngine/lib/glfw && cmake .  -DUSE_MSVC_RUNTIME_LIBRARY_DLL=ON -B build && msbuild ALL_BUILD.vcxproj -property:Platform=x64
+NeuralEngine/lib/glfw/build/src/Debug/glfw3.lib:
+	@cd NeuralEngine/lib/glfw && cmake .  -DUSE_MSVC_RUNTIME_LIBRARY_DLL=ON -B build && cd build && msbuild ALL_BUILD.vcxproj -property:Platform=x64
 
 
 
