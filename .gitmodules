@@ -1,7 +1,7 @@
 
 [submodule "lib/cglm"]
-	path = lib/cglm
+	path = NeuralEngine/lib/cglm
 	url = https://github.com/recp/cglm
 [submodule "lib/glfw"]
-	path = lib/glfw
+	path = NeuralEngine/lib/glfw
 	url = https://github.com/glfw/glfw
