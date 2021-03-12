@@ -4,7 +4,8 @@ FLAGS = -Wall
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 mkfile_dir := $(dir $(mkfile_path))
 
-FLAGS += -Ilib/cglm/include -Ilib/glad/include -Ilib/glfw/include -I"$(CURDIR)"
+INCLUDE = -Ilib/cglm/include -Ilib/glad/include -Ilib/glfw/include -Ilib/stb -I"$(CURDIR)"
+FLAGS += $(INCLUDE)
 
 ifeq ($(OS),)
 OS = $(shell uname -s)
@@ -22,10 +23,9 @@ endif
 
 ifeq ($(OS), Windows_NT)
 CC=cl
-FLAGS += /W 0 /MD
+FLAGS += /W 0 /MDd
 VENDOR_LIBS = lib/glfw/src/Debug/glfw3.lib lib/cglm/Debug/cglm.lib lib/glad/glad.obj
-LIBS = user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
-
+LIBS = kernel32.lib user32.lib gdi32.lib shell32.lib
 SRC  = $(wildcard src/*.c src/**/*.c src/**/**/*.c src/**/**/**/*.c)
 
 endif 
@@ -92,10 +92,10 @@ ifeq ($(OS), Windows_NT)
 
 
 NeuralEngine.lib: $(VENDOR_LIBS) $(OBJ)  
-	lib /nologo /out:NeuralEngine.lib $(LIBS) $(VENDOR_LIBS) $(OBJ)   
+	lib /nologo /out:NeuralEngine.lib $(VENDOR_LIBS) $(OBJ)   
 
 program.exe: NeuralEngine.lib main.c
-	cl /Feprogram.exe main.c $(FLAGS) /link NeuralEngine.lib 
+	cl /Feprogram.exe /MD $(INCLUDE) main.c /link NeuralEngine.lib /NODEFAULTLIB:LIBCMT /NODEFAULTLIB:MSVCRTD $(LIBS) 
 
 clean:
 	del **\*.obj
@@ -106,7 +106,7 @@ cleanLib:
 
 else 
 NeuralEngine: $(VENDOR_LIBS) $(OBJ) 
-	$(CC) $(FLAGS) $(LIBS) $(VENDOR_LIBS) $(OBJ)
+	$(CC) $(FLAGS) $(VENDOR_LIBS) $(OBJ)
 
 clean:
 	rm $(OBJ)

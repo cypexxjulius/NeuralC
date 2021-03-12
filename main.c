@@ -57,6 +57,7 @@ int main()
     {
         float deltaTime = getDeltaTime();
 
+
         v2 pos = orthographicCameraGetPosition(cam);
 
         if(isButtonPressed(window, NL_KEY_ESCAPE))
@@ -86,15 +87,13 @@ int main()
         rendererSwapBuffers(window);
     }
 
-    
-    
     deleteIndexBuffer(indexBuffer);
     deleteVertexBuffer(vertexBuffer);
     deleteVertexBufferLayout(layout);
     deleteVertexArray(vertexArray);
     deleteOrthographicCamera(cam);
     deleteShader(shader);
-    //deleteTexture(texture);
+    deleteTexture(texture);
     
     deleteWindow(window);
     return 0;

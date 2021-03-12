@@ -20,7 +20,6 @@ static void windowCloseCallback(GLFWwindow* glWindow)
 static void keyCallback(GLFWwindow* glWindow, int key, int scancode, int action, int mods)
 {
     n_Window* window = glfwGetWindowUserPointer(glWindow);
-    printf("%c %i\n", (char)key, action);
     window->keyboard.keys[key].down = (action == GLFW_PRESS) ? 1 : (action == GLFW_REPEAT) ? 2 : 0;
 }
 
