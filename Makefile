@@ -3,8 +3,6 @@ CC=gcc
 FLAGS = -Wall 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 mkfile_dir := $(dir $(mkfile_path))
-
-INCLUDE = -INeuralEngine/lib/cglm/include -INeuralEngine/lib/glad/include -INeuralEngine/lib/glfw/include -INeuralEngine/lib/stb -I"$(CURDIR)/NeuralEngine"
 FLAGS += $(INCLUDE)
 
 #--- Platform detection ---
@@ -13,12 +11,15 @@ ifeq ($(OS),)
 OS = $(shell uname -s)
 endif 
 
+
 ifeq ($(OS), Linux)
 
 LIBS = -lpthread -ldl -lm
 FLAGS += -Wextra -Wno-unused-parameter -Wno-int-to-pointer-cast -g -std=c11 
-VENDOR_LIBS = lib/glfw/src/libglfw3.a lib/glad/src/glad.o lib/cglm/libcglm.a
+VENDOR_LIBS = NeuralEngine/lib/glfw/src/libglfw3.a NeuralEngine/lib/glad/src/glad.o NeuralEngine/lib/cglm/libcglm.a
 NAMEPROGRAM = -o program
+INCLUDE = -isystem NeuralEngine/lib/cglm/include -isystem NeuralEngine/lib/glad/include -isystem NeuralEngine/lib/glfw/include -isystem NeuralEngine/lib/stb -I NeuralEngine/
+
 
 endif 
 
@@ -28,6 +29,7 @@ CC=cl
 FLAGS += /W 0 /MDd
 VENDOR_LIBS = NeuralEngine/lib/glfw/build/src/Debug/glfw3.lib NeuralEngine/lib/cglm/build/Debug/cglm.lib NeuralEngine/lib/glad/glad.obj
 LIBS = kernel32.lib user32.lib gdi32.lib shell32.lib
+INCLUDE = -INeuralEngine/lib/cglm/include -INeuralEngine/lib/glad/include -INeuralEngine/lib/glfw/include -INeuralEngine/lib/stb -I"$(CURDIR)/NeuralEngine"
 
 endif 
 
@@ -40,14 +42,12 @@ else
 OBJ  = $(NEURAL_SRC:.c=.o)
 endif 
 
-default: Sandbox/program.exe run
 
 #--------------- Compiling NeuralEngine ----------------------------
 
-
-
-
 ifeq ($(OS), Windows_NT)
+
+default: Sandbox/program.exe run
 
 NeuralEngine/bin/NeuralEngine.lib: $(VENDOR_LIBS) $(NEURAL_OBJ)  
 	$(info Compiling NeuralEngine.lib)
@@ -74,18 +74,21 @@ NeuralEngine/lib/glfw/build/src/Debug/glfw3.lib:
 
 else 
 
-NeuralEngine: $(VENDOR_LIBS) $(OBJ) 
-	@$(CC) $(FLAGS) $(VENDOR_LIBS) $(OBJ)
+default: Sandbox/program run
 
-NeuralEngine/%.o: %.c
+NeuralEngine/bin/NeuralEngine.a: $(OBJ) $(VENDOR_LIBS)
+	@ar -rs NeuralEngine/bin/NeuralEngineCore.a $(OBJ) NeuralEngine/lib/glad/src/glad.o 
+	@ar -rcT NeuralEngine/bin/NeuralEngine.a NeuralEngine/bin/NeuralEngineCore.a NeuralEngine/lib/glfw/src/libglfw3.a NeuralEngine/lib/cglm/libcglm.a
+
+%.o: %.c
 	@echo $< 
-	@$(CC) $(FLAGS) -o NeuralEngine/$@ -c $< 
+	@$(CC) $(FLAGS)  -MMD -MP -o $@ -c $< 
 
 #--- Vendor Libs ---
 
 #glad
 NeuralEngine/lib/glad/src/glad.o:
-	@cd NeuralEngine/lib/glad; $(CC) -o NeuralEngine/src/glad.o -Iinclude -c NeuralEngine/src/glad.c
+	@cd NeuralEngine/lib/glad && $(CC) -o src/glad.o -lm -Iinclude $(FLAGS) -c src/glad.c
 
 # cglm
 NeuralEngine/lib/cglm/libcglm.a:
@@ -111,6 +114,11 @@ run:
 
 else 
 
+Sandbox/program: NeuralEngine/bin/NeuralEngine.a Sandbox/main.c
+	$(info Compiling Sandbox program)
+	@$(CC) -o Sandbox/program Sandbox/main.c -L NeuralEngine/bin/ -l:NeuralEngine.a $(LIBS) $(FLAGS)
+
+
 clean:
 	rm $(OBJ)
 
@@ -119,7 +127,7 @@ cleanLib:
 
 
 run:
-	cd Sandbox/ && program
+	@cd Sandbox/ && ./program
 
 endif 
 
