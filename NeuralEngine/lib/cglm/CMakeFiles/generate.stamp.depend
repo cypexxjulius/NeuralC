@@ -1,0 +1,23 @@
+# CMake generation dependency list for this directory.
+C:/dev/NeuralC/lib/cglm/CMakeFiles/3.20.0-rc3/CMakeCCompiler.cmake
+C:/dev/NeuralC/lib/cglm/CMakeFiles/3.20.0-rc3/CMakeRCCompiler.cmake
+C:/dev/NeuralC/lib/cglm/CMakeFiles/3.20.0-rc3/CMakeSystem.cmake
+C:/dev/NeuralC/lib/cglm/CMakeLists.txt
+F:/CMake/share/cmake-3.20/Modules/CMakeCInformation.cmake
+F:/CMake/share/cmake-3.20/Modules/CMakeCommonLanguageInclude.cmake
+F:/CMake/share/cmake-3.20/Modules/CMakeGenericSystem.cmake
+F:/CMake/share/cmake-3.20/Modules/CMakeInitializeConfigs.cmake
+F:/CMake/share/cmake-3.20/Modules/CMakeLanguageInformation.cmake
+F:/CMake/share/cmake-3.20/Modules/CMakeRCInformation.cmake
+F:/CMake/share/cmake-3.20/Modules/CMakeSystemSpecificInformation.cmake
+F:/CMake/share/cmake-3.20/Modules/CMakeSystemSpecificInitialize.cmake
+F:/CMake/share/cmake-3.20/Modules/CPack.cmake
+F:/CMake/share/cmake-3.20/Modules/CPackComponent.cmake
+F:/CMake/share/cmake-3.20/Modules/Compiler/CMakeCommonCompilerMacros.cmake
+F:/CMake/share/cmake-3.20/Modules/Compiler/MSVC-C.cmake
+F:/CMake/share/cmake-3.20/Modules/GNUInstallDirs.cmake
+F:/CMake/share/cmake-3.20/Modules/Platform/Windows-MSVC-C.cmake
+F:/CMake/share/cmake-3.20/Modules/Platform/Windows-MSVC.cmake
+F:/CMake/share/cmake-3.20/Modules/Platform/Windows.cmake
+F:/CMake/share/cmake-3.20/Modules/Platform/WindowsPaths.cmake
+F:/CMake/share/cmake-3.20/Templates/CPackConfig.cmake.in

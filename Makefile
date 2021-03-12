@@ -4,114 +4,122 @@ FLAGS = -Wall
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 mkfile_dir := $(dir $(mkfile_path))
 
-INCLUDE = -Ilib/cglm/include -Ilib/glad/include -Ilib/glfw/include -Ilib/stb -I"$(CURDIR)"
+INCLUDE = -INeuralEngine/lib/cglm/include -INeuralEngine/lib/glad/include -INeuralEngine/lib/glfw/include -INeuralEngine/lib/stb -I"$(CURDIR)/NeuralEngine"
 FLAGS += $(INCLUDE)
+
+#--- Platform detection ---
 
 ifeq ($(OS),)
 OS = $(shell uname -s)
 endif 
 
 ifeq ($(OS), Linux)
+
 LIBS = -lpthread -ldl -lm
 FLAGS += -Wextra -Wno-unused-parameter -Wno-int-to-pointer-cast -g -std=c11 
 VENDOR_LIBS = lib/glfw/src/libglfw3.a lib/glad/src/glad.o lib/cglm/libcglm.a
 NAMEPROGRAM = -o program
 
-SRC  = $(wildcard *.c src/*c src/**/*.c src/**/**/*.c src/**/**/**/*.c)
-
 endif 
 
 ifeq ($(OS), Windows_NT)
+
 CC=cl
 FLAGS += /W 0 /MDd
-VENDOR_LIBS = lib/glfw/src/Debug/glfw3.lib lib/cglm/Debug/cglm.lib lib/glad/glad.obj
+VENDOR_LIBS = NeuralEngine/lib/glfw/src/Debug/glfw3.lib NeuralEngine/lib/cglm/Debug/cglm.lib NeuralEngine/lib/glad/glad.obj
 LIBS = kernel32.lib user32.lib gdi32.lib shell32.lib
-SRC  = $(wildcard src/*.c src/**/*.c src/**/**/*.c src/**/**/**/*.c)
 
 endif 
 
+NEURAL_SRC  = $(wildcard NeuralEngine/*.c NeuralEngine/src/*c NeuralEngine/src/**/*.c NeuralEngine/src/**/**/*.c NeuralEngine/src/**/**/**/*.c)
 
 
 ifeq ($(OS), Windows_NT)
-OBJ  = $(SRC:.c=.obj)
+NEURAL_OBJ  = $(NEURAL_SRC:.c=.obj)
 else 
-OBJ  = $(SRC:.c=.o)
+OBJ  = $(NEURAL_SRC:.c=.o)
 endif 
 
-default: program.exe
+default: Sandbox/program.exe run
 
-# Making the vendor libraries
+#--------------- Compiling NeuralEngine ----------------------------
 
 
 
 
 ifeq ($(OS), Windows_NT)
+
+NeuralEngine/bin/NeuralEngine.lib: $(VENDOR_LIBS) $(NEURAL_OBJ)  
+	$(info Compiling NeuralEngine.lib)
+	@lib /nologo /out:NeuralEngine/bin/NeuralEngine.lib $(VENDOR_LIBS) $(NEURAL_OBJ)   
+
+NeuralEngine/%.obj: %.c
+	@$(CC) /FoNeuralEngine/$@ /W0 /D "_CRT_SECURE_NO_WARNINGS" /c /Tc $< $(FLAGS)
+
+#--- Vendor Libs ---
+
 # glad
-lib/glad/glad.obj:
-	@cd lib/glad && $(CC) -Iinclude -c src/glad.c /MD
+NeuralEngine/lib/glad/glad.obj:
+	@cd NeuralEngine/lib/glad && $(CC) -Iinclude -c src/glad.c /MD
 
 # cglm
-lib/cglm/Debug/cglm.lib:
-	@cd lib/cglm && cmake . -DCGLM_STATIC=ON -B build && msbuild ALL_BUILD.vcxproj -property:Platform=x64
+NeuralEngine/lib/cglm/Debug/cglm.lib:
+	@cd NeuralEngine/lib/cglm && cmake . -DCGLM_STATIC=ON -B build && msbuild ALL_BUILD.vcxproj -property:Platform=x64
 
 # glfw
-lib/glfw/src/Debug/glfw3.lib:
-	@cd lib/glfw && cmake .  -DUSE_MSVC_RUNTIME_LIBRARY_DLL=ON -B build && msbuild ALL_BUILD.vcxproj -property:Platform=x64
+NeuralEngine/lib/glfw/src/Debug/glfw3.lib:
+	@cd NeuralEngine/lib/glfw && cmake .  -DUSE_MSVC_RUNTIME_LIBRARY_DLL=ON -B build && msbuild ALL_BUILD.vcxproj -property:Platform=x64
 
-%.obj: %.c
-	$(CC) /Fo"$@" /W0 /D "_CRT_SECURE_NO_WARNINGS" /c /Tc $< $(FLAGS)
-
-endif
-
-
-ifeq ($(OS), Linux)
-#glad
-lib/glad/src/glad.o:
-	@cd lib/glad; $(CC) -o src/glad.o -Iinclude -c src/glad.c
-
-# cglm
-lib/cglm/libcglm.a:
-	@cd lib/cglm && cmake . -DCGLM_STATIC=ON && make
-# glfw
-lib/glfw/src/libglfw3.a:
-	@cd lib/glfw && cmake . && make
-
-# C Files 
-
-%.o: %.c
-	@echo $< 
-	$(CC) $(FLAGS) -o $@ -c $< 
-
-endif
-
-
-
-
-
-ifeq ($(OS), Windows_NT)
-
-
-NeuralEngine.lib: $(VENDOR_LIBS) $(OBJ)  
-	lib /nologo /out:NeuralEngine.lib $(VENDOR_LIBS) $(OBJ)   
-
-program.exe: NeuralEngine.lib main.c
-	cl /Feprogram.exe /MD $(INCLUDE) main.c /link NeuralEngine.lib /NODEFAULTLIB:LIBCMT /NODEFAULTLIB:MSVCRTD $(LIBS) 
-
-clean:
-	del **\*.obj
-
-cleanLib:
-	erase $(VENDOR_LIBS)
 
 
 else 
+
 NeuralEngine: $(VENDOR_LIBS) $(OBJ) 
-	$(CC) $(FLAGS) $(VENDOR_LIBS) $(OBJ)
+	@$(CC) $(FLAGS) $(VENDOR_LIBS) $(OBJ)
+
+NeuralEngine/%.o: %.c
+	@echo $< 
+	@$(CC) $(FLAGS) -o NeuralEngine/$@ -c $< 
+
+#--- Vendor Libs ---
+
+#glad
+NeuralEngine/lib/glad/src/glad.o:
+	@cd NeuralEngine/lib/glad; $(CC) -o NeuralEngine/src/glad.o -Iinclude -c NeuralEngine/src/glad.c
+
+# cglm
+NeuralEngine/lib/cglm/libcglm.a:
+	@cd NeuralEngine/lib/cglm && cmake . -DCGLM_STATIC=ON && make
+# glfw
+NeuralEngine/lib/glfw/src/libglfw3.a:
+	@cd NeuralEngine/lib/glfw && cmake . && make
+
+endif 
+
+
+
+
+ifeq ($(OS), Windows_NT) 
+
+Sandbox/program.exe: NeuralEngine/bin/NeuralEngine.lib Sandbox/main.c
+	$(info Compiling Sandbox program)
+	@cl /FeSandbox/program.exe /MD $(INCLUDE) Sandbox/main.c /link NeuralEngine/bin/NeuralEngine.lib /NODEFAULTLIB:LIBCMT /NODEFAULTLIB:MSVCRTD $(LIBS) 
+
+run:
+	$(info # Starting Sandbox program)
+	@cd Sandbox/ && program.exe
+
+else 
 
 clean:
 	rm $(OBJ)
 
 cleanLib:
 	rm $(VENDOR_LIBS)
+
+
+run:
+	cd Sandbox/ && program
+
 endif 
 

@@ -1,0 +1,5 @@
+C:/dev/NeuralC/lib/cglm/CMakeFiles/cglm.dir
+C:/dev/NeuralC/lib/cglm/CMakeFiles/PACKAGE.dir
+C:/dev/NeuralC/lib/cglm/CMakeFiles/INSTALL.dir
+C:/dev/NeuralC/lib/cglm/CMakeFiles/ALL_BUILD.dir
+C:/dev/NeuralC/lib/cglm/CMakeFiles/ZERO_CHECK.dir
