@@ -6,7 +6,7 @@
 #include <cglm/mat4.h>
 #include <cglm/struct.h>
 
-struct n_Window;
+struct Window;
 
 typedef unsigned int n_Shader;
 

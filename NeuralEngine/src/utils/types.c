@@ -17,6 +17,11 @@ void mat4print(mat4s mat)
     puts("\n");
 }
 
+float GetUnsignedFloat(float x)
+{
+    return ((x < 0) ? - x : x);
+}
+
 
 vector *newVector(unsigned int count, unsigned int type_size, VECTOR_FLAGS flags)
 {

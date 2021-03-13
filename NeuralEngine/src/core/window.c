@@ -9,18 +9,20 @@
 #include "src/platform/memory.h"
 
 
-extern n_Window* n_createWindow(int width, int height, char *title)
+static Window* LocalWindow = NULL;
+
+extern Window* CreateWindow(int width, int height, char *title)
 {
-    // Initalizing the n_window struct
-    n_Window *window = nl_malloc(1 * sizeof(n_Window));
-    memset(window, 0 , sizeof(n_Window));
+    // Initalizing the Window struct
+    Window *window = nl_malloc(1 * sizeof(Window));
+    memset(window, 0 , sizeof(Window));
     // Storing the width and the height of the window 
-    window->height = height;
-    window->width = width;
+    window->state.height = height;
+    window->state.width = width;
 
     // Storing the title
-    window->title = nl_malloc(strlen(title) + 1);
-    memcpy(window->title, title, strlen(title) + 1);
+    window->state.title = nl_malloc(strlen(title) + 1);
+    memcpy(window->state.title, title, strlen(title) + 1);
 
     // Initializing event queue
 
@@ -55,31 +57,34 @@ extern n_Window* n_createWindow(int width, int height, char *title)
     glfwSetWindowUserPointer(window->windowHandle, window);
     glfwSwapInterval(1);
 
-
-    n_initError(window);
-
-    n_initEvent(window);
-
+    LocalWindow = window;
     return window;
 }
 
-extern void deleteWindow(n_Window* window)
+extern void deleteWindow(Window* window)
 {
     glfwTerminate();
-    nl_free(window->title);
+    nl_free(window->state.title);
     nl_free(window);
 }
 
-extern v2 n_getMousePosition(n_Window* window)
+extern v2 GetMousePosition(Window* window)
 {
-    return window->mouse.position;
+    return window->state.mouse.position;
 }
 
-extern int isButtonPressed(n_Window* window, int key)
+extern int IsButtonPressed(Window* window, int key)
 {
-    return window->keyboard.keys[key].down;
+    return window->state.keyboard.keys[key].down;
 }
-extern void setMouseGrabbed(n_Window* window, int8_t grabbed) 
+
+extern void SetMouseGrabbed(Window* window, u8 grabbed) 
 {
     glfwSetInputMode(window->windowHandle, GLFW_CURSOR, grabbed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+}
+
+extern Window* GetWindow()
+{
+    ASSERT(LocalWindow, "Window requested without context");
+    return LocalWindow;
 }

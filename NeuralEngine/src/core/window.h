@@ -25,31 +25,34 @@ struct n_Char {
     u32 key[256];
 };
 
-typedef struct n_Window
+typedef struct Window
 {
     GLFWwindow* windowHandle;
-    char *title;
-    unsigned int width;
-    unsigned int height;
-    unsigned char shouldClose;
 
-    // State 
-    struct n_Mouse mouse;
-    struct n_Keyboard keyboard;
-    struct n_Char charSet;
+    bool (*ErrorCallback)(Event* event);
+    struct state 
+    {
+        char *title;
+        unsigned int width;
+        unsigned int height;
+        unsigned char shouldClose;
+
+        // State 
+        struct n_Mouse mouse;
+        struct n_Keyboard keyboard;
+    } state;
+
+} Window;
 
 
-} n_Window;
+extern Window* CreateWindow(int width, int height, char *title);
 
+extern void deleteWindow(Window* window);
 
-extern n_Window* n_createWindow(int width, int height, char *title);
+extern v2 GetMousePosition(Window* window);
 
-extern void deleteWindow(n_Window* window);
+extern int IsButtonPressed(Window* window, int key);
 
-extern v2 n_getMousePosition(n_Window* window);
-
-extern int isButtonPressed(n_Window* window, int key);
-
-extern void setMouseGrabbed(n_Window* window, u8 grabbed);
+extern void SetMouseGrabbed(Window* window, u8 grabbed);
 
 #endif // _CORE_WINDOW_H_

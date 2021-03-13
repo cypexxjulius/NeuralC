@@ -4,30 +4,55 @@
 
 #include "src/utils/types.h"
 
-typedef struct
+typedef struct PosEvent
 {
     v2 pos;
-} n_PosEvent;
+    v2 delta;
+} PosEvent;
 
-typedef struct
+typedef struct WindowResizeEvent
 {
-    u32 width;
-    u32 height;
-} n_WindowResizeEvent;
+    i16 width;
+    i16 height;
+} WindowResizeEvent;
 
-typedef struct
+typedef struct KeyPressedEvent
 {
     u32 keyCode;
-    byte action;
-}n_ButtonEvent;
+    u8 action;
+    u8 mod;
+} KeyPressedEvent;
 
-typedef struct Event_Dispatcher
+typedef struct Event
 {
     byte type;
-    n_ButtonEvent keyEvent;
-    n_WindowResizeEvent windowResizeEvent;
-    n_PosEvent posEvent;
-}n_EventDispatcher;
+    union
+    { 
+        KeyPressedEvent KeyPressedEvent;
+        WindowResizeEvent WindowResizeEvent;
+        PosEvent PosEvent;
+        u8 close;
+    };
+
+} Event;
+
+enum EventTypes
+{
+    WindowResizeEventType = 1,
+    WindowCloseEventType,
+    KeyPressedEventType,
+    MouseButtonPressedEventType,
+    ScrolledEventType,
+    MouseMovedEventType
+};
+
+#define Event( _type, _event) (Event){ .type=_type, _event}
+
+#define KeyPressedEvent( _keycode, _action, _mod) (KeyPressedEvent){ _keycode, _action, _mod}
+
+#define WindowResizeEvent( _width, _height) (WindowResizeEvent) {_width, _height}
+
+#define PosEvent( _pos, _delta) (PosEvent) { _pos, _delta}
 
 #endif // !__EVENTSTRUCTS_H_
 

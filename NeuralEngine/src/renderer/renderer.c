@@ -9,7 +9,7 @@ extern void rendererClearScreen()
     glClearColor(0.1f,1.0f, 1.0f,1.0f);
 }
 
-extern void rendererSwapBuffers(struct n_Window* window)
+extern void rendererSwapBuffers(struct Window* window)
 {
     // Swap Buffers 
     glfwSwapBuffers(window->windowHandle);
@@ -18,7 +18,7 @@ extern void rendererSwapBuffers(struct n_Window* window)
 
 
 extern void rendererDraw
-(struct n_Window* window, n_VertexArray* va, n_IndexBuffer* ib, n_Shader shader, n_Camera *cam)
+(struct Window* window, n_VertexArray* va, n_IndexBuffer* ib, n_Shader shader, Camera *cam)
 {            
     vertexArrayBind(va);
     indexBufferBind(ib);

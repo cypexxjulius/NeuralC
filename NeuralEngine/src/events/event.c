@@ -3,69 +3,105 @@
 #include <stdio.h>
 #include "src/core/window.h"
 
-static void windowSizeCallback(GLFWwindow* glWindow, int width, int height)
+static void _WindowSizeCallback(GLFWwindow* glWindow, int width, int height)
 {
-    n_Window* window = glfwGetWindowUserPointer(glWindow);
-    window->height = height;
-    window->width = width;
+    Window* window = glfwGetWindowUserPointer(glWindow);
+    window->state.height = height;
+    window->state.width = width;
     glViewport(0, 0, width, height);
-}
 
-static void windowCloseCallback(GLFWwindow* glWindow)
-{
-    n_Window* window = glfwGetWindowUserPointer(glWindow);
-    window->shouldClose = 1;
-}
+    Event event = Event(WindowResizeEventType, .WindowResizeEvent = WindowResizeEvent(width, height));
 
-static void keyCallback(GLFWwindow* glWindow, int key, int scancode, int action, int mods)
-{
-    n_Window* window = glfwGetWindowUserPointer(glWindow);
-    window->keyboard.keys[key].down = (action == GLFW_PRESS) ? 1 : (action == GLFW_REPEAT) ? 2 : 0;
-}
-
-static void charCallback(GLFWwindow* glWindow, unsigned int key)
-{
-    n_Window* window = glfwGetWindowUserPointer(glWindow);
-
-    if(key > 0 && key < 256)
-        window->charSet.key[key] = 1;
-}
-
-static void mouseButtonCallback(GLFWwindow* glWindow, int button, int action, int mods)
-{
-    n_Window* window = glfwGetWindowUserPointer(glWindow);
-
-    window->mouse.buttons[button].down = GLFW_PRESS ? 1 : 0;
-}
-
-static void scrollCallback(GLFWwindow* glWindow, double xOffset, double yOffset)
-{
-    n_Window* window = glfwGetWindowUserPointer(glWindow);
-
-
-    window->mouse.scrollOffset[0]  = (float)xOffset;
-    window->mouse.scrollOffset[1]  = (float)yOffset;
+    if(window->ErrorCallback)
+        window->ErrorCallback(&event);
 
 }
 
-static void mouseMoveCallback(GLFWwindow* glWindow, double x, double y)
+static void _WindowCloseCallback(GLFWwindow* glWindow)
 {
-    n_Window* window = glfwGetWindowUserPointer(glWindow);
-    window->mouse.position = v2(x, y);
+    Window* window = glfwGetWindowUserPointer(glWindow);
+    window->state.shouldClose = 1;
+
+    Event event = Event(WindowCloseEventType, .close = 0);
+
+    if(window->ErrorCallback)
+        window->ErrorCallback(&event);
+}
+
+static void _KeyCallback(GLFWwindow* glWindow, int key, int scancode, int action, int mods)
+{
+    Window* window = glfwGetWindowUserPointer(glWindow);
+    window->state.keyboard.keys[key].down = (action == GLFW_PRESS) ? 1 : (action == GLFW_REPEAT) ? 2 : 0;
+
+    Event event = Event(KeyPressedEventType, .KeyPressedEvent = KeyPressedEvent(key, action, mods));
+
+    if(window->ErrorCallback)
+        window->ErrorCallback(&event);
+}
+
+static void _MouseButtonCallback(GLFWwindow* glWindow, int button, int action, int mods)
+{
+    Window* window = glfwGetWindowUserPointer(glWindow);
+
+    window->state.mouse.buttons[button].down = (action == GLFW_PRESS) ? 1 : (action == GLFW_REPEAT) ? 2 : 0;
+
+    Event event = Event(MouseButtonPressedEventType, .KeyPressedEvent = KeyPressedEvent(button, action, mods));
+
+    if(window->ErrorCallback)
+        window->ErrorCallback(&event);
+}
+
+static void _ScrollCallback(GLFWwindow* glWindow, double _xOffset, double _yOffset)
+{
+    Window* window = glfwGetWindowUserPointer(glWindow);
+
+    static v2 oldPos = v2(0, 0);
+
+    v2 Offset = v2((float)_xOffset, (float)_yOffset);
     
+    v2 Delta = v2(Offset.x - oldPos.x, Offset.y - oldPos.y);
+
+    oldPos = Offset;
+
+    window->state.mouse.scrollOffset[0]  = Offset.x;
+    window->state.mouse.scrollOffset[1]  = Offset.y;
+
+
+    Event event = Event(ScrolledEventType, .PosEvent = PosEvent(Offset, Delta));
+
+    if(window->ErrorCallback)
+        window->ErrorCallback(&event);
+
+
+
+}
+
+static void _MouseMoveCallback(GLFWwindow* glWindow, double _x, double _y)
+{
+    Window* window = glfwGetWindowUserPointer(glWindow);
+
+    v2 pos   = v2((float)_x, (float)_y);
+    v2 delta = v2(pos.x - window->state.mouse.position.x, pos.y - window->state.mouse.position.y);
+
+
+    window->state.mouse.position = pos;
+
+    Event event = Event(MouseMovedEventType, .PosEvent = PosEvent(pos, delta));
+    
+    if(window->ErrorCallback)
+        window->ErrorCallback(&event);
 }
 
 
 
 // Callback Functions
-void n_initEvent(n_Window* this)
+void InitEventSystem(Window* this)
 {
-    glfwSetFramebufferSizeCallback(this->windowHandle, windowSizeCallback);
-    glfwSetWindowCloseCallback(this->windowHandle, windowCloseCallback);
-    glfwSetKeyCallback(this->windowHandle, keyCallback);
-    glfwSetCharCallback(this->windowHandle, charCallback);
-    glfwSetMouseButtonCallback(this->windowHandle, mouseButtonCallback);
-    glfwSetCursorPosCallback(this->windowHandle, mouseMoveCallback);
-    glfwSetScrollCallback(this->windowHandle, scrollCallback); 
+    glfwSetFramebufferSizeCallback(this->windowHandle, _WindowSizeCallback);
+    glfwSetWindowCloseCallback(this->windowHandle, _WindowCloseCallback);
+    glfwSetKeyCallback(this->windowHandle, _KeyCallback);
+    glfwSetMouseButtonCallback(this->windowHandle, _MouseButtonCallback);
+    glfwSetCursorPosCallback(this->windowHandle, _MouseMoveCallback);
+    glfwSetScrollCallback(this->windowHandle, _ScrollCallback); 
 }
 

@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 typedef uint32_t u32;
+typedef int32_t i32;
 typedef uint16_t u16;
 typedef int16_t i16;
 typedef uint8_t byte;
@@ -17,6 +18,8 @@ void mat4print(mat4s mat);
 typedef struct{ float x,y; }v2; 
 
 #define v2(x, y) (v2){x, y}
+
+float GetUnsignedFloat(float x);
 
 typedef enum vector_type
 {

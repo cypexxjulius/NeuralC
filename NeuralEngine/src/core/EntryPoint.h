@@ -8,9 +8,9 @@
 
 typedef struct Application
 {
-    n_Window* (*Init)();
-    void (*OnUpdate)(float deltaTime, n_Window* window);
-    bool (*OnEvent)();
+    Window* (*Init)();
+    void (*OnUpdate)(float deltaTime, Window* window);
+    bool (*OnEvent)(Event* event);
     void (*Delete)();
 } Application;
 
@@ -22,9 +22,14 @@ int main()
 {   
     Application app = CreateApplication();
 
-    n_Window* window = app.Init();
+    Window* window = app.Init();
+    window->ErrorCallback = app.OnEvent;
 
-    while(!window->shouldClose)
+    InitError();
+
+    InitEventSystem(window);
+
+    while(!window->state.shouldClose)
     {
         float deltaTime = getDeltaTime();
         app.OnUpdate(deltaTime, window);

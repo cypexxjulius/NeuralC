@@ -24,7 +24,7 @@ static void glfwErrorCallback(int error, const char *description)
     fprintf(stderr, "[GLFW ERROR] %i\n%s", error, description);
 }
 
-void n_initError()
+void InitError()
 {
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(errorCallback, 0);

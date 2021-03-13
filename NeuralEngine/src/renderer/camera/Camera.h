@@ -11,6 +11,8 @@ struct ViewProjection {
 struct OrthographicCamera {
     struct ViewProjection view_proj;
     v2 position;
+    float width;
+    float height;
 };
 
 
@@ -20,7 +22,7 @@ enum CamType
     PerspectiveCameraType = 3
 };
 
-typedef struct n_Camera
+typedef struct Camera
 {
     enum CamType camType;
 
@@ -28,7 +30,7 @@ typedef struct n_Camera
     {
         struct OrthographicCamera orthoCam;
     };
-} n_Camera;
+} Camera;
 
 #include "OrthoCamera.h"
 

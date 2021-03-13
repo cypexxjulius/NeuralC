@@ -22,16 +22,21 @@ n_IndexBuffer* indexBuffer;
 
 n_Shader shader;
 
-n_Camera* cam;
+Camera* cam;
 
 n_Texture* texture;
 
 
 float speed = 5.0f;
 
-n_Window* NeuralInit()
+static Window* LocalWindow = NULL; 
+
+v2 delta = v2(0, 0);
+
+Window* NeuralInit()
 {
-    n_Window *window = n_createWindow(1200, 800, "Test Window"); 
+    Window *window = CreateWindow(1200, 800, "Test Window"); 
+    LocalWindow = window;
     vertexArray = newVertexArray();
     
     vertexBuffer = newVertexBuffer(positions, sizeof(positions));
@@ -60,26 +65,31 @@ n_Window* NeuralInit()
     return window;
 }
 
-void NeuralOnUpdate(float deltaTime, n_Window* window)
+void NeuralOnUpdate(float deltaTime, Window* window)
 {
     v2 pos = orthographicCameraGetPosition(cam);
 
-    if(isButtonPressed(window, NL_KEY_ESCAPE))
-        window->shouldClose = 1;
+    if(IsButtonPressed(window, NL_KEY_ESCAPE))
+        window->state.shouldClose = 1;
         
         
-    if(isButtonPressed(window, NL_KEY_W))
+    if(IsButtonPressed(window, NL_KEY_W))
         pos.y -= speed * deltaTime;
         
 
-    else if(isButtonPressed(window, NL_KEY_S))
+    else if(IsButtonPressed(window, NL_KEY_S))
         pos.y += speed * deltaTime;
         
-    if(isButtonPressed(window, NL_KEY_A))
+    if(IsButtonPressed(window, NL_KEY_A))
         pos.x += speed * deltaTime;
         
-    else if(isButtonPressed(window, NL_KEY_D))
+    else if(IsButtonPressed(window, NL_KEY_D))
         pos.x -= speed * deltaTime;
+    
+    
+    pos.x += delta.x * (cam->orthoCam.width / window->state.width);
+    pos.y -= delta.y * (cam->orthoCam.height / window->state.height);
+    delta = v2(0, 0);
 
     orthographicCameraSetPosition(cam, pos);
 
@@ -102,8 +112,30 @@ void NeuralDelete()
     deleteTexture(texture);
 }
 
-bool NeuralOnEvent()
+bool NeuralOnEvent(Event* event)
 {
+    static u8 isPressed = 0;
+
+    switch(event->type)
+    {
+        case(MouseMovedEventType) :
+        {
+            if(isPressed)
+            {
+                delta.x += event->PosEvent.delta.x;
+                delta.y += event->PosEvent.delta.y;
+            }
+        }break;
+
+        case(MouseButtonPressedEventType) :
+        {
+            if(event->KeyPressedEvent.keyCode == NL_MOUSE_BUTTON_LEFT)
+            {
+                isPressed = event->KeyPressedEvent.action;
+            } 
+        }break;
+
+    }
     return 0;
 }
 

@@ -5,7 +5,7 @@
 
 extern void printAssertMessageAndExit(char *message, char *file, int line);
 
-void n_initError();
+void InitError();
 
 
 #define ASSERT(boolean, message) {if(!(boolean)) { printAssertMessageAndExit(message, __FILE__, __LINE__); } }

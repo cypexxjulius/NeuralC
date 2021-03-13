@@ -77,12 +77,13 @@ else
 default: Sandbox/program run
 
 NeuralEngine/bin/NeuralEngine.a: $(OBJ) $(VENDOR_LIBS)
+	rm NeuralEngine/bin/NeuralEngineCore.a NeuralEngine/bin/NeuralEngine.a
 	@ar -rs NeuralEngine/bin/NeuralEngineCore.a $(OBJ) NeuralEngine/lib/glad/src/glad.o 
 	@ar -rcT NeuralEngine/bin/NeuralEngine.a NeuralEngine/bin/NeuralEngineCore.a NeuralEngine/lib/glfw/src/libglfw3.a NeuralEngine/lib/cglm/libcglm.a
 
 %.o: %.c
 	@echo $< 
-	@$(CC) $(FLAGS)  -MMD -MP -o $@ -c $< 
+	@$(CC) $(FLAGS) -o $@ -c $< 
 
 #--- Vendor Libs ---
 
