@@ -31,7 +31,7 @@ float speed = 5.0f;
 
 static Window* LocalWindow = NULL; 
 
-v2 delta = v2(0, 0);
+v2 delta = {0};
 
 Window* NeuralInit()
 {

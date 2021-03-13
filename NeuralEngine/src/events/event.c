@@ -55,7 +55,7 @@ static void _ScrollCallback(GLFWwindow* glWindow, double _xOffset, double _yOffs
 {
     Window* window = glfwGetWindowUserPointer(glWindow);
 
-    static v2 oldPos = v2(0, 0);
+    static v2 oldPos = {0, 0};
 
     v2 Offset = v2((float)_xOffset, (float)_yOffset);
     

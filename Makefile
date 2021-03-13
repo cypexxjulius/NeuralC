@@ -53,8 +53,8 @@ NeuralEngine/bin/NeuralEngine.lib: $(VENDOR_LIBS) $(NEURAL_OBJ)
 	$(info Compiling NeuralEngine.lib)
 	@lib /nologo /out:NeuralEngine/bin/NeuralEngine.lib $(VENDOR_LIBS) $(NEURAL_OBJ)   
 
-NeuralEngine/%.obj: %.c
-	@$(CC) /FoNeuralEngine/$@ /W0 /D "_CRT_SECURE_NO_WARNINGS" /c /Tc $< $(FLAGS)
+%.obj: %.c
+	@$(CC) /Fo$@ /W0 /wd5045 /D "_CRT_SECURE_NO_WARNINGS" /c /Tc $< $(FLAGS)
 
 #--- Vendor Libs ---
 
@@ -68,7 +68,7 @@ NeuralEngine/lib/cglm/build/Debug/cglm.lib:
 
 # glfw
 NeuralEngine/lib/glfw/build/src/Debug/glfw3.lib:
-	@cd NeuralEngine/lib/glfw && cmake .  -DUSE_MSVC_RUNTIME_LIBRARY_DLL=ON -B build && cd build && msbuild ALL_BUILD.vcxproj -property:Platform=x64
+	@cd NeuralEngine/lib/glfw && cmake .  -B build && cd build && msbuild ALL_BUILD.vcxproj -property:Platform=x64
 
 
 
@@ -106,8 +106,8 @@ endif
 ifeq ($(OS), Windows_NT) 
 
 Sandbox/program.exe: NeuralEngine/bin/NeuralEngine.lib Sandbox/main.c
-	$(info Compiling Sandbox program)
-	@cl /FeSandbox/program.exe /MD $(INCLUDE) Sandbox/main.c /link NeuralEngine/bin/NeuralEngine.lib /NODEFAULTLIB:LIBCMT /NODEFAULTLIB:MSVCRTD $(LIBS) 
+	$(info # Compiling Sandbox program)
+	@cl /FeSandbox/program.exe /MD -I NeuralEngine/src/ $(INCLUDE) Sandbox/main.c /link NeuralEngine/bin/NeuralEngine.lib $(LIBS) 
 
 run:
 	$(info # Starting Sandbox program)
