@@ -15,18 +15,21 @@ extern char* n_readFile(char *filepath)
         ASSERT(0, "File does not exist");
     }
 
-    fseek(fp, 0, SEEK_END); 
-    unsigned int length = ftell(fp);
-    rewind(fp);
+    fseek(fp, 0, SEEK_END);
+    unsigned int fileLength = ftell(fp); 
+    fseek(fp, 0, SEEK_SET);
 
-    char *file = nl_calloc(length, sizeof(char));
+    char *file = nl_calloc(fileLength + 1, sizeof(char));
 
     if(!file)
     {
         ASSERT(0, "Memory allocation failed");
     }
 
-    fread(file, length, sizeof(char), fp);
+    fread(file, fileLength, sizeof(char), fp);
     fclose(fp);
+
+    printf("File %s  Size %i\n", filepath, fileLength);
+    puts(file);
     return file;
 }

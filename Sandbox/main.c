@@ -46,7 +46,6 @@ Window* NeuralInit()
     vertexBufferLayoutPush(layout, GL_FLOAT, 2);
 
     vertexArrayAddBuffer(vertexArray, &vertexBuffer, layout);
-
     deleteVertexBufferLayout(layout);
 
     indexBuffer = newIndexBuffer(indices, sizeof(indices) / sizeof(unsigned int));
