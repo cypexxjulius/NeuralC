@@ -23,56 +23,12 @@ INCLUDE = -isystem NeuralEngine/lib/cglm/include -isystem NeuralEngine/lib/glad/
 
 endif 
 
-ifeq ($(OS), Windows_NT)
-
-CC=cl
-FLAGS += /W 0 /MDd
-VENDOR_LIBS = NeuralEngine/lib/glfw/build/src/Debug/glfw3.lib NeuralEngine/lib/cglm/build/Debug/cglm.lib NeuralEngine/lib/glad/glad.obj
-LIBS = kernel32.lib user32.lib gdi32.lib shell32.lib
-INCLUDE = -INeuralEngine/lib/cglm/include -INeuralEngine/lib/glad/include -INeuralEngine/lib/glfw/include -INeuralEngine/lib/stb -I"$(CURDIR)/NeuralEngine"
-
-endif 
 
 NEURAL_SRC  = $(wildcard NeuralEngine/*.c NeuralEngine/src/*c NeuralEngine/src/**/*.c NeuralEngine/src/**/**/*.c NeuralEngine/src/**/**/**/*.c)
 
-
-ifeq ($(OS), Windows_NT)
-NEURAL_OBJ  = $(NEURAL_SRC:.c=.obj)
-else 
 OBJ  = $(NEURAL_SRC:.c=.o)
-endif 
-
 
 #--------------- Compiling NeuralEngine ----------------------------
-
-ifeq ($(OS), Windows_NT)
-
-default: Sandbox/program.exe run
-
-NeuralEngine/bin/NeuralEngine.lib: $(VENDOR_LIBS) $(NEURAL_OBJ)  
-	$(info Compiling NeuralEngine.lib)
-	@lib /nologo /out:NeuralEngine/bin/NeuralEngine.lib $(VENDOR_LIBS) $(NEURAL_OBJ)   
-
-%.obj: %.c
-	@$(CC) /Fo$@ /W0 /wd5045 /D "_CRT_SECURE_NO_WARNINGS" /c /Tc $< $(FLAGS)
-
-#--- Vendor Libs ---
-
-# glad
-NeuralEngine/lib/glad/glad.obj:
-	@cd NeuralEngine/lib/glad && $(CC) -Iinclude -c src/glad.c /MD
-
-# cglm
-NeuralEngine/lib/cglm/build/Debug/cglm.lib:
-	@cd NeuralEngine/lib/cglm && cmake . -DCGLM_STATIC=ON -B build && cd build && msbuild ALL_BUILD.vcxproj -property:Platform=x64
-
-# glfw
-NeuralEngine/lib/glfw/build/src/Debug/glfw3.lib:
-	@cd NeuralEngine/lib/glfw && cmake .  -B build && cd build && msbuild ALL_BUILD.vcxproj -property:Platform=x64
-
-
-
-else 
 
 default: Sandbox/program run
 
@@ -98,22 +54,6 @@ NeuralEngine/lib/cglm/libcglm.a:
 NeuralEngine/lib/glfw/src/libglfw3.a:
 	@cd NeuralEngine/lib/glfw && cmake . && make
 
-endif 
-
-
-
-
-ifeq ($(OS), Windows_NT) 
-
-Sandbox/program.exe: NeuralEngine/bin/NeuralEngine.lib Sandbox/main.c
-	$(info # Compiling Sandbox program)
-	@cl /FeSandbox/program.exe /MD -I NeuralEngine/src/ $(INCLUDE) Sandbox/main.c /link NeuralEngine/bin/NeuralEngine.lib $(LIBS) 
-
-run:
-	$(info # Starting Sandbox program)
-	@cd Sandbox/ && program.exe
-
-else 
 
 Sandbox/program: NeuralEngine/bin/NeuralEngine.a Sandbox/main.c
 	$(info Compiling Sandbox program)
@@ -129,6 +69,4 @@ cleanLib:
 
 run:
 	@cd Sandbox/ && ./program
-
-endif 
 

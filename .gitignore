@@ -8,3 +8,5 @@ program.exe
 
 **/*.obj
 **/*.lib
+
+*.4coder

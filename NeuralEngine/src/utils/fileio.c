@@ -28,8 +28,5 @@ extern char* n_readFile(char *filepath)
 
     fread(file, fileLength, sizeof(char), fp);
     fclose(fp);
-
-    printf("File %s  Size %i\n", filepath, fileLength);
-    puts(file);
     return file;
 }

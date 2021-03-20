@@ -61,8 +61,6 @@ for /R %%f IN ("*.c") DO (
     set NeuralCompiledFiles=!!NeuralCompiledFiles! !outfile!!
 
     call cl /Fo!outfile! !CompilerFlags! !file! !NeuralIncludePath! 2> nul
-
-    echo %%~nxf
 )
 popd
 

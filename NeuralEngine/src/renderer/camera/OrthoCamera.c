@@ -7,14 +7,13 @@
 
 static inline void orthographicCameraRecalculate(Camera *this)
 {
-    ASSERT(this->camType == OrthographicCameraType, "Wrong camera type");   
+    ASSERT(this->camType == OrthographicCameraType, "Wrong camera type"); 
     this->orthoCam.view_proj.view = glms_mat4_inv_fast(glms_translate(glms_mat4_identity(), (vec3s) {{ -this->orthoCam.position.x, -this->orthoCam.position.y, 0 }}));
 }
 
 extern Camera* newOrthographicCamera(float left, float right, float top, float bottom)
 {
-    Camera* this = nl_malloc(sizeof(Camera));
-    memset(this, 0, sizeof(struct Camera));
+    Camera* this = nl_calloc(1, sizeof(Camera));
 
     this->camType = OrthographicCameraType;
 
@@ -51,7 +50,7 @@ extern mat4s orthographicCameraGetViewPosMat(Camera *this)
 {
 
     ASSERT(this->camType == OrthographicCameraType, "Wrong camera type");
-    return glms_mat4_mul(this->orthoCam.view_proj.view, this->orthoCam.view_proj.proj);
+    return glms_mat4_mul(this->orthoCam.view_proj.proj, this->orthoCam.view_proj.view);
 }
 
 extern void deleteOrthographicCamera(Camera* this)
