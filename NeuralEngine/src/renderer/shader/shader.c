@@ -106,9 +106,9 @@ static inline int getUniform(n_Shader this, char *name)
 }
 
 
-extern void shaderUploadUniform1m4(n_Shader this, char* name, mat4s matrix)
+extern void shaderUploadUniform1m4(n_Shader this, char* name, mat4 matrix)
 {
-    glUniformMatrix4fv(getUniform(this, name), 1, GL_FALSE, (const GLfloat *) &matrix.raw);
+    glUniformMatrix4fv(getUniform(this, name), 1, GL_FALSE, (const GLfloat *)matrix);
 }
 
 extern void shaderUploadUniform1f(n_Shader this, char* name, float float0)

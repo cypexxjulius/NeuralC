@@ -55,19 +55,8 @@ static void _ScrollCallback(GLFWwindow* glWindow, double _xOffset, double _yOffs
 {
     Window* window = glfwGetWindowUserPointer(glWindow);
 
-    static v2 oldPos = {0, 0};
 
-    v2 Offset = v2((float)_xOffset, (float)_yOffset);
-    
-    v2 Delta = v2(Offset.x - oldPos.x, Offset.y - oldPos.y);
-
-    oldPos = Offset;
-
-    window->state.mouse.scrollOffset[0]  = Offset.x;
-    window->state.mouse.scrollOffset[1]  = Offset.y;
-
-
-    Event event = Event(ScrolledEventType, .PosEvent = PosEvent(Offset, Delta));
+    Event event = Event(ScrolledEventType, .PosEvent = PosEvent(v2(_xOffset, _yOffset), v2( 0,0 )));
 
     if(window->ErrorCallback)
         window->ErrorCallback(&event);

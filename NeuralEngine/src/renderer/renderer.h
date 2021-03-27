@@ -7,14 +7,18 @@
 #include "shader/shader.h"
 #include "camera/Camera.h"
 #include "textures/texture.h"
+#include "src/utils/types.h"
+#include <cglm/mat4.h>
 
 extern void RendererBeginScene(Camera* cam);
 
 extern void RendererSubmit
-(n_VertexArray* va, n_IndexBuffer* ib, n_Shader shader);
+(n_VertexArray* va, n_IndexBuffer* ib, n_Shader shader, mat4s transform);
 
 extern void RendererClearScreen();
 
 extern void RendererEndScene();
+
+#define NO_TRANSFORM GLMS_MAT4_IDENTITY
 
 #endif // __RENDERER_H_

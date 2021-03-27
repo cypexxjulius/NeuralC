@@ -36,6 +36,8 @@ v2 delta = {0};
 
 v2 DisplayRatio = {0};
 
+float scaleFactor = 0.1f;
+
 Window* NeuralInit()
 {
     
@@ -94,11 +96,25 @@ void NeuralOnUpdate(float deltaTime, Window* window)
     delta = v2(0.0f, 0.0f);
     orthographicCameraSetPosition(cam, pos);
 
+    
+    mat4s scale = glms_scale_make((vec3s){ scaleFactor, scaleFactor, 0.0f });
+    
     RendererClearScreen();
 
     RendererBeginScene(cam);
     {
-        RendererSubmit(vertexArray, indexBuffer, shader);
+        
+        for(int i = 0; i < 20; i++)
+        {
+            for(int k = 0; k < 20; k++)
+            { 
+                mat4s transform_temp = glms_translate_make((vec3s){ pos.x + i * scaleFactor * 1.1f, pos.y + k * scaleFactor * 1.1f, 0.0f});
+                mat4s transform = glms_mat4_mul(transform_temp, scale);
+                RendererSubmit(vertexArray, indexBuffer, shader, transform);
+            }
+        }
+        
+        RendererSubmit(vertexArray, indexBuffer, shader, NO_TRANSFORM);
     }
     RendererEndScene(window);
     
@@ -122,7 +138,21 @@ bool NeuralOnEvent(Event* event)
             if(event->KeyPressedEvent.keyCode == NL_MOUSE_BUTTON_LEFT)
                 isPressed = event->KeyPressedEvent.action != 0; 
         }break;
-        
+
+        case(ScrolledEventType) : 
+        {
+            if(event->PosEvent.pos.y == 0)
+                break;
+            
+            float scrollIntensity = 2.0f;
+
+            if(event->PosEvent.pos.y > 0)
+                scaleFactor *= event->PosEvent.pos.y * scrollIntensity;
+            else 
+                scaleFactor /= -event->PosEvent.pos.y * scrollIntensity;
+
+            printf("ScaleFactor : %f\n",scaleFactor);
+        }
     }
     return 0;
 }

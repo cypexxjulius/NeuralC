@@ -23,7 +23,7 @@ extern void deleteShader(n_Shader this);
 Uniforms 
 */
 
-extern void shaderUploadUniform1m4(n_Shader this, char* name, mat4s matrix);
+extern void shaderUploadUniform1m4(n_Shader this, char* name, mat4 matrix);
 
 
 extern void shaderUploadUniform1f(n_Shader this, char* name, float float0);

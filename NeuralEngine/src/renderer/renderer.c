@@ -24,7 +24,7 @@ extern void RendererClearScreen()
 
 
 extern void RendererSubmit
-(n_VertexArray* va, n_IndexBuffer* ib, n_Shader shader)
+(n_VertexArray* va, n_IndexBuffer* ib, n_Shader shader, mat4s transform)
 {        
 
     ASSERT(Cam, "Camera must be defined with RendererBeginScene before Calling RendererSubmit"); 
@@ -34,11 +34,11 @@ extern void RendererSubmit
     shaderBind(shader);
 
     // Upload cameraViewPosMat to shader
-    if (Cam->camType == OrthographicCameraType)
-        shaderUploadUniform1m4(shader, "u_viewProj", orthographicCameraGetViewPosMat(Cam));
+    shaderUploadUniform1m4(shader, "u_viewProj", orthographicCameraGetViewPosMat(Cam).raw);
 
-    else 
-        ASSERT(0, "Wrong Camera type")
+    // Upload Transformationmatrix to shader
+    shaderUploadUniform1m4(shader, "u_Transform", transform.raw);
+
 
     // Draw Elements
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
