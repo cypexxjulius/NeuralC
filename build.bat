@@ -75,6 +75,9 @@ echo -- Linking
 call cl /FeSandbox/program.exe /MDd -I NeuralEngine/src/ %NeuralIncludePath% Sandbox/main.c /link /nologo /NODEFAULTLIB:LIBCMT NeuralEngine/bin/NeuralEngine.lib %PlatformLibs% 2> nul && (
 
     echo --- Compiled Succesfully
+    pushd "Sandbox/"
+        call program.exe
+    popd 
     goto end
 ) || (
     echo --- Compilation failed

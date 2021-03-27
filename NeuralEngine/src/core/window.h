@@ -55,4 +55,6 @@ extern int IsButtonPressed(Window* window, int key);
 
 extern void SetMouseGrabbed(Window* window, u8 grabbed);
 
+Window* GetWindow();
+
 #endif // _CORE_WINDOW_H_

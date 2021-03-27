@@ -8,13 +8,13 @@
 #include "camera/Camera.h"
 #include "textures/texture.h"
 
-struct Window;
+extern void RendererBeginScene(Camera* cam);
 
-extern void rendererDraw
-(struct Window* window, n_VertexArray* va, n_IndexBuffer* ib, n_Shader shader, Camera *cam);
+extern void RendererSubmit
+(n_VertexArray* va, n_IndexBuffer* ib, n_Shader shader);
 
-extern void rendererClearScreen();
+extern void RendererClearScreen();
 
-extern void rendererSwapBuffers(struct Window* window);
+extern void RendererEndScene();
 
 #endif // __RENDERER_H_

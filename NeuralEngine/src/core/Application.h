@@ -9,8 +9,8 @@ typedef struct Application
     char *name;
 } Application;
 
+Application* newApplication(char* ApplicationName);
 
-
-Layer* SetGameLayer();
+void SetApplication(Application* app);
 
 #endif // __APPLICATION_H_

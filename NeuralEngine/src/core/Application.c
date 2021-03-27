@@ -1,7 +1,8 @@
 #include "src/platform/memory.h"
+#include "error.h"
 #include "Application.h"
 
-static Application* App;
+static Application* App = 0;
 
 Application *newApplication(char *ApplicationName)
 {
@@ -15,29 +16,9 @@ Application *newApplication(char *ApplicationName)
     return this;
 }
 
-int main()
+void SetApplication(Application* app)
 {   
-    App = newApplication("Test Layer");
+    ASSERT(App != 0, "Redefinition of the Application");
 
-    App->gameLayer = SetGameLayer();    
-
-    Window* window = App->gameLayer->Init();
-    window->ErrorCallback = App->gameLayer->OnEvent;
-
-    InitError();
-
-    InitEventSystem(window);
-
-    while(!window->state.shouldClose)
-    {
-        float deltaTime = getDeltaTime();
-        App->gameLayer->OnUpdate(deltaTime, window);
-    }
-
-    App->gameLayer->Delete();
-    
-       
-    deleteWindow(window);
-    return 0;
-}
-
+    App = app; 
+}   

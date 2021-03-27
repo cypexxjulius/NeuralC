@@ -1,40 +1,53 @@
 #include "renderer.h"
+
+
 #include <glad/glad.h>
+
+
 #include "src/core/window.h"
 #include "src/core/error.h"
 
-extern void rendererClearScreen()
+
+
+static Camera* Cam = NULL;
+
+extern void RendererBeginScene(Camera* cam)
+{       
+    Cam = cam;
+}
+
+extern void RendererClearScreen()
 {
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.1f,1.0f, 1.0f,1.0f);
 }
 
-extern void rendererSwapBuffers(struct Window* window)
-{
-    // Swap Buffers 
-    glfwSwapBuffers(window->windowHandle);
-    glfwPollEvents();
-}
 
+extern void RendererSubmit
+(n_VertexArray* va, n_IndexBuffer* ib, n_Shader shader)
+{        
 
-extern void rendererDraw
-(struct Window* window, n_VertexArray* va, n_IndexBuffer* ib, n_Shader shader, Camera *cam)
-{            
+    ASSERT(Cam, "Camera must be defined with RendererBeginScene before Calling RendererSubmit"); 
+
     vertexArrayBind(va);
     indexBufferBind(ib);
     shaderBind(shader);
 
-    if(cam != NULL)
-    {
-
     // Upload cameraViewPosMat to shader
-    if (cam->camType == OrthographicCameraType)
-        shaderUploadUniform1m4(shader, "u_viewProj", orthographicCameraGetViewPosMat(cam));
+    if (Cam->camType == OrthographicCameraType)
+        shaderUploadUniform1m4(shader, "u_viewProj", orthographicCameraGetViewPosMat(Cam));
 
     else 
         ASSERT(0, "Wrong Camera type")
-    }
 
     // Draw Elements
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+}
+
+void RendererEndScene()
+{
+    Cam = NULL;
+    // Swap Buffers 
+    glfwSwapBuffers(GetWindow()->windowHandle);
+    glfwPollEvents();
 }

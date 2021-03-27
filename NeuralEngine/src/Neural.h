@@ -9,4 +9,9 @@
 
 #include "src/platform/memory.h"
 
+/*
+Entry Point
+*/
+#include "src/core/EntryPoint.h"
+
 #endif // __NEURAL_H_

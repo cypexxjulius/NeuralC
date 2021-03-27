@@ -38,7 +38,6 @@ v2 DisplayRatio = {0};
 
 Window* NeuralInit()
 {
-
     
     LocalWindow = CreateWindow(1280, 720, "Test Window"); 
     vertexArray = newVertexArray();
@@ -92,15 +91,16 @@ void NeuralOnUpdate(float deltaTime, Window* window)
     pos.x += delta.x * (cam->orthoCam.height / window->state.height);
     pos.y -= delta.y * (cam->orthoCam.width  / window->state.width);
 
-    delta.x = delta.y = 0;
+    delta = v2(0.0f, 0.0f);
     orthographicCameraSetPosition(cam, pos);
-    
-    
-    rendererClearScreen();
-    
-    rendererDraw(window, vertexArray, indexBuffer, shader, cam);
-    
-    rendererSwapBuffers(window);
+
+    RendererClearScreen();
+
+    RendererBeginScene(cam);
+    {
+        RendererSubmit(vertexArray, indexBuffer, shader);
+    }
+    RendererEndScene(window);
     
 }
 
