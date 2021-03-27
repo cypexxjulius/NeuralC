@@ -5,8 +5,8 @@
 #include "src/renderer/renderer.h"
 #include "src/renderer/camera/Camera.h"
 #include "src/events/keycode.h"
+#include "src/core/Application.h"
 
 #include "src/platform/memory.h"
-#include "src/core/EntryPoint.h"
 
 #endif // __NEURAL_H_

@@ -14,17 +14,15 @@ static Window* LocalWindow = NULL;
 extern Window* CreateWindow(int width, int height, char *title)
 {
     // Initalizing the Window struct
-    Window *window = nl_malloc(1 * sizeof(Window));
+    Window *window = MemAlloc(1 * sizeof(Window));
     memset(window, 0 , sizeof(Window));
     // Storing the width and the height of the window 
     window->state.height = height;
     window->state.width = width;
 
     // Storing the title
-    window->state.title = nl_malloc(strlen(title) + 1);
+    window->state.title = MemAlloc(strlen(title) + 1);
     memcpy(window->state.title, title, strlen(title) + 1);
-
-    // Initializing event queue
 
 
     if(!glfwInit())
@@ -49,9 +47,8 @@ extern Window* CreateWindow(int width, int height, char *title)
 
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
-        fprintf(stderr, "%s",  "error initializing GLAD\n");
         glfwTerminate();
-        exit(1);
+        ASSERT(0, "Program failed to initializing GLAD");
     }
 
     glfwSetWindowUserPointer(window->windowHandle, window);
@@ -64,8 +61,8 @@ extern Window* CreateWindow(int width, int height, char *title)
 extern void deleteWindow(Window* window)
 {
     glfwTerminate();
-    nl_free(window->state.title);
-    nl_free(window);
+    MemFree(window->state.title);
+    MemFree(window);
 }
 
 extern v2 GetMousePosition(Window* window)
@@ -85,6 +82,6 @@ extern void SetMouseGrabbed(Window* window, u8 grabbed)
 
 extern Window* GetWindow()
 {
-    ASSERT(LocalWindow, "Window requested without context");
+    ASSERT(LocalWindow, "Window requested without previous creation");
     return LocalWindow;
 }

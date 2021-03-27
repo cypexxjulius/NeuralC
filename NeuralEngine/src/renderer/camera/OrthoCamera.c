@@ -13,7 +13,7 @@ static inline void orthographicCameraRecalculate(Camera *this)
 
 extern Camera* newOrthographicCamera(float left, float right, float top, float bottom)
 {
-    Camera* this = nl_calloc(1, sizeof(Camera));
+    Camera* this = MemCalloc(1, sizeof(Camera));
 
     this->camType = OrthographicCameraType;
 
@@ -56,5 +56,5 @@ extern mat4s orthographicCameraGetViewPosMat(Camera *this)
 extern void deleteOrthographicCamera(Camera* this)
 {
     ASSERT(this->camType == OrthographicCameraType, "Wrong camera type");  
-    nl_free(this);
+    MemFree(this);
 }

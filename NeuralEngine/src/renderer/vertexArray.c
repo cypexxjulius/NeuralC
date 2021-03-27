@@ -6,7 +6,7 @@
 
 extern n_VertexArray* newVertexArray()
 {
-    n_VertexArray* this = nl_malloc(1 * sizeof(n_VertexArray));
+    n_VertexArray* this = MemAlloc(1 * sizeof(n_VertexArray));
     glGenVertexArrays(1, &this->rendererID); 
 
     return this;
@@ -15,7 +15,7 @@ extern n_VertexArray* newVertexArray()
 extern void deleteVertexArray(n_VertexArray* this)
 {
     glDeleteVertexArrays(1, &this->rendererID);
-    nl_free(this);
+    MemFree(this);
 }
 
 extern void vertexArrayBind(n_VertexArray* this)

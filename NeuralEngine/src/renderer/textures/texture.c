@@ -7,7 +7,7 @@
 
 extern n_Texture* newTexture(char *filepath)
 {
-    n_Texture *this = nl_malloc(sizeof(n_Texture));
+    n_Texture *this = MemAlloc(sizeof(n_Texture));
 
     stbi_set_flip_vertically_on_load(1);
     byte *buffer = stbi_load(filepath, &this->width, &this->height, &this->bpp, 4);
@@ -44,5 +44,5 @@ extern void textureUnbind()
 extern void deleteTexture(n_Texture * this)
 {
     glDeleteTextures(1, &this->id);
-    nl_free(this);
+    MemFree(this);
 }

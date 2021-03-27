@@ -38,8 +38,9 @@ v2 DisplayRatio = {0};
 
 Window* NeuralInit()
 {
-    Window *window = CreateWindow(1280, 720, "Test Window"); 
-    LocalWindow = window;
+
+    
+    LocalWindow = CreateWindow(1280, 720, "Test Window"); 
     vertexArray = newVertexArray();
     
     vertexBuffer = newVertexBuffer(positions, sizeof(positions));
@@ -64,8 +65,7 @@ Window* NeuralInit()
     texture = newTexture("res/textures/firstImage.jpg");
     textureBind(texture, 0);
     shaderUploadUniform1i(shader, "u_Texture", 0);
-    
-    return window;
+    return LocalWindow;
 }
 
 void NeuralOnUpdate(float deltaTime, Window* window)
@@ -138,7 +138,7 @@ void NeuralDelete()
     deleteTexture(texture);
 }
 
-Application CreateApplication()
+Layer* SetGameLayer()
 {
-    return Application(NeuralInit, NeuralOnUpdate, NeuralOnEvent, NeuralDelete);
+    return newLayer(NeuralInit, NeuralOnUpdate, NeuralOnEvent, NeuralDelete);
 }

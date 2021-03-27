@@ -33,13 +33,13 @@ static unsigned int compileShader(char *shaderSrc, n_ShaderType type)
         int length;
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 
-        char *message = nl_malloc(length * sizeof(char));
+        char *message = MemAlloc(length * sizeof(char));
         printf("Shader: %s\n", (type == VertexShaderType) ? "Vertex shader" : "Fragement shader");
         glGetShaderInfoLog(id, length, &length, message);
 
         ASSERT(0, message);
 
-        nl_free(message);
+        MemFree(message);
     }   
 
     return id;
@@ -56,8 +56,8 @@ extern n_Shader newShader(char* vertexShaderPath, char* fragmentShaderPath)
     unsigned int fragmentShaderID   = compileShader(fragmentShader, FragmentShaderType);
 
 
-    nl_free(vertexShader);
-    nl_free(fragmentShader);
+    MemFree(vertexShader);
+    MemFree(fragmentShader);
 
     glAttachShader(program, vertexShaderID);
     glAttachShader(program, fragmentShaderID);

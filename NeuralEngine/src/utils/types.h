@@ -13,24 +13,28 @@ typedef uint8_t byte;
 typedef uint8_t u8;
 
 
+
+typedef struct v2 { float x,y; }v2; 
+typedef struct v3 { float x,y,z; }v3; 
+typedef struct v4 { float x,y,z,w; }v4; 
+
+#define v2(x, y)       (v2){x, y}
+#define v3(x, y, z)    (v3){x, y, z}
+#define v4(x, y, z, w) (v4){x, y, z, w}
+
 void mat4print(mat4s mat);
-
-typedef struct{ float x,y; }v2; 
-
-#define v2(x, y) (v2){x, y}
-
 float GetUnsignedFloat(float x);
 
-typedef enum vector_type
+typedef enum VECTOR_FLAGS
 {
     VECTOR_POINTER = 4, VECTOR_FREE = 8
 } VECTOR_FLAGS;
 
 typedef struct vector
 {  
-    unsigned int capacity;
-    unsigned int type_size;
-    unsigned int used;
+    u32 capacity;
+    u32 type_size;
+    u32 used;
     char flags;
     void *data;
 } vector;

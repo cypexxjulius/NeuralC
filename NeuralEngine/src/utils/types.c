@@ -25,7 +25,7 @@ float GetUnsignedFloat(float x)
 
 vector *newVector(unsigned int count, unsigned int type_size, VECTOR_FLAGS flags)
 {
-    vector* this = nl_malloc(sizeof(vector));
+    vector* this = MemAlloc(sizeof(vector));
 
     this->capacity = count;
     this->used = 0;
@@ -33,7 +33,7 @@ vector *newVector(unsigned int count, unsigned int type_size, VECTOR_FLAGS flags
     this->type_size = (flags & VECTOR_POINTER) ? sizeof(void *) : type_size;
     this->flags = flags;
 
-    this->data = nl_malloc(type_size * count);
+    this->data = MemAlloc(type_size * count);
 
     return this;
 }
@@ -42,7 +42,7 @@ void vectorAdd(vector* this, void *element)
 {
     if(this->capacity == this->used)
     {
-        this->data = nl_realloc(this->data, this->type_size * (this->capacity + 1));
+        this->data = MemRealloc(this->data, this->type_size * (this->capacity + 1));
         this->capacity++;
     }
 
@@ -66,7 +66,7 @@ void vectorRemove(vector* this, unsigned int indices)
     if(this->flags & VECTOR_FREE)
     {
         void **temp = this->data;
-        nl_free(temp[indices]);
+        MemFree(temp[indices]);
     }
     memcpy((byte*)this->data + indices * this->type_size, (byte*)this->data + (indices +1) * this->type_size, this->type_size * (this->used - indices - 1));
     this->used--;
@@ -94,9 +94,9 @@ void deleteVector(vector *this)
         for(unsigned int i= 0; i < this->used; i++)
             free(temp[i]);
     }
-    nl_free(this->data);
+    MemFree(this->data);
 
-    nl_free(this);
+    MemFree(this);
 }
 
 unsigned int vectorLength(vector *this)

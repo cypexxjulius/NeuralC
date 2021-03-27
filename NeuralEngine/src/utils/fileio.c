@@ -19,7 +19,7 @@ extern char* n_readFile(char *filepath)
     unsigned int fileLength = ftell(fp); 
     fseek(fp, 0, SEEK_SET);
 
-    char *file = nl_calloc(fileLength + 1, sizeof(char));
+    char *file = MemCalloc(fileLength + 1, sizeof(char));
 
     if(!file)
     {
