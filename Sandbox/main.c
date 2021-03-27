@@ -108,8 +108,8 @@ void NeuralOnUpdate(float deltaTime, Window* window)
         {
             for(int k = 0; k < 20; k++)
             { 
-                mat4s transform_temp = glms_translate_make((vec3s){ pos.x + i * scaleFactor * 1.1f, pos.y + k * scaleFactor * 1.1f, 0.0f});
-                mat4s transform = glms_mat4_mul(transform_temp, scale);
+                mat4s transform_temp    = glms_translate_make((vec3s){ i * scaleFactor * 1.1f, k * scaleFactor * 1.1f, 0.0f});
+                mat4s transform         = glms_mat4_mul(transform_temp, scale);
                 RendererSubmit(vertexArray, indexBuffer, shader, transform);
             }
         }

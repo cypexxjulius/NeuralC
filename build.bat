@@ -7,7 +7,7 @@ set OperatingDirectory=%~dp0
 :: Sets settings Variables
 
 
-call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64 2> nul
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64 >nul 2> nul
 echo --- Environment Configured
 
 IF NOT EXIST "NeuralEngine/lib/glfw/build/src/Debug/glfw3.lib" (
