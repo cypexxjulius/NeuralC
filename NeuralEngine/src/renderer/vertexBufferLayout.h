@@ -1,7 +1,7 @@
 #ifndef __VERTEX_BUFFER_LAYOUT_H_
 #define __VERTEX_BUFFER_LAYOUT_H_ 
 
-struct vector;
+struct Vector;
 
 typedef struct 
 {
@@ -11,7 +11,7 @@ typedef struct
 typedef struct 
 {
 
-    struct vector* elements;
+    struct Vector* elements;
     unsigned int stride;
 }n_VertexBufferLayout;
 

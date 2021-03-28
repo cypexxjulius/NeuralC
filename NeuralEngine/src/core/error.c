@@ -11,11 +11,11 @@ void APIENTRY errorCallback(GLenum source, GLenum type, GLuint id, GLenum severi
     length = length;
     userParam = userParam;
     id = id;
-    fprintf(stderr, "[OPENGL ERROR]:\n" 
-                    "Source     : 0x%x\n"
-                    "Type       : 0x%x\n"
-                    "Severity   : 0x%x\n"
-                    "ERROR:\n%s\n", source, type, severity, message);
+    CoreWarn("[OPENGL ERROR]:\n" 
+            "Source     : 0x%x\n"
+            "Type       : 0x%x\n"
+            "Severity   : 0x%x\n"
+            "ERROR:\n%s\n", source, type, severity, message);
 }
 
 static void glfwErrorCallback(int error, const char *description)

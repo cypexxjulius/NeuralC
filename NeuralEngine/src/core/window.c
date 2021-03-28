@@ -27,7 +27,7 @@ extern Window* CreateWindow(int width, int height, char *title)
 
     if(!glfwInit())
     {
-        ASSERT(0, "Failed to initialize GLFW");
+        Assert(1, "Failed to initialize GLFW");
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -39,7 +39,7 @@ extern Window* CreateWindow(int width, int height, char *title)
     if(!window->windowHandle)
     {   
         glfwTerminate();
-        ASSERT(0, "Failed to initialize Window");
+        Assert(1, "Failed to initialize Window");
     }
 
     glfwMakeContextCurrent(window->windowHandle);
@@ -48,7 +48,7 @@ extern Window* CreateWindow(int width, int height, char *title)
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
         glfwTerminate();
-        ASSERT(0, "Program failed to initializing GLAD");
+        Assert(1, "Program failed to initializing GLAD");
     }
 
     glfwSetWindowUserPointer(window->windowHandle, window);
@@ -82,6 +82,6 @@ extern void SetMouseGrabbed(Window* window, u8 grabbed)
 
 extern Window* GetWindow()
 {
-    ASSERT(LocalWindow, "Window requested without previous creation");
+    Assert(!LocalWindow, "Window requested without previous creation");
     return LocalWindow;
 }

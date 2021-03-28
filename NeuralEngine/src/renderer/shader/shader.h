@@ -8,26 +8,30 @@
 
 struct Window;
 
-typedef unsigned int n_Shader;
+typedef struct Shader
+{
+    unsigned int ShaderID;
+    char name[50];
+} Shader;
 
 
-extern n_Shader newShader(char* vertexShaderPath, char* fragmentShaderPath);
+extern Shader* newShader(char* ShaderName, char* vertexShaderPath, char* fragmentShaderPath);
 
-extern void shaderBind(n_Shader this);
+extern void shaderBind(Shader* this);
 
 extern void shaderUnbind();
 
-extern void deleteShader(n_Shader this);
+extern void deleteShader(Shader* this);
 
 /*
 Uniforms 
 */
 
-extern void shaderUploadUniform1m4(n_Shader this, char* name, mat4 matrix);
+extern void shaderUploadUniform1m4(Shader* this, char* name, mat4 matrix);
 
 
-extern void shaderUploadUniform1f(n_Shader this, char* name, float float0);
+extern void shaderUploadUniform1f(Shader* this, char* name, float float0);
 
-extern void shaderUploadUniform1i(n_Shader this, char* name, int number);
+extern void shaderUploadUniform1i(Shader* this, char* name, int number);
 
 #endif // __SHADER_H_

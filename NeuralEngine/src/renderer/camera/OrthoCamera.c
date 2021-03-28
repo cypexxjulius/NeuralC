@@ -7,7 +7,7 @@
 
 static inline void orthographicCameraRecalculate(Camera *this)
 {
-    ASSERT(this->camType == OrthographicCameraType, "Wrong camera type"); 
+    Assert(this->camType != OrthographicCameraType, "Wrong camera type"); 
     this->orthoCam.view_proj.view = glms_mat4_inv_fast(glms_translate(glms_mat4_identity(), (vec3s) {{ -this->orthoCam.position.x, -this->orthoCam.position.y, 0 }}));
 }
 
@@ -29,7 +29,7 @@ extern Camera* newOrthographicCamera(float left, float right, float top, float b
 extern void orthographicCameraSetPosition(Camera* this, v2 pos)
 {
 
-    ASSERT(this->camType == OrthographicCameraType, "Wrong camera type");  
+    Assert(this->camType != OrthographicCameraType, "Wrong camera type");  
     if(pos.x == this->orthoCam.position.x && pos.y == this->orthoCam.position.y)
     {
         return;
@@ -41,7 +41,7 @@ extern void orthographicCameraSetPosition(Camera* this, v2 pos)
 
 extern v2 orthographicCameraGetPosition(Camera* this)
 {
-    ASSERT(this->camType == OrthographicCameraType, "Wrong camera type");  
+    Assert(this->camType != OrthographicCameraType, "Wrong camera type");  
     return this->orthoCam.position;
 }
 
@@ -49,12 +49,12 @@ extern v2 orthographicCameraGetPosition(Camera* this)
 extern mat4s orthographicCameraGetViewPosMat(Camera *this)
 {
 
-    ASSERT(this->camType == OrthographicCameraType, "Wrong camera type");
+    Assert(this->camType != OrthographicCameraType, "Wrong camera type");
     return glms_mat4_mul(this->orthoCam.view_proj.proj, this->orthoCam.view_proj.view);
 }
 
 extern void deleteOrthographicCamera(Camera* this)
 {
-    ASSERT(this->camType == OrthographicCameraType, "Wrong camera type");  
+    Assert(this->camType != OrthographicCameraType, "Wrong camera type");  
     MemFree(this);
 }

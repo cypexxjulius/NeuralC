@@ -14,10 +14,10 @@ typedef enum ShaderType
 {
     VertexShaderType = 2,
     FragmentShaderType = 3
-} n_ShaderType;
+} ShaderType;
 
 
-static unsigned int compileShader(char *shaderSrc, n_ShaderType type)
+static int CompileShader(char *shaderSrc, ShaderType type)
 {
     GLenum glType = (type == 2) ? GL_VERTEX_SHADER : (type == 3) ? GL_FRAGMENT_SHADER : GL_FALSE;
 
@@ -28,58 +28,88 @@ static unsigned int compileShader(char *shaderSrc, n_ShaderType type)
 
     int result;
     glGetShaderiv(id, GL_COMPILE_STATUS, &result);
+
     if(result == GL_FALSE)
     {  
         int length;
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 
         char *message = MemAlloc(length * sizeof(char));
-        printf("Shader: %s\n", (type == VertexShaderType) ? "Vertex shader" : "Fragement shader");
+        fprintf(stderr, "%s shader failed to compile\n", (type == VertexShaderType) ? "Vertex" : "Fragment");
+        fprintf(stderr, "[ERROR MESSAGE]\n%s\n", message);
+
         glGetShaderInfoLog(id, length, &length, message);
 
-        ASSERT(0, message);
 
         MemFree(message);
+        return -1 ;
     }   
 
     return id;
 }
 
-extern n_Shader newShader(char* vertexShaderPath, char* fragmentShaderPath)
+extern Shader* newShader(char *ShaderName, char* vertexShaderPath, char* fragmentShaderPath)
 {
-    char *vertexShader    = n_readFile(vertexShaderPath);
-    char *fragmentShader  = n_readFile(fragmentShaderPath);    
+    Shader* this = CreateObject(Shader);
+  
+    Assert(strlen(ShaderName) > 49, "Shadername to long");  // Checking for the shader name to be under 50 
+    MemCpy(this->name, ShaderName, strlen(ShaderName) + 1);     // Copying the shader Name
+    
+    char *vertexShader    = ReadStringFromFile(vertexShaderPath);
+    char *fragmentShader  = ReadStringFromFile(fragmentShaderPath);    
 
-    unsigned int program = glCreateProgram();
+    this->ShaderID = glCreateProgram();
 
-    unsigned int vertexShaderID     = compileShader(vertexShader, VertexShaderType);
-    unsigned int fragmentShaderID   = compileShader(fragmentShader, FragmentShaderType);
+    unsigned int vertexShaderID     = CompileShader(vertexShader, VertexShaderType);
+    unsigned int fragmentShaderID   = CompileShader(fragmentShader, FragmentShaderType);
 
+    if(vertexShaderID == -1 || fragmentShaderID == -1)
+    {
+        return NULL;
+    }
 
     MemFree(vertexShader);
     MemFree(fragmentShader);
 
-    glAttachShader(program, vertexShaderID);
-    glAttachShader(program, fragmentShaderID);
+    glAttachShader(this->ShaderID, vertexShaderID);
+    glAttachShader(this->ShaderID, fragmentShaderID);
 
-    glLinkProgram(program);
+    glLinkProgram(this->ShaderID);
 
-    glDetachShader(program, vertexShaderID);
-    glDetachShader(program, fragmentShaderID);
+    int isLinked;
+    glGetProgramiv(this->ShaderID, GL_LINK_STATUS, &isLinked);
+
+    if(isLinked == GL_FALSE)
+    {
+        unsigned int errorMessageLength = 0;
+        glGetProgramiv(this->ShaderID, GL_INFO_LOG_LENGTH, &errorMessageLength);
+
+        char* errorMessage = MemAlloc(errorMessageLength);
+        Assert(!errorMessage, "Memory allocation failed");
+
+        
+        glDeleteProgram(this->ShaderID);
+
+        glDeleteShader(vertexShaderID);
+        glDeleteShader(fragmentShaderID);
+
+        CoreWarn(errorMessage);
+
+        return NULL;
+    }
+
+    glDetachShader(this->ShaderID, vertexShaderID);
+    glDetachShader(this->ShaderID, fragmentShaderID);
 
 
-    glValidateProgram(program);
+    glValidateProgram(this->ShaderID);
 
-
-    glDeleteShader(vertexShaderID);
-    glDeleteShader(fragmentShaderID);
-
-    return program;
+    return this;
 }
 
-extern void shaderBind(n_Shader this)
+extern void shaderBind(Shader* this)
 {   
-    glUseProgram(this);
+    glUseProgram(this->ShaderID);
 }   
 
 extern void shaderUnbind()
@@ -87,9 +117,9 @@ extern void shaderUnbind()
     glUseProgram(0);
 }
 
-extern void deleteShader(n_Shader this)
+extern void deleteShader(Shader* this)
 {
-    glDeleteProgram(this);
+    glDeleteProgram(this->ShaderID);
 }
 
 
@@ -97,26 +127,31 @@ extern void deleteShader(n_Shader this)
 Uniforms
 */
 
-static inline int getUniform(n_Shader this, char *name)
+static inline int getUniform(Shader* this, char *name)
 {
 
-    int location = glGetUniformLocation(this, name);
-    ASSERT(location != -1, "Uniform not found Error");
+    int location = glGetUniformLocation(this->ShaderID, name);
+    if(location != -1)
+    {
+        char errorMessage[300];
+        snprintf(errorMessage, 300, "Uniform '%s' not found", name);
+        Assert(location == -1, errorMessage);
+    }
     return location;
 }
 
 
-extern void shaderUploadUniform1m4(n_Shader this, char* name, mat4 matrix)
+extern void shaderUploadUniform1m4(Shader* this, char* name, mat4 matrix)
 {
     glUniformMatrix4fv(getUniform(this, name), 1, GL_FALSE, (const GLfloat *)matrix);
 }
 
-extern void shaderUploadUniform1f(n_Shader this, char* name, float float0)
+extern void shaderUploadUniform1f(Shader* this, char* name, float float0)
 {
     glUniform1f(getUniform(this, name), float0);
 }
 
-extern void shaderUploadUniform1i(n_Shader this, char* name, int number)
+extern void shaderUploadUniform1i(Shader* this, char* name, int number)
 {
     glUniform1i(getUniform(this, name), number);
 }

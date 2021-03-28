@@ -37,7 +37,7 @@ extern void vertexArrayAddBuffer
     unsigned int offset = 0;
     for(unsigned int i = 0; i < layout->elements->used; i++)
     {
-        n_VertexBufferElement* element = vectorGet(layout->elements, i);
+        n_VertexBufferElement* element = VectorGet(layout->elements, i);
 
         glEnableVertexAttribArray(i);
         glVertexAttribPointer(i, element->count, element->type, element->normalized, layout->stride, (const void*)offset);

@@ -9,6 +9,8 @@
 
 #include "src/platform/memory.h"
 
+#include "src/renderer/shader/ShaderLibrary.h"
+
 /*
 Entry Point
 */

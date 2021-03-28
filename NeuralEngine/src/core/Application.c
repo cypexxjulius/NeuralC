@@ -18,7 +18,7 @@ Application *newApplication(char *ApplicationName)
 
 void SetApplication(Application* app)
 {   
-    ASSERT(App != 0, "Redefinition of the Application");
+    Assert(App != 0, "Redefinition of the Application");
 
     App = app; 
 }   

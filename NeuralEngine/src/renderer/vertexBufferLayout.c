@@ -14,7 +14,7 @@ static unsigned int convertToSize(GLenum type)
         case GL_UNSIGNED_INT:   return sizeof(GLuint);
         case GL_UNSIGNED_BYTE:  return sizeof(GLubyte);
     }
-    ASSERT(0, "Unknown type!");
+    Assert(1, "Unknown type!");
 
     return 0;
 }
@@ -36,7 +36,7 @@ extern void vertexBufferLayoutPush
     element.normalized = (type == GL_UNSIGNED_BYTE) ? 1 : 0;
     element.typesize = convertToSize(type);
 
-    vectorAdd(this->elements, &element);
+    VectorAdd(this->elements, &element);
     this->stride += convertToSize(type) * count;
 }
 extern void deleteVertexBufferLayout(n_VertexBufferLayout* this)

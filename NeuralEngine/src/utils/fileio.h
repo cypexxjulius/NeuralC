@@ -3,7 +3,7 @@
 
 
 
-extern char* n_readFile(char *filepath);
+extern char* ReadStringFromFile(char *filepath);
 
 
 

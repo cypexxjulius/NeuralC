@@ -6,27 +6,32 @@
 #include "src/platform/memory.h"
 #include "src/core/error.h"
 
-extern char* n_readFile(char *filepath)
+extern char* ReadStringFromFile(char *filepath)
 {
-    FILE* fp = fopen(filepath, "rb");
+    FILE* fp = fopen(filepath, "rb");           // Opens the File
+
     if(!fp)
-    {
-        puts(filepath);
-        ASSERT(0, "File does not exist");
+    {   
+        // Displaing errormessage
+        char errorMessage[300];
+        snprintf(errorMessage, 300, "Could not open file : %s", filepath); 
+        Assert(1, errorMessage);                        
     }
 
-    fseek(fp, 0, SEEK_END);
-    unsigned int fileLength = ftell(fp); 
-    fseek(fp, 0, SEEK_SET);
+    fseek(fp, 0, SEEK_END);                     // Seeking to the EOF
+    unsigned int fileLength = ftell(fp);        // Reading the position of the Cursor (last position in File = Length of File)
+    rewind(fp);                                 // Resetting the Cursor to the Beginning
 
-    char *file = MemCalloc(fileLength + 1, sizeof(char));
-
+    char *file = MemAlloc(fileLength + 1, sizeof(char)); // Reserving space for the filecontent in a buffer
     if(!file)
     {
-        ASSERT(0, "Memory allocation failed");
+        Assert(1, "Memory allocation failed");  // Assert if MemAlloc failed
     }
 
-    fread(file, fileLength, sizeof(char), fp);
-    fclose(fp);
-    return file;
+    fread(file, fileLength, sizeof(char), fp);  // Reading the filecontent into the Buffer
+    file[fileLength] = 0;                       // Appending End of File
+
+
+    fclose(fp);                                 // Closing the file
+    return file;                                // Return the Buffer (Heap Allocated)
 }

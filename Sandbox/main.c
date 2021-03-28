@@ -21,11 +21,11 @@ n_VertexBuffer vertexBuffer;
 
 n_IndexBuffer* indexBuffer;
 
-n_Shader shader;
-
 Camera* cam;
 
 n_Texture* texture;
+
+ShaderLibrary* shaderLibrary;
 
 
 float speed = 5.0f;
@@ -46,6 +46,7 @@ Window* NeuralInit()
     
     vertexBuffer = newVertexBuffer(positions, sizeof(positions));
     
+
     n_VertexBufferLayout* layout = newVertexBufferLayout();
     vertexBufferLayoutPush(layout, GL_FLOAT, 2);
     vertexBufferLayoutPush(layout, GL_FLOAT, 2);
@@ -55,15 +56,18 @@ Window* NeuralInit()
     
     indexBuffer = newIndexBuffer(indices, sizeof(indices) / sizeof(unsigned int));
     
-    shader = newShader("res/shader/vertexShader.glsl", "res/shader/fragmentShader.glsl");
+    shaderLibrary = newShaderLibrary(3);
+
+    Shader * shader = ShaderLibraryLoadShader(shaderLibrary, "BasicShader", "res/shader/vertexShader.glsl", "res/shader/fragmentShader.glsl");
     
+
     shaderBind(shader);
     
     cam = newOrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
     
     
     
-    texture = newTexture("res/textures/firstImage.jpg");
+    texture = newTexture("res/textures/Placeholder.jpg");
     textureBind(texture, 0);
     shaderUploadUniform1i(shader, "u_Texture", 0);
     return LocalWindow;
@@ -71,6 +75,7 @@ Window* NeuralInit()
 
 void NeuralOnUpdate(float deltaTime, Window* window)
 {
+
     v2 pos = orthographicCameraGetPosition(cam);
     
     if(IsButtonPressed(window, NL_KEY_ESCAPE))
@@ -99,22 +104,22 @@ void NeuralOnUpdate(float deltaTime, Window* window)
     
     mat4s scale = glms_scale_make((vec3s){ scaleFactor, scaleFactor, 0.0f });
     
+    Shader* shader =  ShaderLibraryGetShader(shaderLibrary, "BasicShader");
+
     RendererClearScreen();
 
     RendererBeginScene(cam);
     {
         
-        for(int i = 0; i < 20; i++)
+        for(int i = 0; i < 10; i++)
         {
-            for(int k = 0; k < 20; k++)
+            for(int k = 0; k < 10; k++)
             { 
                 mat4s transform_temp    = glms_translate_make((vec3s){ i * scaleFactor * 1.1f, k * scaleFactor * 1.1f, 0.0f});
                 mat4s transform         = glms_mat4_mul(transform_temp, scale);
                 RendererSubmit(vertexArray, indexBuffer, shader, transform);
             }
         }
-        
-        RendererSubmit(vertexArray, indexBuffer, shader, NO_TRANSFORM);
     }
     RendererEndScene(window);
     
@@ -147,11 +152,13 @@ bool NeuralOnEvent(Event* event)
             float scrollIntensity = 2.0f;
 
             if(event->PosEvent.pos.y > 0)
+            {
                 scaleFactor *= event->PosEvent.pos.y * scrollIntensity;
+            }
             else 
+            {
                 scaleFactor /= -event->PosEvent.pos.y * scrollIntensity;
-
-            printf("ScaleFactor : %f\n",scaleFactor);
+            }
         }
     }
     return 0;
@@ -164,7 +171,7 @@ void NeuralDelete()
     deleteVertexBuffer(vertexBuffer);
     deleteVertexArray(vertexArray);
     deleteOrthographicCamera(cam);
-    deleteShader(shader);
+    deleteShaderLibrary(shaderLibrary);
     deleteTexture(texture);
 }
 
