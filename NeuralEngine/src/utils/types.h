@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 #include "datatypes/Vector.h"
+#include "datatypes/String.h"
 
 typedef uint8_t byte;
 
@@ -20,6 +21,9 @@ typedef int16_t i16;
 typedef int8_t i8;
 
 
+#define vec3s(x, y, z)       (vec3s){{x, y, z}}
+#define vec4s(x, y, z, w)    (vec4s){{x, y, z, w}}
+
 
 typedef struct v2 { float x,y; }    v2; 
 typedef struct v3 { float x,y,z; }  v3; 
@@ -31,5 +35,7 @@ typedef struct v4 { float x,y,z,w; }v4;
 
 void mat4print(mat4s mat);
 float GetUnsignedFloat(float x);
+
+void PrintStringLimited(char*string, unsigned int count);
 
 #endif // __TYPES_H_

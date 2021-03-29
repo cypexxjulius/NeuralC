@@ -14,7 +14,7 @@ typedef struct ShaderLibrary
 
 ShaderLibrary* newShaderLibrary(unsigned int startCapacity);
 
-Shader* ShaderLibraryLoadShader(ShaderLibrary* this, char* ShaderName, char* vertexShaderPath, char* fragmentShaderPath);
+Shader* ShaderLibraryLoadShader(ShaderLibrary* this, char* ShaderName,char* ShaderPath);
 
 void ShaderLibraryAddShader(ShaderLibrary* this, Shader* shader);
 

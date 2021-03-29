@@ -15,7 +15,7 @@ typedef struct Shader
 } Shader;
 
 
-extern Shader* newShader(char* ShaderName, char* vertexShaderPath, char* fragmentShaderPath);
+extern Shader* newShader(char* ShaderName, char* ShaderPath);
 
 extern void shaderBind(Shader* this);
 
@@ -33,5 +33,7 @@ extern void shaderUploadUniform1m4(Shader* this, char* name, mat4 matrix);
 extern void shaderUploadUniform1f(Shader* this, char* name, float float0);
 
 extern void shaderUploadUniform1i(Shader* this, char* name, int number);
+
+extern void shaderUploadUniform4f(Shader* this, char* name, float x, float y, float z, float w);
 
 #endif // __SHADER_H_

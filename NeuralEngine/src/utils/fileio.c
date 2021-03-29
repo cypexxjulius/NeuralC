@@ -22,7 +22,7 @@ extern char* ReadStringFromFile(char *filepath)
     unsigned int fileLength = ftell(fp);        // Reading the position of the Cursor (last position in File = Length of File)
     rewind(fp);                                 // Resetting the Cursor to the Beginning
 
-    char *file = MemAlloc(fileLength + 1, sizeof(char)); // Reserving space for the filecontent in a buffer
+    char *file = MemAlloc(fileLength + 1); // Reserving space for the filecontent in a buffer
     if(!file)
     {
         Assert(1, "Memory allocation failed");  // Assert if MemAlloc failed

@@ -12,14 +12,13 @@ ShaderLibrary* newShaderLibrary(unsigned int startCapacity)
 }
 
 
-Shader* ShaderLibraryLoadShader(ShaderLibrary* this, char* ShaderName,  char* vertexShaderPath, char* fragmentShaderPath)
+Shader* ShaderLibraryLoadShader(ShaderLibrary* this, char* ShaderName,  char* ShaderPath)
 {
-    Shader* shader = newShader(ShaderName, vertexShaderPath, fragmentShaderPath);
-    if(!shader)
-    {
-        CoreWarn("Shader Creation Failed");
-        return;
-    }
+    Shader* shader = newShader(ShaderName, ShaderPath);
+    
+    
+    Assert(!shader, "Shader Creation Failed");
+        
 
     VectorAdd(this->ShaderCollection, shader);
 
@@ -35,7 +34,7 @@ void ShaderLibraryAddShader(ShaderLibrary* this, Shader* shader)
 Shader* ShaderLibraryGetShader(ShaderLibrary* this, char* ShaderName)
 { 
     Shader* temp;
-    for(int i = 0; i < this->ShaderCollection->used; i++)
+    for(u32 i = 0; i < this->ShaderCollection->used; i++)
     {
         temp = VectorGet(this->ShaderCollection, i);
         if(strcmp(ShaderName, temp->name) == 0)
@@ -48,7 +47,7 @@ Shader* ShaderLibraryGetShader(ShaderLibrary* this, char* ShaderName)
 void deleteShaderLibrary(ShaderLibrary* this)
 {
     Shader* temp;
-    for(int i = 0; i < this->ShaderCollection->used; i++)
+    for(u32 i = 0; i < this->ShaderCollection->used; i++)
     {
         temp = VectorGet(this->ShaderCollection, i);
         deleteShader(temp);

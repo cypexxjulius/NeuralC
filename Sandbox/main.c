@@ -3,6 +3,8 @@
 
 #include <Neural.h>
 
+#include "cglm/vec3.h"
+
 float positions[] = {
     -0.5, -0.5, 0.0f, 0.0f,
     0.5, -0.5, 1.0f, 0.0f,
@@ -40,7 +42,7 @@ float scaleFactor = 0.1f;
 
 Window* NeuralInit()
 {
-    
+
     LocalWindow = CreateWindow(1280, 720, "Test Window"); 
     vertexArray = newVertexArray();
     
@@ -58,28 +60,36 @@ Window* NeuralInit()
     
     shaderLibrary = newShaderLibrary(3);
 
-    Shader * shader = ShaderLibraryLoadShader(shaderLibrary, "BasicShader", "res/shader/vertexShader.glsl", "res/shader/fragmentShader.glsl");
+    Shader *flatColorShader = ShaderLibraryLoadShader(shaderLibrary, "FlatColorShader", "res/shader/FlatColor.glsl");
     
+    shaderBind(flatColorShader);
 
-    shaderBind(shader);
+    shaderUploadUniform4f(flatColorShader, "u_Color", 1.0, 0.3, 0.8, 1.0f);
     
+    Shader * shader = ShaderLibraryLoadShader(shaderLibrary, "TextureShader", "res/shader/TextureShader.glsl");
+
     cam = newOrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
     
     
     
     texture = newTexture("res/textures/Placeholder.jpg");
+
+
+    shaderBind(shader);
     textureBind(texture, 0);
+
+    
     shaderUploadUniform1i(shader, "u_Texture", 0);
     return LocalWindow;
 }
 
 void NeuralOnUpdate(float deltaTime, Window* window)
 {
-
     v2 pos = orthographicCameraGetPosition(cam);
     
     if(IsButtonPressed(window, NL_KEY_ESCAPE))
         window->state.shouldClose = 1;
+    
     
     
     if(IsButtonPressed(window, NL_KEY_W))
@@ -88,6 +98,7 @@ void NeuralOnUpdate(float deltaTime, Window* window)
     
     else if(IsButtonPressed(window, NL_KEY_S))
         pos.y += speed * deltaTime;
+    
     
     if(IsButtonPressed(window, NL_KEY_A))
         pos.x += speed * deltaTime;
@@ -102,9 +113,9 @@ void NeuralOnUpdate(float deltaTime, Window* window)
     orthographicCameraSetPosition(cam, pos);
 
     
-    mat4s scale = glms_scale_make((vec3s){ scaleFactor, scaleFactor, 0.0f });
+    mat4s scale = glms_scale_make(vec3s(scaleFactor, scaleFactor, 0.0f ));
     
-    Shader* shader =  ShaderLibraryGetShader(shaderLibrary, "BasicShader");
+    Shader* shader =  ShaderLibraryGetShader(shaderLibrary, "TextureShader");
 
     RendererClearScreen();
 
@@ -115,11 +126,13 @@ void NeuralOnUpdate(float deltaTime, Window* window)
         {
             for(int k = 0; k < 10; k++)
             { 
-                mat4s transform_temp    = glms_translate_make((vec3s){ i * scaleFactor * 1.1f, k * scaleFactor * 1.1f, 0.0f});
+                mat4s transform_temp    = glms_translate_make(vec3s( i * scaleFactor * 1.1f, k * scaleFactor * 1.1f, 0.0f));
                 mat4s transform         = glms_mat4_mul(transform_temp, scale);
                 RendererSubmit(vertexArray, indexBuffer, shader, transform);
             }
         }
+        shader = ShaderLibraryGetShader(shaderLibrary, "FlatColorShader");
+        RendererSubmit(vertexArray, indexBuffer,shader, NO_TRANSFORM);
     }
     RendererEndScene(window);
     

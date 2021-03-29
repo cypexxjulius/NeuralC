@@ -1,8 +1,6 @@
 #ifndef __MEMORY_H_
 #define __MEMORY_H_
 
-#include "src/utils/types.h"
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -11,7 +9,7 @@ void incrementCount();
 
 void decrementCount();
 
-i16 getMemoryCount();
+unsigned int getMemoryCount();
 
 /*
 Wrappers for Memory managment
@@ -28,6 +26,10 @@ Wrappers for Memory managment
 // Move or copy memory
 
 #define MemCpy(dest, src, count) memcpy(dest, src, count) 
+
+// Compare memory
+
+#define MemCmp(dest, src, count) memcmp(dest, src, count)
 
 /*
 Creating new Object

@@ -21,3 +21,13 @@ float GetUnsignedFloat(float x)
 {
     return ((x < 0) ? - x : x);
 }
+
+void PrintStringLimited(char *string, unsigned int count)
+{
+    char temp[count + 1];
+    temp[count] = 0;
+
+    MemCpy(temp, string, count);
+
+    puts(temp);
+}

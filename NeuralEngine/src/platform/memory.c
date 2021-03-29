@@ -1,6 +1,6 @@
 #include "memory.h"
 
-static i16 s_count = 0;
+static unsigned int s_count = 0;
 
 void incrementCount()
 {
@@ -12,7 +12,7 @@ void decrementCount()
     s_count--;
 }
 
-i16 getMemoryCount()
+unsigned int getMemoryCount()
 {
     return s_count;
 }
