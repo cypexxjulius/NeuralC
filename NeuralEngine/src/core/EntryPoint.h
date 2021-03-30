@@ -12,7 +12,7 @@ Layer* SetGameLayer();
 
 int main()
 {   
-    Application* App = newApplication("Test Layer");
+    Application* App = NewApplication("Test Layer");
 
     App->gameLayer = SetGameLayer();    
 
@@ -32,7 +32,7 @@ int main()
     App->gameLayer->Delete();
     
        
-    deleteWindow(window);
+    DeleteWindow(window);
     return 0;
 }
 

@@ -9,7 +9,7 @@ typedef struct Application
     char *name;
 } Application;
 
-Application* newApplication(char* ApplicationName);
+Application* NewApplication(char* ApplicationName);
 
 void SetApplication(Application* app);
 

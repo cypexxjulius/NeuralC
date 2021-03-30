@@ -36,6 +36,4 @@ typedef struct v4 { float x,y,z,w; }v4;
 void mat4print(mat4s mat);
 float GetUnsignedFloat(float x);
 
-void PrintStringLimited(char*string, unsigned int count);
-
 #endif // __TYPES_H_

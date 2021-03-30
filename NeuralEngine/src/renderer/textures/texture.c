@@ -1,13 +1,12 @@
 #include "texture.h"
 #include "src/platform/memory.h"
-#include <glad/glad.h>
 #include <string.h>
 
 #include <stb_image.h>
 
-extern n_Texture* newTexture(char *filepath)
+extern Texture* NewTexture(char *filepath)
 {
-    n_Texture *this = MemAlloc(sizeof(n_Texture));
+    Texture *this = MemAlloc(sizeof(Texture));
 
     stbi_set_flip_vertically_on_load(1);
     byte *buffer = stbi_load(filepath, &this->width, &this->height, &this->bpp, 4);
@@ -29,20 +28,4 @@ extern n_Texture* newTexture(char *filepath)
         stbi_image_free(buffer);
     }
     return this;
-}
-
-extern void textureBind(n_Texture *this, byte slot)
-{
-    glActiveTexture(GL_TEXTURE0 + slot);
-    glBindTexture(GL_TEXTURE_2D, this->id);   
-}
-
-extern void textureUnbind()
-{
-    glBindTexture(GL_TEXTURE_2D, 0);
-}
-extern void deleteTexture(n_Texture * this)
-{
-    glDeleteTextures(1, &this->id);
-    MemFree(this);
 }

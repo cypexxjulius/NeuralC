@@ -12,7 +12,7 @@ typedef struct ShaderLibrary
 } ShaderLibrary;
 
 
-ShaderLibrary* newShaderLibrary(unsigned int startCapacity);
+ShaderLibrary* NewShaderLibrary(unsigned int startCapacity);
 
 Shader* ShaderLibraryLoadShader(ShaderLibrary* this, char* ShaderName,char* ShaderPath);
 
@@ -20,6 +20,6 @@ void ShaderLibraryAddShader(ShaderLibrary* this, Shader* shader);
 
 Shader* ShaderLibraryGetShader(ShaderLibrary* this, char* ShaderName);
 
-void deleteShaderLibrary(ShaderLibrary* this);
+void DeleteShaderLibrary(ShaderLibrary* this);
 
 #endif // __SHADERLIBRARY_H_

@@ -1,9 +1,11 @@
 #include "Vector.h"
 
 #include "src/platform/memory.h"
-Vector *newVector(unsigned int count, unsigned int type_size, VECTOR_FLAGS flags)
+#include "src/core/error.h"
+
+Vector *NewVector(unsigned int count, unsigned int type_size, VECTOR_FLAGS flags)
 {
-    Vector* this = MemAlloc(sizeof(Vector));
+    Vector* this = CreateObject(Vector);
 
     this->capacity = count;
     this->used = 0;
@@ -20,7 +22,7 @@ void VectorAdd(Vector* this, void *element)
 {
     if(this->capacity == this->used)
     {
-        this->data = MemRealloc(this->data, this->type_size * (this->capacity + 1));
+        this->data = MemRealloc(this->data, this->type_size * (this->capacity + 2));
         this->capacity++;
     }
 
@@ -31,53 +33,55 @@ void VectorAdd(Vector* this, void *element)
     }
     else 
     {
-        memcpy((byte*)this->data + this->type_size * this->used, element, this->type_size);
+        MemCpy((byte*)this->data + this->type_size * this->used, element, this->type_size);
     }
 
     this->used++;
 }
-void VectorRemove(Vector* this, unsigned int indices)
+void VectorRemove(Vector* this, unsigned int index)
 {
-    if(this->used <= indices)
-        return; 
+    Assert(this->used <= index, "Vector index does not exist");
 
     if(this->flags & VECTOR_FREE)
     {
         void **temp = this->data;
-        MemFree(temp[indices]);
+        MemFree(temp[index]);
     }
-    memcpy((byte*)this->data + indices * this->type_size, (byte*)this->data + (indices +1) * this->type_size, this->type_size * (this->used - indices - 1));
+    MemCpy( 
+            (byte*)this->data + index * this->type_size,  
+            (byte*)this->data + (index +1) * this->type_size, 
+            this->type_size * (this->used - index - 1)
+    );
+
+
     this->used--;
 }
 
-void* VectorGet(Vector* this, unsigned int indices)
+void* VectorGet(Vector* this, unsigned int index)
 {
-    if(this->used <= indices)
-        return NULL; 
+    Assert(this->used <= index, "Invalid vector address accessed");
+
     
     if(this->flags & VECTOR_POINTER)
     {
         void **temp = this->data;
-        return temp[indices];
+        return temp[index];
     }
 
-    return (byte*)this->data + indices * this->type_size;
+    return (byte*)this->data + index * this->type_size;
 }
 
-void deleteVector(Vector *this)
+void DeleteVector(Vector *this)
 {
     if(this->flags & VECTOR_FREE)
     {
         void **temp = this->data;
         for(unsigned int i= 0; i < this->used; i++)
+        {
             free(temp[i]);
+        }
     }
     MemFree(this->data);
 
     MemFree(this);
-}
-
-unsigned int VectorLength(Vector *this)
-{
-    return this->used;
 }

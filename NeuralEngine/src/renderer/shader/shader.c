@@ -138,7 +138,7 @@ static int CompileShader(char *shaderSrc, ShaderType type)
     return id;
 }
 
-extern Shader* newShader(char *ShaderName, char* ShaderPath)
+extern Shader* NewShader(char *ShaderName, char* ShaderPath)
 {
     Shader* this = CreateObject(Shader);
 
@@ -212,56 +212,20 @@ extern Shader* newShader(char *ShaderName, char* ShaderPath)
     return this;
 }
 
-extern void shaderBind(Shader* this)
-{   
-    glUseProgram(this->ShaderID);
-}   
-
-extern void shaderUnbind()
-{
-    glUseProgram(0);
-}
-
-extern void deleteShader(Shader* this)
-{
-    glDeleteProgram(this->ShaderID);
-}
-
 
 /*
 Uniforms
 */
 
-static inline int getUniform(Shader* this, char *name)
+extern int getUniform(Shader* this, char *name)
 {
 
     int location = glGetUniformLocation(this->ShaderID, name);
     if(location != -1)
     {
         char errorMessage[300];
-        snprintf(errorMessage, 300, "Uniform '%s' not found", name);
+        snprintf((char* const)errorMessage, 300, "Uniform '%s' not found", name);
         Assert(location == -1, errorMessage);
     }
     return location;
-}
-
-
-extern void shaderUploadUniform1m4(Shader* this, char* name, mat4 matrix)
-{
-    glUniformMatrix4fv(getUniform(this, name), 1, GL_FALSE, (const GLfloat *)matrix);
-}
-
-extern void shaderUploadUniform1f(Shader* this, char* name, float float0)
-{
-    glUniform1f(getUniform(this, name), float0);
-}
-
-extern void shaderUploadUniform1i(Shader* this, char* name, int number)
-{
-    glUniform1i(getUniform(this, name), number);
-}
-
-extern void shaderUploadUniform4f(Shader* this, char* name, float x, float y, float z, float w)
-{
-    glUniform4f(getUniform(this, name), x, y, z, w);
 }

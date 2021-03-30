@@ -2,7 +2,7 @@
 #include "Layer.h"
 #include "src/platform/memory.h"
 
-Layer* newLayer
+Layer* NewLayer
 (   
     Window*(*InitFunc)(), 
     void (*OnUpdateFunc)(float deltaTime, Window* window), 

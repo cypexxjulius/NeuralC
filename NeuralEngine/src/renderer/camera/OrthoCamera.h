@@ -7,13 +7,13 @@
 
 #include "Camera.h"
 
-extern Camera* newOrthographicCamera(float left, float right, float top, float bottom);
+extern Camera* NewOrthographicCamera(float left, float right, float top, float bottom);
 
 extern void orthographicCameraSetPosition(Camera* this, v2 pos);
 
 extern v2 orthographicCameraGetPosition(Camera* this);
 
-extern void deleteOrthographicCamera(Camera* this);
+extern void DeleteOrthographicCamera(Camera* this);
 
 extern mat4s orthographicCameraGetViewPosMat(Camera *this);
 

@@ -1,18 +1,32 @@
 #ifndef __BUFFER_H_
 #define __BUFFER_H_
 
+
+#include <glad/glad.h>
+
 /*
 VertexBuffer
 */
-typedef unsigned int n_VertexBuffer;
+typedef unsigned int VertexBuffer;
 
-extern n_VertexBuffer newVertexBuffer(void *data, unsigned int size); 
+extern VertexBuffer NewVertexBuffer(void *data, unsigned int size); 
 
-extern void vertexBufferBind(n_VertexBuffer this);
 
-extern void vertexBufferUnbind();
+void inline vertexBufferBind(VertexBuffer this)
+{
+    glBindBuffer(GL_ARRAY_BUFFER, this);
+}
 
-extern void deleteVertexBuffer(n_VertexBuffer this);
+void inline vertexBufferUnbind()
+{
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+
+inline void DeleteVertexBuffer(VertexBuffer this)
+{
+    glDeleteBuffers(1, &this);
+}
 
 /*
 IndexBuffer
@@ -22,16 +36,22 @@ typedef struct
 {
     unsigned int id;
     unsigned int count;
-}n_IndexBuffer;
+}IndexBuffer;
 
 
-extern n_IndexBuffer* newIndexBuffer(unsigned int *data, unsigned int count); 
+extern IndexBuffer* NewIndexBuffer(unsigned int *data, unsigned int count); 
 
-extern void indexBufferBind(n_IndexBuffer* this);
+inline void indexBufferBind(IndexBuffer* this)
+{
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
+}
 
-extern void indexBufferUnbind();
+inline void indexBufferUnbind()
+{
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
 
-extern void deleteIndexBuffer(n_IndexBuffer* this);
+extern void DeleteIndexBuffer(IndexBuffer* this);
 
 
 #endif // __BUFFER_H_

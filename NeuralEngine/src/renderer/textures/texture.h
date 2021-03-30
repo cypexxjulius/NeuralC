@@ -3,19 +3,31 @@
 
 #include "src/utils/types.h"
 
-typedef struct n_Texture
+#include <glad/glad.h>
+
+typedef struct Texture
 {
     unsigned int id;
     int width, height, bpp;
-} n_Texture;
+} Texture;
 
-extern n_Texture* newTexture(char *filepath);
+extern Texture* NewTexture(char *filepath);
 
-extern void textureBind(n_Texture *this, byte slot);
+inline void textureUnbind()
+{
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
 
-extern void textureUnbind();
-
-extern void deleteTexture(n_Texture* this);
+inline void textureBind(Texture *this, byte slot)
+{
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(GL_TEXTURE_2D, this->id);   
+}
+inline void DeleteTexture(Texture * this)
+{
+    glDeleteTextures(1, &this->id);
+    MemFree(this);
+}
 
 
 #endif // !__TEXTURES_H_

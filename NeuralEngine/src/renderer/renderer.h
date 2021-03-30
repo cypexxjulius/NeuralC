@@ -13,7 +13,7 @@
 extern void RendererBeginScene(Camera* cam);
 
 extern void RendererSubmit
-(n_VertexArray* va, n_IndexBuffer* ib, Shader* shader, mat4s transform);
+(VertexArray* va, IndexBuffer* ib, Shader* shader, mat4s transform);
 
 extern void RendererClearScreen();
 

@@ -6,41 +6,57 @@
 
 #include <glad/glad.h>
 
-static unsigned int convertToSize(GLenum type)
+unsigned int GetOpenGLSizeType(unsigned int type)
 {
     switch (type)
     {
         case GL_FLOAT:          return sizeof(GLfloat);
         case GL_UNSIGNED_INT:   return sizeof(GLuint);
         case GL_UNSIGNED_BYTE:  return sizeof(GLubyte);
+        default:     Assert(1, "Unknown OpenGL type!");
     }
-    Assert(1, "Unknown type!");
 
     return 0;
 }
 
-extern n_VertexBufferLayout* newVertexBufferLayout()
+extern VertexBufferLayout* NewVertexBufferLayout(unsigned int count, ...)
 {
-    n_VertexBufferLayout* this =  MemCalloc(1, sizeof(n_VertexBufferLayout));
-    this->elements = newVector(2, sizeof(n_VertexBufferElement), 0);
+
+    va_list args;
+    va_start(args, count);
+    
+    VertexBufferLayout* this =  CreateObject(VertexBufferLayout);
+    this->elements = NewVector(2 + count, sizeof(VertexBufferElement*), VECTOR_POINTER | VECTOR_FREE);
     this->stride = 0;
+
+    for(unsigned int i = 0; i < count; i++)
+    {
+        VertexBufferElement element = va_arg(args, VertexBufferElement);
+        element.index = i;
+
+
+        VertexBufferElement *StoredElement = CreateObject(VertexBufferElement);
+        *StoredElement = element;
+
+        VectorAdd(this->elements, StoredElement);
+        this->stride += element.typesize * count;
+    }
+
+    va_end(args);
     return this;
 }
 
 extern void vertexBufferLayoutPush
-(n_VertexBufferLayout* this, unsigned int type, unsigned int count)
+(VertexBufferLayout* this, VertexBufferElement layout)
 {
-    n_VertexBufferElement element;
-    element.type = type;
-    element.count = count;
-    element.normalized = (type == GL_UNSIGNED_BYTE) ? 1 : 0;
-    element.typesize = convertToSize(type);
+    VertexBufferElement *StoredElement = CreateObject(VertexBufferElement);
+    *StoredElement = layout;
 
-    VectorAdd(this->elements, &element);
-    this->stride += convertToSize(type) * count;
+    VectorAdd(this->elements, StoredElement);
+    this->stride += layout.typesize * layout.count;
 }
-extern void deleteVertexBufferLayout(n_VertexBufferLayout* this)
+extern void DeleteVertexBufferLayout(VertexBufferLayout* this)
 {
-    deleteVector(this->elements);
+    DeleteVector(this->elements);
     MemFree(this);
 }

@@ -32,7 +32,7 @@ Wrappers for Memory managment
 #define MemCmp(dest, src, count) memcmp(dest, src, count)
 
 /*
-Creating new Object
+Creating New Object
 */
 
 #define CreateObject(objectName) MemCalloc(1, sizeof(objectName))

@@ -9,14 +9,14 @@ Appends src to dest, reallocates automaticly
 void StringAppend(char **dest, char *src);
 
 /*
-Creates new Heap allocated String copy of string
+Creates New Heap allocated String copy of string
 */
-char *newString(char* string);
+char *NewString(char* string);
 
 /*
 Frees string, only for Heap allocated Strings
 */
-void deleteString(char* string);
+void DeleteString(char* string);
 
 /*
 Counts the occurence of searchChar in string

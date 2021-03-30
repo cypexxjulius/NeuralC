@@ -11,7 +11,7 @@ typedef struct Layer
     void (*Delete)();
 } Layer;
 
-Layer* newLayer
+Layer* NewLayer
 (   
     Window*(*InitFunc)(), 
     void (*OnUpdateFunc)(float deltaTime, Window* window), 

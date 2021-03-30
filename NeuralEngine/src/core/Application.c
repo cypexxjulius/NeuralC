@@ -4,7 +4,7 @@
 
 static Application* App = 0;
 
-Application *newApplication(char *ApplicationName)
+Application *NewApplication(char *ApplicationName)
 {
     Application* this = CreateObject(Application);
 

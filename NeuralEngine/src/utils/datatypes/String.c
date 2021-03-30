@@ -14,19 +14,19 @@ void StringAppend(char **dest, char *src)
     MemCpy(*dest + destLen, src, srcLen + 1);
 }
 
-char *newString(char* string)
+char *NewString(char* string)
 {
     unsigned int strLength = strlen(string);
-    char *newString = MemAlloc(strLength + 1);
+    char *NewString = MemAlloc(strLength + 1);
 
-    Assert(!newString, "Memory Allocation Failed");
+    Assert(!NewString, "Memory Allocation Failed");
 
-    MemCpy(newString, string, strLength + 1);
+    MemCpy(NewString, string, strLength + 1);
 
-    return newString;   
+    return NewString;   
 }
 
-void deleteString(char* string)
+void DeleteString(char* string)
 {
     free(string);
 }

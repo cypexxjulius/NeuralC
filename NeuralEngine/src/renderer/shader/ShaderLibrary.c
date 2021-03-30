@@ -2,11 +2,11 @@
 #include "src/platform/memory.h"
 #include "src/core/error.h"
 
-ShaderLibrary* newShaderLibrary(unsigned int startCapacity)
+ShaderLibrary* NewShaderLibrary(unsigned int startCapacity)
 {
     ShaderLibrary* this = CreateObject(ShaderLibrary);
 
-    this->ShaderCollection = newVector(startCapacity, sizeof(Shader), VECTOR_POINTER);
+    this->ShaderCollection = NewVector(startCapacity, sizeof(Shader), VECTOR_POINTER);
 
     return this;
 }
@@ -14,7 +14,7 @@ ShaderLibrary* newShaderLibrary(unsigned int startCapacity)
 
 Shader* ShaderLibraryLoadShader(ShaderLibrary* this, char* ShaderName,  char* ShaderPath)
 {
-    Shader* shader = newShader(ShaderName, ShaderPath);
+    Shader* shader = NewShader(ShaderName, ShaderPath);
     
     
     Assert(!shader, "Shader Creation Failed");
@@ -44,13 +44,13 @@ Shader* ShaderLibraryGetShader(ShaderLibrary* this, char* ShaderName)
 }
 
 
-void deleteShaderLibrary(ShaderLibrary* this)
+void DeleteShaderLibrary(ShaderLibrary* this)
 {
     Shader* temp;
     for(u32 i = 0; i < this->ShaderCollection->used; i++)
     {
         temp = VectorGet(this->ShaderCollection, i);
-        deleteShader(temp);
+        DeleteShader(temp);
     }
 }
 

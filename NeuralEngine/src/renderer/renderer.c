@@ -24,7 +24,7 @@ extern void RendererClearScreen()
 
 
 extern void RendererSubmit
-(n_VertexArray* va, n_IndexBuffer* ib, Shader* shader, mat4s transform)
+(VertexArray* va, IndexBuffer* ib, Shader* shader, mat4s transform)
 {        
 
     Assert(!Cam, "Camera must be defined with RendererBeginScene before Calling RendererSubmit"); 

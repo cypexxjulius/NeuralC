@@ -58,26 +58,11 @@ extern Window* CreateWindow(int width, int height, char *title)
     return window;
 }
 
-extern void deleteWindow(Window* window)
+extern void DeleteWindow(Window* window)
 {
     glfwTerminate();
     MemFree(window->state.title);
     MemFree(window);
-}
-
-extern v2 GetMousePosition(Window* window)
-{
-    return window->state.mouse.position;
-}
-
-extern int IsButtonPressed(Window* window, int key)
-{
-    return window->state.keyboard.keys[key].down;
-}
-
-extern void SetMouseGrabbed(Window* window, u8 grabbed) 
-{
-    glfwSetInputMode(window->windowHandle, GLFW_CURSOR, grabbed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }
 
 extern Window* GetWindow()

@@ -16,16 +16,16 @@ u32 indices[] = {
     2, 3, 0
 };
 
-n_VertexArray* vertexArray;
+VertexArray* vertexArray;
 
-n_VertexBuffer vertexBuffer;
+VertexBuffer vertexBuffer;
 
 
-n_IndexBuffer* indexBuffer;
+IndexBuffer* indexBuffer;
 
 Camera* cam;
 
-n_Texture* texture;
+Texture* texture;
 
 ShaderLibrary* shaderLibrary;
 
@@ -42,23 +42,25 @@ float scaleFactor = 0.1f;
 
 Window* NeuralInit()
 {
-
     LocalWindow = CreateWindow(1280, 720, "Test Window"); 
-    vertexArray = newVertexArray();
+    vertexArray = NewVertexArray();
     
-    vertexBuffer = newVertexBuffer(positions, sizeof(positions));
+    vertexBuffer = NewVertexBuffer(positions, sizeof(positions));
     
 
-    n_VertexBufferLayout* layout = newVertexBufferLayout();
-    vertexBufferLayoutPush(layout, GL_FLOAT, 2);
-    vertexBufferLayoutPush(layout, GL_FLOAT, 2);
+    VertexBufferLayout* layout = NewVertexBufferLayout(
+        2, 
+        BufferElement(2, GL_FLOAT),
+        BufferElement(2, GL_FLOAT)
+    );
     
     vertexArrayAddBuffer(vertexArray, &vertexBuffer, layout);
-    deleteVertexBufferLayout(layout);
+
+    DeleteVertexBufferLayout(layout);
     
-    indexBuffer = newIndexBuffer(indices, sizeof(indices) / sizeof(unsigned int));
+    indexBuffer = NewIndexBuffer(indices, sizeof(indices) / sizeof(unsigned int));
     
-    shaderLibrary = newShaderLibrary(3);
+    shaderLibrary = NewShaderLibrary(3);
 
     Shader *flatColorShader = ShaderLibraryLoadShader(shaderLibrary, "FlatColorShader", "res/shader/FlatColor.glsl");
     
@@ -68,11 +70,11 @@ Window* NeuralInit()
     
     Shader * shader = ShaderLibraryLoadShader(shaderLibrary, "TextureShader", "res/shader/TextureShader.glsl");
 
-    cam = newOrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
+    cam = NewOrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
     
     
     
-    texture = newTexture("res/textures/Placeholder.jpg");
+    texture = NewTexture("res/textures/Placeholder.jpg");
 
 
     shaderBind(shader);
@@ -180,15 +182,15 @@ bool NeuralOnEvent(Event* event)
 
 void NeuralDelete()
 {
-    deleteIndexBuffer(indexBuffer);
-    deleteVertexBuffer(vertexBuffer);
-    deleteVertexArray(vertexArray);
-    deleteOrthographicCamera(cam);
-    deleteShaderLibrary(shaderLibrary);
-    deleteTexture(texture);
+    DeleteIndexBuffer(indexBuffer);
+    DeleteVertexBuffer(vertexBuffer);
+    DeleteVertexArray(vertexArray);
+    DeleteOrthographicCamera(cam);
+    DeleteShaderLibrary(shaderLibrary);
+    DeleteTexture(texture);
 }
 
 Layer* SetGameLayer()
 {
-    return newLayer(NeuralInit, NeuralOnUpdate, NeuralOnEvent, NeuralDelete);
+    return NewLayer(NeuralInit, NeuralOnUpdate, NeuralOnEvent, NeuralDelete);
 }

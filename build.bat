@@ -27,7 +27,7 @@ IF NOT EXIST "NeuralEngine/lib/glad/glad.obj" (
 
 echo --- Building NeuralEngine.lib
 
-set CompilerFlags=/W0 /wd5045 /D "_CRT_SECURE_NO_WARNINGS" /c /TC
+set CompilerFlags=/W1 /wd4201 /wd5045 /D "_CRT_SECURE_NO_WARNINGS" /c /TC
 
 set NeuralOutputDir=!%~d0%cd%\NeuralEngine\bin\!
 

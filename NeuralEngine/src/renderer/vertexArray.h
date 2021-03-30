@@ -5,21 +5,21 @@
 #include "buffer.h"
 
 
-typedef struct n_VertexArray
+typedef struct VertexArray
 {
     unsigned int rendererID;
-} n_VertexArray;
+} VertexArray;
 
 
-extern n_VertexArray* newVertexArray();
+extern VertexArray* NewVertexArray();
 
 extern void vertexArrayAddBuffer
-(n_VertexArray* this, n_VertexBuffer* vertexBuffer, n_VertexBufferLayout* layout);
+(VertexArray* this, VertexBuffer* vertexBuffer, VertexBufferLayout* layout);
 
-extern void vertexArrayBind(n_VertexArray *this);
+extern void vertexArrayBind(VertexArray *this);
 
 extern void vertexArrayUnbind();
 
-extern void deleteVertexArray(n_VertexArray *this);
+extern void DeleteVertexArray(VertexArray *this);
 
 #endif // __VERTEX_ARRAY_H_

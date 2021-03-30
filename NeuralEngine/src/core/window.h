@@ -47,13 +47,23 @@ typedef struct Window
 
 extern Window* CreateWindow(int width, int height, char *title);
 
-extern void deleteWindow(Window* window);
+extern void DeleteWindow(Window* window);
 
-extern v2 GetMousePosition(Window* window);
 
-extern int IsButtonPressed(Window* window, int key);
+v2 inline GetMousePosition(Window* window)
+{
+    return window->state.mouse.position;
+}
 
-extern void SetMouseGrabbed(Window* window, u8 grabbed);
+int inline IsButtonPressed(Window* window, int key)
+{
+    return window->state.keyboard.keys[key].down;
+}
+
+void inline SetMouseGrabbed(Window* window, u8 grabbed) 
+{
+    glfwSetInputMode(window->windowHandle, GLFW_CURSOR, grabbed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+}
 
 Window* GetWindow();
 
