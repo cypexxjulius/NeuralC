@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <cglm/struct.h>
 #include <stdbool.h>
+#include <math.h>
 
 #include "datatypes/Vector.h"
 #include "datatypes/String.h"
@@ -34,6 +35,17 @@ typedef struct v4 { float x,y,z,w; }v4;
 #define v4(x, y, z, w) (v4){x, y, z, w}
 
 void mat4print(mat4s mat);
-float GetUnsignedFloat(float x);
+
+extern inline float GetUnsignedFloat(float x)
+{
+    return (x < 0) ? -x : x;
+}
+
+extern inline int RoundFloat(float num)
+{
+    return (int)roundf(num); 
+}
+#define ArraySize(array, type) (sizeof(array) / sizeof(type))
+
 
 #endif // __TYPES_H_

@@ -16,7 +16,10 @@ char *NewString(char* string);
 /*
 Frees string, only for Heap allocated Strings
 */
-void DeleteString(char* string);
+extern inline void DeleteString(char* string)
+{
+    free(string);
+}
 
 /*
 Counts the occurence of searchChar in string

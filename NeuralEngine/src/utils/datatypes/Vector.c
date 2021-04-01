@@ -3,10 +3,12 @@
 #include "src/platform/memory.h"
 #include "src/core/error.h"
 
+#include <math.h>
+
 Vector *NewVector(unsigned int count, unsigned int type_size, VECTOR_FLAGS flags)
 {
     Vector* this = CreateObject(Vector);
-
+    Assert(!this, "Memory Allocation failed");
     this->capacity = count;
     this->used = 0;
 
@@ -20,10 +22,12 @@ Vector *NewVector(unsigned int count, unsigned int type_size, VECTOR_FLAGS flags
 
 void VectorAdd(Vector* this, void *element)
 {
-    if(this->capacity == this->used)
+    if(this->capacity <= this->used)
     {
-        this->data = MemRealloc(this->data, this->type_size * (this->capacity + 2));
-        this->capacity++;
+        unsigned int newAllocSize = this->capacity + (int)roundf(this->capacity / 2);
+        this->data = MemRealloc(this->data, this->type_size * newAllocSize);
+        Assert(!this->data, "Memory Reallocation failed");
+        this->capacity = newAllocSize;
     }
 
     if(this->flags & VECTOR_POINTER)
@@ -41,16 +45,19 @@ void VectorRemove(Vector* this, unsigned int index)
 {
     Assert(this->used <= index, "Vector index does not exist");
 
-    if(this->flags & VECTOR_FREE)
+    if(this->flags & VECTOR_POINTER)
     {
         void **temp = this->data;
-        MemFree(temp[index]);
+
+        if(this->flags & VECTOR_FREE)
+            MemFree(temp[index]);
 
         for(unsigned int i = index; i < VectorLength(this) - 1; i++)
         {
             temp[i] = temp[i+1];
         }
-        this->used++;
+
+        this->used--;
         return;
     }
     MemCpy( 

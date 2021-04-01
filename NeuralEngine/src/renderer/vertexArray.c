@@ -12,23 +12,6 @@ extern VertexArray* NewVertexArray()
     return this;
 }
 
-extern void DeleteVertexArray(VertexArray* this)
-{
-    glDeleteVertexArrays(1, &this->rendererID);
-    MemFree(this);
-}
-
-extern void vertexArrayBind(VertexArray* this)
-{
-    glBindVertexArray(this->rendererID);
-}
-
-extern void vertexArrayUnbind()
-{
-    glBindVertexArray(0);
-}
-
-
 extern void vertexArrayAddBuffer
 (VertexArray* this, VertexBuffer* vertexBuffer, VertexBufferLayout* layout)
 {

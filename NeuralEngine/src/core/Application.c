@@ -59,6 +59,12 @@ extern void ApplicationLoop()
         }
     }
 
+    for(unsigned int i = 0; i < VectorLength(App.layerStack); i++)
+    {
+        activeLayer = VectorGet(App.layerStack, i);
+        activeLayer->Delete();
+    }
+
     MemFree(App.name);
     DeleteVector(App.layerStack);
     DeleteWindow(App.window);

@@ -4,6 +4,7 @@
 #include <Neural.h>
 
 #include "src/renderer/shader/shader.h"
+#include "src/platform/memory.h"
 
 float positions[] = {
     -0.5, -0.5, 0.0f, 0.0f,
@@ -57,7 +58,7 @@ void NeuralInit()
 
     DeleteVertexBufferLayout(layout);
     
-    indexBuffer = NewIndexBuffer(indices, sizeof(indices) / sizeof(unsigned int));
+    indexBuffer = NewIndexBuffer(indices, ArraySize(indices, unsigned int));
     
     shaderLibrary = NewShaderLibrary(3);
 

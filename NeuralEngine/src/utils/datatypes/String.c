@@ -26,11 +26,6 @@ char *NewString(char* string)
     return NewString;   
 }
 
-void DeleteString(char* string)
-{
-    free(string);
-}
-
 unsigned int StringCountChar(char *string, char searchChar)
 {
     unsigned int strLength = strlen(string);
