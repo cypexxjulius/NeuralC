@@ -1,6 +1,4 @@
-#ifndef __CAMERA_H_
-#define __CAMERA_H_
-
+#pragma once
 
 #include "src/utils/types.h"
 
@@ -32,7 +30,18 @@ typedef struct Camera
     };
 } Camera;
 
+
+struct OrthographicCameraController
+{
+    float aspectRatio;
+    float zoomLevel;
+    Camera* camera;
+};
+
+typedef struct CameraController 
+{   
+    enum CamType camType;
+    
+} CameraController;
+
 #include "OrthoCamera.h"
-
-
-#endif // !__CAMERA_H_

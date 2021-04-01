@@ -1,6 +1,4 @@
-#ifndef __SHADER_H_
-#define __SHADER_H_
-
+#pragma once
 
 #include <cglm/cglm.h>
 #include <cglm/mat4.h>
@@ -61,5 +59,3 @@ inline void shaderUploadUniform4f(Shader* this, char* name, float x, float y, fl
 {
     glUniform4f(getUniform(this, name), x, y, z, w);
 }
-
-#endif // __SHADER_H_

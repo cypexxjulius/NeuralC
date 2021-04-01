@@ -1,23 +1,20 @@
-#ifndef __LAYER_H_
-#define __LAYER_H_
+#pragma once 
 
 #include "window.h"
 
 typedef struct Layer
 {
-    Window* (*Init)();
-    void (*OnUpdate)(float deltaTime, Window* window);
-    bool (*OnEvent)(Event* event);
+    void (*Init)();
+    void (*OnUpdate)(float deltaTime,const Window* window);
+    bool (*OnEvent)(const Event* event);
     void (*Delete)();
 } Layer;
 
 Layer* NewLayer
 (   
-    Window*(*InitFunc)(), 
-    void (*OnUpdateFunc)(float deltaTime, Window* window), 
-    bool (*OnEventFunc)(Event* event), 
+    void (*InitFunc)(), 
+    void (*OnUpdateFunc)(float deltaTime,const Window* window), 
+    bool (*OnEventFunc)(const Event* event), 
     void (*DeleteFunc)()
 );
 
-
-#endif //__LAYER_H_

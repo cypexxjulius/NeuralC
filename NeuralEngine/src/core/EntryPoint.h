@@ -1,10 +1,6 @@
-#ifndef __ENTRYPOINT_H_
-#define  __ENTRYPOINT_H_
+#pragma once
 
 #include "Application.h"
-#include "error.h"
-#include "src/events/event.h"
-#include "src/renderer/timestep.h"
 
 
 Layer* SetGameLayer();
@@ -12,31 +8,10 @@ Layer* SetGameLayer();
 
 int main()
 {   
-    Application* App = NewApplication("Test Layer");
+    CreateApplication("Test Layer");
 
-    App->gameLayer = SetGameLayer();    
+    ApplicationLayerAdd(SetGameLayer());    
 
-    Window* window = App->gameLayer->Init();
-    window->ErrorCallback = App->gameLayer->OnEvent;
-
-    InitError();
-
-    InitEventSystem(window);
-
-    while(!window->state.shouldClose)
-    {
-        float deltaTime = getDeltaTime();
-        App->gameLayer->OnUpdate(deltaTime, window);
-    }
-
-    App->gameLayer->Delete();
-    
-       
-    DeleteWindow(window);
+    ApplicationLoop();
     return 0;
 }
-
-
-
-
-#endif // __ENTRYPOINT_H_

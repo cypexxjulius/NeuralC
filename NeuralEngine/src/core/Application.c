@@ -1,24 +1,103 @@
-#include "src/platform/memory.h"
-#include "error.h"
 #include "Application.h"
 
-static Application* App = 0;
+#include "src/platform/memory.h"
+#include "error.h"
+#include "src/events/event.h"
+#include "window.h"
+#include "src/utils/types.h"
+#include "src/renderer/timestep.h"
+#include "src/events/keycode.h"
 
-Application *NewApplication(char *ApplicationName)
+static Application App = { 0 };
+
+extern void CreateApplication(char *ApplicationName)
 {
-    Application* this = CreateObject(Application);
-
     u32 NameLength = sizeof(ApplicationName) + 1;
-    this->name = MemAlloc(NameLength);
-    MemCpy(this->name, ApplicationName, NameLength);
-
-
-    return this;
+    App.name = MemAlloc(NameLength);
+    MemCpy(App.name, ApplicationName, NameLength);
+    
+    App.layerStack = NewVector(2, sizeof(Layer *), VECTOR_POINTER | VECTOR_FREE);
 }
 
-void SetApplication(Application* app)
-{   
-    Assert(App != 0, "Redefinition of the Application");
+static void ApplicationOnEvent(Event* event)
+{
+    if(event->type == WindowCloseEventType)
+    {
+        App.shouldClose = 1;
+        return;
+    }
 
-    App = app; 
-}   
+    Layer* layer;
+    for(unsigned int i = 0; i < VectorLength(App.layerStack); i++)
+    {
+        layer = VectorGet(App.layerStack, i);
+
+        if(layer->OnEvent(event))
+            break;
+    }
+}
+
+
+extern void ApplicationCreateWindow(int width, int height, char* title)
+{
+    App.window = NewWindow(width, height, title);
+    App.window->EventCallback = ApplicationOnEvent;
+    InitEventSystem(App.window);
+    InitError();
+}
+
+extern void ApplicationLoop()
+{
+    Assert(!App.window, "Window does not exist");
+    Layer* activeLayer = NULL;
+    while(!App.shouldClose)
+    {
+        for(unsigned int i = 0; i < VectorLength(App.layerStack); i++)
+        {
+            activeLayer = VectorGet(App.layerStack, i);
+            activeLayer->OnUpdate(GetDeltaTime(), App.window);
+        }
+    }
+
+    MemFree(App.name);
+    DeleteVector(App.layerStack);
+    DeleteWindow(App.window);
+}
+
+extern void ApplicationLayerAdd(Layer* layer)
+{
+    VectorAdd(App.layerStack, layer);
+    layer->Init();
+}
+
+const Window* ApplicationGetWindow()
+{
+    Assert(!App.window, "Window object does not exist");
+    return App.window;
+}
+
+void ApplicationTerminate()
+{
+    App.shouldClose = 1;
+}
+
+extern v2  GetMousePosition()
+{
+    
+    Assert(!App.window, "Window object does not exist");
+    return App.window->state.mouse.position;
+}
+
+extern int  IsButtonPressed(int key)
+{
+    
+    Assert(!App.window, "Window object does not exist");
+    return App.window->state.keyboard.keys[key].down;
+}
+
+extern void SetMouseGrabbed(unsigned int grabbed) 
+{
+    
+    Assert(!App.window, "Window object does not exist");
+    glfwSetInputMode(App.window->windowHandle, GLFW_CURSOR, grabbed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+}

@@ -3,8 +3,6 @@
 
 #include <Neural.h>
 
-#include "cglm/vec3.h"
-
 float positions[] = {
     -0.5, -0.5, 0.0f, 0.0f,
     0.5, -0.5, 1.0f, 0.0f,
@@ -32,17 +30,16 @@ ShaderLibrary* shaderLibrary;
 
 float speed = 5.0f;
 
-static Window* LocalWindow = NULL; 
-
 v2 delta = {0};
 
 v2 DisplayRatio = {0};
 
 float scaleFactor = 0.1f;
 
-Window* NeuralInit()
+void NeuralInit()
 {
-    LocalWindow = CreateWindow(1280, 720, "Test Window"); 
+    ApplicationCreateWindow(1280, 720, "Test Window"); 
+
     vertexArray = NewVertexArray();
     
     vertexBuffer = NewVertexBuffer(positions, sizeof(positions));
@@ -82,30 +79,26 @@ Window* NeuralInit()
 
     
     shaderUploadUniform1i(shader, "u_Texture", 0);
-    return LocalWindow;
+    
 }
 
-void NeuralOnUpdate(float deltaTime, Window* window)
+void NeuralOnUpdate(float deltaTime, const Window* window)
 {
     v2 pos = orthographicCameraGetPosition(cam);
     
-    if(IsButtonPressed(window, NL_KEY_ESCAPE))
-        window->state.shouldClose = 1;
     
-    
-    
-    if(IsButtonPressed(window, NL_KEY_W))
+    if(IsButtonPressed(NL_KEY_W))
         pos.y -= speed * deltaTime;
     
     
-    else if(IsButtonPressed(window, NL_KEY_S))
+    else if(IsButtonPressed(NL_KEY_S))
         pos.y += speed * deltaTime;
     
     
-    if(IsButtonPressed(window, NL_KEY_A))
+    if(IsButtonPressed(NL_KEY_A))
         pos.x += speed * deltaTime;
     
-    else if(IsButtonPressed(window, NL_KEY_D))
+    else if(IsButtonPressed(NL_KEY_D))
         pos.x -= speed * deltaTime;
     
     pos.x += delta.x * (cam->orthoCam.height / window->state.height);
@@ -115,9 +108,10 @@ void NeuralOnUpdate(float deltaTime, Window* window)
     orthographicCameraSetPosition(cam, pos);
 
     
-    mat4s scale = glms_scale_make(vec3s(scaleFactor, scaleFactor, 0.0f ));
     
-    Shader* shader =  ShaderLibraryGetShader(shaderLibrary, "TextureShader");
+    Shader* shader = ShaderLibraryGetShader(shaderLibrary, "TextureShader");
+    
+    mat4s scale = glms_scale_make(vec3s(scaleFactor, scaleFactor, 0.0f ));
 
     RendererClearScreen();
 
@@ -136,12 +130,11 @@ void NeuralOnUpdate(float deltaTime, Window* window)
         shader = ShaderLibraryGetShader(shaderLibrary, "FlatColorShader");
         RendererSubmit(vertexArray, indexBuffer,shader, NO_TRANSFORM);
     }
-    RendererEndScene(window);
-    
+    RendererEndScene();
 }
 
 
-bool NeuralOnEvent(Event* event)
+bool NeuralOnEvent(const Event* event)
 {
     static u8 isPressed = 0;
     
@@ -155,8 +148,19 @@ bool NeuralOnEvent(Event* event)
         
         case(MouseButtonPressedEventType) :
         {
-            if(event->KeyPressedEvent.keyCode == NL_MOUSE_BUTTON_LEFT)
-                isPressed = event->KeyPressedEvent.action != 0; 
+            switch(event->KeyPressedEvent.keyCode)
+            {
+                case NL_MOUSE_BUTTON_LEFT :
+                {
+                    isPressed = event->KeyPressedEvent.action != 0; 
+                } break;
+
+                case NL_KEY_ESCAPE :
+                {
+                    ApplicationTerminate();
+                } break;
+            }
+            
         }break;
 
         case(ScrolledEventType) : 

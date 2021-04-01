@@ -9,20 +9,18 @@
 #include "src/platform/memory.h"
 
 
-static Window* LocalWindow = NULL;
-
-extern Window* CreateWindow(int width, int height, char *title)
+extern Window* NewWindow(int width, int height, char *title)
 {
     // Initalizing the Window struct
-    Window *window = MemAlloc(1 * sizeof(Window));
-    memset(window, 0 , sizeof(Window));
+    Window *window = CreateObject(Window);
+
     // Storing the width and the height of the window 
     window->state.height = height;
     window->state.width = width;
 
     // Storing the title
     window->state.title = MemAlloc(strlen(title) + 1);
-    memcpy(window->state.title, title, strlen(title) + 1);
+    MemCpy(window->state.title, title, strlen(title) + 1);
 
 
     if(!glfwInit())
@@ -54,7 +52,6 @@ extern Window* CreateWindow(int width, int height, char *title)
     glfwSetWindowUserPointer(window->windowHandle, window);
     glfwSwapInterval(1);
 
-    LocalWindow = window;
     return window;
 }
 
@@ -63,10 +60,4 @@ extern void DeleteWindow(Window* window)
     glfwTerminate();
     MemFree(window->state.title);
     MemFree(window);
-}
-
-extern Window* GetWindow()
-{
-    Assert(!LocalWindow, "Window requested without previous creation");
-    return LocalWindow;
 }

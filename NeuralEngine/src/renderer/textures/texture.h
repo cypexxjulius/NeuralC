@@ -1,6 +1,4 @@
-#ifndef __TEXTURE_H_
-#define __TEXTURE_H_
-
+#pragma once
 #include "src/utils/types.h"
 
 #include <glad/glad.h>
@@ -29,5 +27,3 @@ inline void DeleteTexture(Texture * this)
     MemFree(this);
 }
 
-
-#endif // !__TEXTURES_H_

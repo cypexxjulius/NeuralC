@@ -1,5 +1,4 @@
-#ifndef __EVENTSTRUCTS_H_
-#define __EVENTSTRUCTS_H_
+#pragma once
 
 
 #include "src/utils/types.h"
@@ -53,8 +52,6 @@ enum EventTypes
 #define WindowResizeEvent( _width, _height) (WindowResizeEvent) {_width, _height}
 
 #define PosEvent( _pos, _delta) (PosEvent) { _pos, _delta}
-
-#endif // !__EVENTSTRUCTS_H_
 
 
 

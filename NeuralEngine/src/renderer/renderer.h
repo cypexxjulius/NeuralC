@@ -1,5 +1,4 @@
-#ifndef __RENDERER_H_
-#define __RENDERER_H_
+#pragma once
 
 #include "buffer.h"
 #include "vertexArray.h"
@@ -20,5 +19,3 @@ extern void RendererClearScreen();
 extern void RendererEndScene();
 
 #define NO_TRANSFORM GLMS_MAT4_IDENTITY
-
-#endif // __RENDERER_H_

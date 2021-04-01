@@ -1,6 +1,4 @@
-#ifndef __ERROR_H_
-#define __ERROR_H_
-
+#pragma once
 #include <stdlib.h>
 #include <assert.h>
 
@@ -14,4 +12,3 @@ void __ASSERT(char *message, char *file, unsigned int line);
 
 
 #define CoreWarn(...) fprintf(stderr, __VA_ARGS__)
-#endif //__ERROR_H_

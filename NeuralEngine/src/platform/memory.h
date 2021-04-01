@@ -1,25 +1,24 @@
-#ifndef __MEMORY_H_
-#define __MEMORY_H_
+#pragma once
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
-void incrementCount();
+void IncrementMemoryCount();
 
-void decrementCount();
+void DecrementMemoryCount();
 
-unsigned int getMemoryCount();
+unsigned int GetMemoryCount();
 
 /*
 Wrappers for Memory managment
 */
 
-#define MemAlloc(size) malloc((size)); incrementCount()
+#define MemAlloc(size) malloc((size)); IncrementMemoryCount()
 
-#define MemCalloc(count, size) calloc((count), (size)); incrementCount()
+#define MemCalloc(count, size) calloc((count), (size)); IncrementMemoryCount()
 
-#define MemFree(pointer) free((pointer)); decrementCount()
+#define MemFree(pointer) free((pointer)); DecrementMemoryCount()
 
 #define MemRealloc(pointer, size) realloc((pointer),(size))
 
@@ -37,5 +36,3 @@ Creating New Object
 
 #define CreateObject(objectName) MemCalloc(1, sizeof(objectName))
 
-
-#endif // __MEMORY_H_

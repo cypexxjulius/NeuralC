@@ -1,6 +1,4 @@
-#ifndef _CORE_WINDOW_H_
-#define _CORE_WINDOW_H_
-
+#pragma once
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -29,13 +27,12 @@ typedef struct Window
 {
     GLFWwindow* windowHandle;
 
-    bool (*ErrorCallback)(Event* event);
+    void (*EventCallback)(Event* event);
     struct state 
     {
         char *title;
         unsigned int width;
         unsigned int height;
-        unsigned char shouldClose;
 
         // State 
         struct n_Mouse mouse;
@@ -45,26 +42,6 @@ typedef struct Window
 } Window;
 
 
-extern Window* CreateWindow(int width, int height, char *title);
+extern Window* NewWindow(int width, int height, char *title);
 
 extern void DeleteWindow(Window* window);
-
-
-v2 inline GetMousePosition(Window* window)
-{
-    return window->state.mouse.position;
-}
-
-int inline IsButtonPressed(Window* window, int key)
-{
-    return window->state.keyboard.keys[key].down;
-}
-
-void inline SetMouseGrabbed(Window* window, u8 grabbed) 
-{
-    glfwSetInputMode(window->windowHandle, GLFW_CURSOR, grabbed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
-}
-
-Window* GetWindow();
-
-#endif // _CORE_WINDOW_H_

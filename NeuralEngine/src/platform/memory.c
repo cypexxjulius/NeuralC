@@ -2,17 +2,17 @@
 
 static unsigned int s_count = 0;
 
-void incrementCount()
+void IncrementMemoryCount()
 {
     s_count++;
 }
 
-void decrementCount()
+void DecrementMemoryCount()
 {
     s_count--;
 }
 
-unsigned int getMemoryCount()
+unsigned int GetMemoryCount()
 {
     return s_count;
 }

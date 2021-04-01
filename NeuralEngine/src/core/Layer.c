@@ -4,9 +4,9 @@
 
 Layer* NewLayer
 (   
-    Window*(*InitFunc)(), 
-    void (*OnUpdateFunc)(float deltaTime, Window* window), 
-    bool (*OnEventFunc)(Event* event), 
+    void (*InitFunc)(), 
+    void (*OnUpdateFunc)(float deltaTime, const Window* window), 
+    bool (*OnEventFunc)(const Event* event), 
     void (*DeleteFunc)()
 )
 {

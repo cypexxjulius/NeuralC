@@ -1,5 +1,4 @@
-#ifndef __ORTHO_CAMERA_H_
-#define __ORTHO_CAMERA_H_
+#pragma once
 
 #include <cglm/cglm.h>
 #include <cglm/mat4.h>
@@ -16,5 +15,3 @@ extern v2 orthographicCameraGetPosition(Camera* this);
 extern void DeleteOrthographicCamera(Camera* this);
 
 extern mat4s orthographicCameraGetViewPosMat(Camera *this);
-
-#endif // __ORTHO_CAMERA_H_

@@ -6,14 +6,19 @@
 
 #include "src/core/window.h"
 #include "src/core/error.h"
+#include "src/core/Application.h"
 
 
 
 static Camera* Cam = NULL;
+static const Window* window = NULL;
 
 extern void RendererBeginScene(Camera* cam)
 {       
     Cam = cam;
+
+    if(!window) 
+        window = ApplicationGetWindow();
 }
 
 extern void RendererClearScreen()
@@ -47,7 +52,8 @@ extern void RendererSubmit
 void RendererEndScene()
 {
     Cam = NULL;
+    
     // Swap Buffers 
-    glfwSwapBuffers(GetWindow()->windowHandle);
+    glfwSwapBuffers(window->windowHandle);
     glfwPollEvents();
 }
