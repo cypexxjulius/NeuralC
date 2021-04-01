@@ -12,18 +12,18 @@ typedef unsigned int VertexBuffer;
 extern VertexBuffer NewVertexBuffer(void *data, unsigned int size); 
 
 
-void inline vertexBufferBind(VertexBuffer this)
+extern inline void vertexBufferBind(VertexBuffer this)
 {
     glBindBuffer(GL_ARRAY_BUFFER, this);
 }
 
-void inline vertexBufferUnbind()
+extern inline void vertexBufferUnbind()
 {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 
-inline void DeleteVertexBuffer(VertexBuffer this)
+extern inline void DeleteVertexBuffer(VertexBuffer this)
 {
     glDeleteBuffers(1, &this);
 }
@@ -41,12 +41,12 @@ typedef struct
 
 extern IndexBuffer* NewIndexBuffer(unsigned int *data, unsigned int count); 
 
-inline void indexBufferBind(IndexBuffer* this)
+extern inline void indexBufferBind(IndexBuffer* this)
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
 }
 
-inline void indexBufferUnbind()
+extern inline void indexBufferUnbind()
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

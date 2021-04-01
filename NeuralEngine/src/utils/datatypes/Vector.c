@@ -46,7 +46,7 @@ void VectorRemove(Vector* this, unsigned int index)
         void **temp = this->data;
         MemFree(temp[index]);
 
-        for(unsigned int i = index; i < VectorLength(this->used) - 1; i++)
+        for(unsigned int i = index; i < VectorLength(this) - 1; i++)
         {
             temp[i] = temp[i+1];
         }

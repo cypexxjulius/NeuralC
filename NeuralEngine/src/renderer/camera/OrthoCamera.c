@@ -5,7 +5,7 @@
 
 #include <string.h>
 
-static inline void orthographicCameraRecalculate(Camera *this)
+inline static void orthographicCameraRecalculate(Camera *this)
 {
     Assert(this->camType != OrthographicCameraType, "Wrong camera type"); 
     this->orthoCam.view_proj.view = glms_mat4_inv_fast(glms_translate(glms_mat4_identity(), (vec3s) {{ -this->orthoCam.position.x, -this->orthoCam.position.y, 0 }}));

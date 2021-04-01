@@ -18,17 +18,17 @@ typedef struct Shader
 extern Shader* NewShader(char* ShaderName, char* ShaderPath);
 
 
-inline void shaderBind(Shader* this)
+extern inline void shaderBind(Shader* this)
 {   
     glUseProgram(this->ShaderID);
 }   
 
-inline void shaderUnbind()
+extern inline void shaderUnbind()
 {
     glUseProgram(0);
 }
 
-inline void DeleteShader(Shader* this)
+extern inline void DeleteShader(Shader* this)
 {
     glDeleteProgram(this->ShaderID);
 }
@@ -40,22 +40,22 @@ Uniforms
 
 extern int getUniform(Shader* this, char *name);
 
-inline void shaderUploadUniform1m4(Shader* this, char* name, mat4 matrix)
+extern inline void shaderUploadUniform1m4(Shader* this, char* name, mat4 matrix)
 {
     glUniformMatrix4fv(getUniform(this, name), 1, GL_FALSE, (const GLfloat *)matrix);
 }
 
-inline void shaderUploadUniform1f(Shader* this, char* name, float float0)
+extern inline void shaderUploadUniform1f(Shader* this, char* name, float float0)
 {
     glUniform1f(getUniform(this, name), float0);
 }
 
-inline void shaderUploadUniform1i(Shader* this, char* name, int number)
+extern inline void shaderUploadUniform1i(Shader* this, char* name, int number)
 {
     glUniform1i(getUniform(this, name), number);
 }
 
-inline void shaderUploadUniform4f(Shader* this, char* name, float x, float y, float z, float w)
+extern inline void shaderUploadUniform4f(Shader* this, char* name, float x, float y, float z, float w)
 {
     glUniform4f(getUniform(this, name), x, y, z, w);
 }

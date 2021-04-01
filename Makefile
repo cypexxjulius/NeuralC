@@ -1,6 +1,6 @@
 VPATH = src/
 CC=gcc
-FLAGS = -Wall 
+FLAGS = -Wall
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 mkfile_dir := $(dir $(mkfile_path))
 FLAGS += $(INCLUDE)

@@ -17,6 +17,7 @@ Shader* ShaderLibraryLoadShader(ShaderLibrary* this, char* ShaderName,  char* Sh
     Shader* shader = NewShader(ShaderName, ShaderPath);
     
     
+    
     Assert(!shader, "Shader Creation Failed");
         
 

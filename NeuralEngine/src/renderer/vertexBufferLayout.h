@@ -28,7 +28,7 @@ typedef struct VertexBufferLayout
 extern VertexBufferLayout* NewVertexBufferLayout(unsigned int count, ...);
 
 extern void vertexBufferLayoutPush
-(VertexBufferLayout* this, unsigned int type, unsigned int count);
+(VertexBufferLayout* this, VertexBufferElement element);
 
 extern void DeleteVertexBufferLayout(VertexBufferLayout * this);
 

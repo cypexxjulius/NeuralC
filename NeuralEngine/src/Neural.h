@@ -7,6 +7,7 @@
 
 #include "src/platform/memory.h"
 
+#include "src/renderer/shader/shader.h"
 #include "src/renderer/shader/ShaderLibrary.h"
 
 /*

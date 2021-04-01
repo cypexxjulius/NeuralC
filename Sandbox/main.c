@@ -3,6 +3,8 @@
 
 #include <Neural.h>
 
+#include "src/renderer/shader/shader.h"
+
 float positions[] = {
     -0.5, -0.5, 0.0f, 0.0f,
     0.5, -0.5, 1.0f, 0.0f,
