@@ -33,5 +33,5 @@ void ApplicationLoop();
 extern v2 InputGetMousePosition();
 extern int InputIsButtonPressed(int key);
 extern void SetMouseGrabbed(unsigned int grabbed);
-
+extern int InputIsMouseButtonPressed(int key);
 #endif // __APPLICATION_H_

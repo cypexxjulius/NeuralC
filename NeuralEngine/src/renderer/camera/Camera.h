@@ -9,9 +9,11 @@ struct ViewProjection {
 
 struct OrthographicCamera {
     struct ViewProjection view_proj;
-    v2 position;
     float width;
     float height;
+
+    v2 position;
+    float rotation;
 };
 
 
@@ -32,17 +34,32 @@ typedef struct Camera
 } Camera;
 
 
-struct OrthographicCameraController
+typedef enum CameraControllerType
+{
+    KeyboardController = 1,
+    MouseDragController = 2
+} CameraControllerType;
+
+struct OrthographicCameraControllerAssets
 {
     float aspectRatio;
     float zoomLevel;
-    Camera* camera;
+
+    CameraControllerType controllerType;
+
+    v2 mouseMovedDelta;
+
+    float cameraTranslationSpeed;
+    float cameraRotationSpeed;
 };
 
 typedef struct CameraController 
 {   
-    enum CamType camType;
-    
+    Camera *camera;
+    union 
+    {
+        struct OrthographicCameraControllerAssets OrthoCamAssets;
+    };
 } CameraController;
 
 #include "OrthoCamera.h"

@@ -101,6 +101,12 @@ extern int  InputIsButtonPressed(int key)
     return App.window->state.keyboard.keys[key].down;
 }
 
+extern int InputIsMouseButtonPressed(int key)
+{
+    Assert(!App.window, "Window object does not exist");
+    return App.window->state.mouse.buttons[key].down;
+}
+
 extern void SetMouseGrabbed(unsigned int grabbed) 
 {
     

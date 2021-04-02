@@ -2,10 +2,15 @@
 #define __ORTHOGRAPHIC_CAMERA_CONTROLLER_H_
 
 #include "Camera.h"
+#include "src/events/event.h"
 
-CameraController* NewOrthographicCameraController(float aspectRatio);
+
+CameraController* NewOrthographicCameraController(float aspectRatio, CameraControllerType controlltype);
+
+void CameraControllerOnUpdate(CameraController* this, float deltaTime);
+
+void CameraControllerOnEvent(CameraController* this, const Event* event);
 
 
-void OrthographicCameraControllerOnUpdate(float timeStep);
 
 #endif //__ORTHOGRAPHIC_CAMERA_CONTROLLER_H_

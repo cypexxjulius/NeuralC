@@ -24,7 +24,7 @@ VertexBuffer vertexBuffer;
 
 IndexBuffer* indexBuffer;
 
-Camera* cam;
+CameraController* cam;
 
 Texture* texture;
 
@@ -38,6 +38,7 @@ v2 delta = {0};
 v2 DisplayRatio = {0};
 
 float scaleFactor = 0.1f;
+
 
 void NeuralInit()
 {
@@ -70,7 +71,8 @@ void NeuralInit()
     
     Shader * shader = ShaderLibraryLoadShader(shaderLibrary, "TextureShader", "res/shader/TextureShader.glsl");
 
-    cam = NewOrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
+    const Window* window = ApplicationGetWindow();
+    cam = NewOrthographicCameraController((float)window->state.width / (float)window->state.height, MouseDragController | KeyboardController);
     
     
     
@@ -87,30 +89,7 @@ void NeuralInit()
 
 void NeuralOnUpdate(float deltaTime, const Window* window)
 {
-    v2 pos = orthographicCameraGetPosition(cam);
-    
-    
-    if(InputIsButtonPressed(NL_KEY_W))
-        pos.y -= speed * deltaTime;
-    
-    
-    else if(InputIsButtonPressed(NL_KEY_S))
-        pos.y += speed * deltaTime;
-    
-    
-    if(InputIsButtonPressed(NL_KEY_A))
-        pos.x += speed * deltaTime;
-    
-    else if(InputIsButtonPressed(NL_KEY_D))
-        pos.x -= speed * deltaTime;
-    
-    pos.x += delta.x * (cam->orthoCam.height / window->state.height);
-    pos.y -= delta.y * (cam->orthoCam.width  / window->state.width);
-
-    delta = v2(0.0f, 0.0f);
-    orthographicCameraSetPosition(cam, pos);
-
-    
+    CameraControllerOnUpdate(cam, deltaTime);    
     
     Shader* shader = ShaderLibraryGetShader(shaderLibrary, "TextureShader");
     
@@ -118,7 +97,7 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
 
     RendererClearScreen();
 
-    RendererBeginScene(cam);
+    RendererBeginScene(cam->camera);
     {
         
         for(int i = 0; i < 10; i++)
@@ -139,6 +118,8 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
 
 bool NeuralOnEvent(const Event* event)
 {
+
+    CameraControllerOnEvent(cam, event);
     static u8 isPressed = 0;
     
     switch(event->type)
@@ -171,23 +152,6 @@ bool NeuralOnEvent(const Event* event)
                 }break;
             }
         }break;
-
-        case(ScrolledEventType) : 
-        {
-            if(event->PosEvent.pos.y == 0)
-                break;
-            
-            float scrollIntensity = 2.0f;
-
-            if(event->PosEvent.pos.y > 0)
-            {
-                scaleFactor *= event->PosEvent.pos.y * scrollIntensity;
-            }
-            else 
-            {
-                scaleFactor /= -event->PosEvent.pos.y * scrollIntensity;
-            }
-        }
     }
     return 0;
 }
@@ -198,7 +162,7 @@ void NeuralDelete()
     DeleteIndexBuffer(indexBuffer);
     DeleteVertexBuffer(vertexBuffer);
     DeleteVertexArray(vertexArray);
-    DeleteOrthographicCamera(cam);
+    DeleteOrthographicCameraController(cam);
     DeleteShaderLibrary(shaderLibrary);
     DeleteTexture(texture);
 }

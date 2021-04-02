@@ -42,5 +42,9 @@ int RoundFloat(float num);
 
 #define ArraySize(array, type) (sizeof(array) / sizeof(type))
 
+inline static C_Max(float x , float y)
+{
+    return (x < y) ? y : x;
+}
 
 #endif // __TYPES_H_
