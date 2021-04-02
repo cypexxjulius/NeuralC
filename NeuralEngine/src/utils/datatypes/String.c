@@ -9,8 +9,6 @@ void StringAppend(char **dest, char *src)
 
     *dest = MemRealloc(*dest, destLen + srcLen + 1);
 
-    Assert(!*dest, "Memory Reallocation failed");
-
     MemCpy(*dest + destLen, src, srcLen + 1);
 }
 
@@ -18,8 +16,6 @@ char *NewString(char* string)
 {
     unsigned int strLength = strlen(string);
     char *NewString = MemAlloc(strLength + 1);
-
-    Assert(!NewString, "Memory Allocation Failed");
 
     MemCpy(NewString, string, strLength + 1);
 

@@ -1,8 +1,11 @@
-#pragma once
+#ifndef __MEMORY_H_
+#define __MEMORY_H_
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+
+#include "src/core/error.h"
 
 void IncrementMemoryCount();
 
@@ -14,14 +17,34 @@ unsigned int GetMemoryCount();
 Wrappers for Memory managment
 */
 
-#define MemAlloc(size) malloc((size)); IncrementMemoryCount()
+static inline void *MemAlloc(size_t size)
+{
+    void*temp = malloc((size)); 
+    IncrementMemoryCount();
+    Assert(!temp, "Memory Allocation failed");
+    return temp;
+};
 
-#define MemCalloc(count, size) calloc((count), (size)); IncrementMemoryCount()
+static inline void* MemCalloc(size_t count,size_t size)
+{ 
+    void*temp = calloc((count), (size)); 
+    IncrementMemoryCount();
+    Assert(!temp, "Memory Allocation failed");
+    return temp;
+};
 
-#define MemFree(pointer) free((pointer)); DecrementMemoryCount()
+static inline void MemFree(void *pointer) 
+{ 
+    free(pointer); 
+    DecrementMemoryCount();
+};
 
-#define MemRealloc(pointer, size) realloc((pointer),(size))
-
+static inline void *MemRealloc(void* pointer,size_t size)
+{
+    void*temp = realloc(pointer, size);
+    Assert(!temp, "Memory Reallocation failed");
+    return temp;
+}
 // Move or copy memory
 
 #define MemCpy(dest, src, count) memcpy(dest, src, count) 
@@ -36,3 +59,4 @@ Creating New Object
 
 #define CreateObject(objectName) MemCalloc(1, sizeof(objectName))
 
+#endif // __MEMORY_H_

@@ -1,4 +1,5 @@
-#pragma once 
+#ifndef __LAYER_H_
+#define __LAYER_H_
 
 #include "window.h"
 
@@ -18,3 +19,4 @@ Layer* NewLayer
     void (*DeleteFunc)()
 );
 
+#endif // __LAYER_H_

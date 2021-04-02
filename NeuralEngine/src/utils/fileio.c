@@ -23,10 +23,6 @@ extern char* ReadStringFromFile(char *filepath)
     rewind(fp);                                 // Resetting the Cursor to the Beginning
 
     char *file = MemAlloc(fileLength + 1); // Reserving space for the filecontent in a buffer
-    if(!file)
-    {
-        Assert(1, "Memory allocation failed");  // Assert if MemAlloc failed
-    }
 
     fread(file, fileLength, sizeof(char), fp);  // Reading the filecontent into the Buffer
     file[fileLength] = 0;                       // Appending End of File

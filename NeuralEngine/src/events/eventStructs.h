@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __EVENT_STRUCTS_H_
+#define __EVENT_STRUCTS_H_
 
 
 #include "src/utils/types.h"
@@ -55,3 +56,4 @@ enum EventTypes
 
 
 
+#endif // __EVENT_STRUCTS_H_

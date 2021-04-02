@@ -16,3 +16,13 @@ void mat4print(mat4s mat)
     }
     puts("\n");
 }
+
+float GetUnsignedFloat(float x)
+{
+    return (x < 0) ? -x : x;
+}
+
+int RoundFloat(float num)
+{
+    return (int)roundf(num); 
+}

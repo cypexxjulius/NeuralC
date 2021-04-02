@@ -90,18 +90,18 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
     v2 pos = orthographicCameraGetPosition(cam);
     
     
-    if(IsButtonPressed(NL_KEY_W))
+    if(InputIsButtonPressed(NL_KEY_W))
         pos.y -= speed * deltaTime;
     
     
-    else if(IsButtonPressed(NL_KEY_S))
+    else if(InputIsButtonPressed(NL_KEY_S))
         pos.y += speed * deltaTime;
     
     
-    if(IsButtonPressed(NL_KEY_A))
+    if(InputIsButtonPressed(NL_KEY_A))
         pos.x += speed * deltaTime;
     
-    else if(IsButtonPressed(NL_KEY_D))
+    else if(InputIsButtonPressed(NL_KEY_D))
         pos.x -= speed * deltaTime;
     
     pos.x += delta.x * (cam->orthoCam.height / window->state.height);
@@ -157,13 +157,19 @@ bool NeuralOnEvent(const Event* event)
                 {
                     isPressed = event->KeyPressedEvent.action != 0; 
                 } break;
+            }
+            
+        }break;
 
+        case (KeyPressedEventType) :
+        {
+            switch (event->KeyPressedEvent.keyCode)
+            {
                 case NL_KEY_ESCAPE :
                 {
                     ApplicationTerminate();
-                } break;
+                }break;
             }
-            
         }break;
 
         case(ScrolledEventType) : 

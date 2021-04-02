@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __APPLICATION_H_
+#define __APPLICATION_H_
 
 #include "Layer.h"
 #include "window.h"
@@ -29,6 +30,8 @@ const Window* ApplicationGetWindow();
 
 void ApplicationLoop();
 
-extern v2 GetMousePosition();
-extern int IsButtonPressed(int key);
+extern v2 InputGetMousePosition();
+extern int InputIsButtonPressed(int key);
 extern void SetMouseGrabbed(unsigned int grabbed);
+
+#endif // __APPLICATION_H_

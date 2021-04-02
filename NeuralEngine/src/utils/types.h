@@ -36,15 +36,10 @@ typedef struct v4 { float x,y,z,w; }v4;
 
 void mat4print(mat4s mat);
 
-extern inline float GetUnsignedFloat(float x)
-{
-    return (x < 0) ? -x : x;
-}
+float GetUnsignedFloat(float x);
 
-extern inline int RoundFloat(float num)
-{
-    return (int)roundf(num); 
-}
+int RoundFloat(float num);
+
 #define ArraySize(array, type) (sizeof(array) / sizeof(type))
 
 

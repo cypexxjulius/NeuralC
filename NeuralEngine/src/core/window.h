@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __WINDOW_H_
+#define __WINDOW_H_
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -45,3 +46,5 @@ typedef struct Window
 extern Window* NewWindow(int width, int height, char *title);
 
 extern void DeleteWindow(Window* window);
+
+#endif // __WINDOW_H_

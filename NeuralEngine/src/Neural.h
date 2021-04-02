@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __NEURAL_H_
+#define __NEURAL_H_
 
 #include "src/renderer/renderer.h"
 #include "src/renderer/camera/Camera.h"
@@ -14,3 +15,5 @@
 Entry Point
 */
 #include "src/core/EntryPoint.h"
+
+#endif // __NEURAL_H_

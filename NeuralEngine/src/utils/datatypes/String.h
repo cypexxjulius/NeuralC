@@ -16,9 +16,9 @@ char *NewString(char* string);
 /*
 Frees string, only for Heap allocated Strings
 */
-extern inline void DeleteString(char* string)
+static inline void DeleteString(char* string)
 {
-    free(string);
+    MemFree(string);
 }
 
 /*

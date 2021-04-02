@@ -1,4 +1,7 @@
-#pragma once
+#ifndef __TEXTURE_H_
+#define __TEXTURE_H_
+
+
 #include "src/utils/types.h"
 
 #include <glad/glad.h>
@@ -11,19 +14,20 @@ typedef struct Texture
 
 extern Texture* NewTexture(char *filepath);
 
-extern inline void textureUnbind()
+static inline void textureUnbind()
 {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-extern inline void textureBind(Texture *this, byte slot)
+static inline void textureBind(Texture *this, byte slot)
 {
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_2D, this->id);   
 }
-extern inline void DeleteTexture(Texture * this)
+static inline void DeleteTexture(Texture * this)
 {
     glDeleteTextures(1, &this->id);
     MemFree(this);
 }
 
+#endif // __TEXTURE_H_

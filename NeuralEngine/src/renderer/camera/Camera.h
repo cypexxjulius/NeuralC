@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __CAMERA_H_
+#define __CAMERA_H_
 
 #include "src/utils/types.h"
 
@@ -45,3 +46,4 @@ typedef struct CameraController
 } CameraController;
 
 #include "OrthoCamera.h"
+#endif // __CAMERA_H_

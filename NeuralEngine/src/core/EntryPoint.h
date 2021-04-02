@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __ENTRYPOINT_H_
+#define __ENTRYPOINT_H_
 
 #include "Application.h"
 
@@ -18,3 +19,5 @@ int main()
     printf("Memory Count %d\n", GetMemoryCount());
     return 0;
 }
+
+#endif // __ENTRYPOINT_H_

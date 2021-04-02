@@ -54,7 +54,9 @@ void DeleteVector(Vector *this);
 /*
 Returns the length of the Vector.
 */
-extern inline unsigned int VectorLength(Vector *this)
+
+
+static inline unsigned int VectorLength(Vector *this)
 {
     return this->used;
 }

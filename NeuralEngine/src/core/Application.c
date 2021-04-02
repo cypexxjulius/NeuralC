@@ -87,14 +87,14 @@ void ApplicationTerminate()
     App.shouldClose = 1;
 }
 
-extern v2  GetMousePosition()
+extern v2  InputGetMousePosition()
 {
     
     Assert(!App.window, "Window object does not exist");
     return App.window->state.mouse.position;
 }
 
-extern int  IsButtonPressed(int key)
+extern int  InputIsButtonPressed(int key)
 {
     
     Assert(!App.window, "Window object does not exist");

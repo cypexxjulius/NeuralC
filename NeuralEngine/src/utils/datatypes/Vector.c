@@ -8,7 +8,6 @@
 Vector *NewVector(unsigned int count, unsigned int type_size, VECTOR_FLAGS flags)
 {
     Vector* this = CreateObject(Vector);
-    Assert(!this, "Memory Allocation failed");
     this->capacity = count;
     this->used = 0;
 
@@ -26,7 +25,6 @@ void VectorAdd(Vector* this, void *element)
     {
         unsigned int newAllocSize = this->capacity + (int)roundf(this->capacity / 2);
         this->data = MemRealloc(this->data, this->type_size * newAllocSize);
-        Assert(!this->data, "Memory Reallocation failed");
         this->capacity = newAllocSize;
     }
 

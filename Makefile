@@ -1,6 +1,6 @@
 VPATH = src/
 CC=gcc
-FLAGS = -Wall
+FLAGS = -Wall -O3 -std=c99
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 mkfile_dir := $(dir $(mkfile_path))
 FLAGS += $(INCLUDE)
@@ -15,7 +15,7 @@ endif
 ifeq ($(OS), Linux)
 
 LIBS = -lpthread -ldl -lm
-FLAGS += -Wextra -Wno-unused-parameter -Wno-int-to-pointer-cast -g -std=c11 
+FLAGS += -Wextra -Wno-unused-parameter -Wno-int-to-pointer-cast -g
 VENDOR_LIBS = NeuralEngine/lib/glfw/src/libglfw3.a NeuralEngine/lib/glad/src/glad.o NeuralEngine/lib/cglm/libcglm.a
 NAMEPROGRAM = -o program
 INCLUDE = -isystem NeuralEngine/lib/cglm/include -isystem NeuralEngine/lib/glad/include -isystem NeuralEngine/lib/glfw/include -isystem NeuralEngine/lib/stb -I  NeuralEngine/
@@ -57,7 +57,7 @@ NeuralEngine/lib/glfw/src/libglfw3.a:
 
 Sandbox/program: NeuralEngine/bin/NeuralEngine.a Sandbox/main.c
 	$(info Compiling Sandbox program)
-	@$(CC) -o Sandbox/program Sandbox/main.c -isystem NeuralEngine/src -L NeuralEngine/bin/ -l:NeuralEngine.a $(LIBS) $(FLAGS)
+	@$(CC) $(FLAGS) -o Sandbox/program Sandbox/main.c -isystem NeuralEngine/src -L NeuralEngine/bin/ -l:NeuralEngine.a $(LIBS)
 
 
 clean:
