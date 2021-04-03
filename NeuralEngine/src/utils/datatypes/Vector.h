@@ -61,5 +61,4 @@ static inline unsigned int VectorLength(Vector *this)
     return this->used;
 }
 
-
 #endif // __VECTOR_H_

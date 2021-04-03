@@ -90,7 +90,7 @@ void NeuralInit()
 void NeuralOnUpdate(float deltaTime, const Window* window)
 {
     CameraControllerOnUpdate(cam, deltaTime);    
-    
+
     Shader* shader = ShaderLibraryGetShader(shaderLibrary, "TextureShader");
     
     mat4s scale = glms_scale_make(vec3s(scaleFactor, scaleFactor, 0.0f ));

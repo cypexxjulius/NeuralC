@@ -87,7 +87,6 @@ void CameraControllerOnEvent(CameraController* this, const Event* event)
         case WindowResizeEventType :
         {
             this->OrthoCamAssets.aspectRatio = (float)event->WindowResizeEvent.width / (float)event->WindowResizeEvent.height;
-            printf("%f\n", (float)this->OrthoCamAssets.aspectRatio);
             orthographicCameraSetProjection(this->camera,   -this->OrthoCamAssets.aspectRatio * this->OrthoCamAssets.zoomLevel, 
                                                             this->OrthoCamAssets.aspectRatio * this->OrthoCamAssets.zoomLevel, 
                                                             -this->OrthoCamAssets.zoomLevel, 
@@ -99,7 +98,6 @@ void CameraControllerOnEvent(CameraController* this, const Event* event)
             if(this->OrthoCamAssets.controllerType & MouseDragController)
             {
                 unsigned int isPressed = InputIsMouseButtonPressed(NL_MOUSE_BUTTON_LEFT);
-                printf("Button Pressed %d\n", isPressed);
                 this->OrthoCamAssets.mouseMovedDelta.x += event->PosEvent.delta.x * isPressed;
                 this->OrthoCamAssets.mouseMovedDelta.y -= event->PosEvent.delta.y * isPressed;
             }
