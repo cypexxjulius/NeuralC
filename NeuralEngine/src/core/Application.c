@@ -7,6 +7,7 @@
 #include "src/utils/types.h"
 #include "src/renderer/timestep.h"
 #include "src/events/keycode.h"
+#include "src/renderer/renderer.h"
 
 static Application App = { 0 };
 
@@ -19,6 +20,19 @@ extern void CreateApplication(char *ApplicationName)
     App.layerStack = NewVector(2, sizeof(Layer *), VECTOR_POINTER | VECTOR_FREE);
 }
 
+static void ApplicationOnWindowResizedEvent(const Event* event)
+{
+    if(event->WindowResizeEvent.width == 0 || event->WindowResizeEvent.width == 0)
+    {
+        App.minimized = true;
+        return;
+    }
+    
+    App.minimized = false;
+    RendererSetViewPort(event->WindowResizeEvent.width, event->WindowResizeEvent.height);
+}
+
+
 static void ApplicationOnEvent(Event* event)
 {
     if(event->type == WindowCloseEventType)
@@ -27,11 +41,15 @@ static void ApplicationOnEvent(Event* event)
         return;
     }
 
-    Layer* layer;
-    for(unsigned int i = 0; i < VectorLength(App.layerStack); i++)
+    if(event->type == WindowResizeEventType)
     {
-        layer = VectorGet(App.layerStack, i);
+        ApplicationOnWindowResizedEvent(event);
+    }
 
+    Layer* layer;
+    for(unsigned int i = 0; i < App.layerStack->used; i++)
+    {       
+        layer = VectorGet(App.layerStack, i);
         if(layer->OnEvent(event))
             break;
     }
@@ -44,6 +62,7 @@ extern void ApplicationCreateWindow(int width, int height, char* title)
     App.window->EventCallback = ApplicationOnEvent;
     InitEventSystem(App.window);
     InitError();
+    RendererInit();
 }
 
 extern void ApplicationLoop()
@@ -52,13 +71,18 @@ extern void ApplicationLoop()
     Layer* activeLayer = NULL;
     while(!App.shouldClose)
     {
-        for(unsigned int i = 0; i < VectorLength(App.layerStack); i++)
+        if(App.minimized == false)
         {
-            activeLayer = VectorGet(App.layerStack, i);
-            activeLayer->OnUpdate(GetDeltaTime(), App.window);
+            for(unsigned int i = 0; i < VectorLength(App.layerStack); i++)
+            {
+                activeLayer = VectorGet(App.layerStack, i);
+                activeLayer->OnUpdate(GetDeltaTime(), App.window);
+            }
+            WindowUpdate(App.window, !App.minimized);
         }
     }
 
+    // Cleanup
     for(unsigned int i = 0; i < VectorLength(App.layerStack); i++)
     {
         activeLayer = VectorGet(App.layerStack, i);
@@ -84,6 +108,7 @@ const Window* ApplicationGetWindow()
 
 void ApplicationTerminate()
 {
+    RendererShutdown();
     App.shouldClose = 1;
 }
 

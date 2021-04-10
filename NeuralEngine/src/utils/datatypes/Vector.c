@@ -70,7 +70,7 @@ void VectorRemove(Vector* this, unsigned int index)
 
 void* VectorGet(Vector* this, unsigned int index)
 {
-    Assert(this->used <= index, "Invalid vector address accessed");
+    Assert(this->used <= index, "Invalid vector index accessed");
 
     
     if(this->flags & VECTOR_POINTER)
@@ -89,7 +89,7 @@ void DeleteVector(Vector *this)
         void **temp = this->data;
         for(unsigned int i= 0; i < this->used; i++)
         {
-            free(temp[i]);
+            MemFree(temp[i]);
         }
     }
     MemFree(this->data);

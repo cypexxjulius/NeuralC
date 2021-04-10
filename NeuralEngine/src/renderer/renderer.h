@@ -10,14 +10,24 @@
 #include "src/utils/types.h"
 #include <cglm/mat4.h>
 
+extern void RendererShutdown();
+
+extern void RendererInit();
+
+
 extern void RendererBeginScene(Camera* cam);
 
 extern void RendererSubmit
-(VertexArray* va, IndexBuffer* ib, Shader* shader, mat4s transform);
+(VertexArray* va, Shader* shader, mat4s transform);
 
 extern void RendererClearScreen();
 
 extern void RendererEndScene();
+
+
+extern void RendererSetViewPort(unsigned int width, unsigned int height);
+
+void RendererDrawIndexed(VertexArray* va);
 
 #define NO_TRANSFORM GLMS_MAT4_IDENTITY
 

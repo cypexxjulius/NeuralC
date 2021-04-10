@@ -1,33 +1,45 @@
 #ifndef __VERTEX_ARRAY_H_
 #define __VERTEX_ARRAY_H_
 
-#include "vertexBufferLayout.h"
 #include "buffer.h"
 #include "src/platform/memory.h"
 
 typedef struct VertexArray
 {
-    unsigned int rendererID;
+    unsigned int rendererID, index;
+    IndexBuffer* indexBuffer;
 } VertexArray;
 
 
 extern VertexArray* NewVertexArray();
 
-extern void vertexArrayAddBuffer
-(VertexArray* this, VertexBuffer* vertexBuffer, VertexBufferLayout* layout);
+extern void VertexArrayAddVertexBuffer
+(VertexArray* this, VertexBuffer* vertexBuffer);
+
+
 
 static inline void DeleteVertexArray(VertexArray* this)
 {
     glDeleteVertexArrays(1, &this->rendererID);
+
+    DeleteIndexBuffer(this->indexBuffer);
     MemFree(this);
 }
 
-static inline void vertexArrayBind(VertexArray* this)
+static inline void VertexArrayBind(VertexArray* this)
 {
     glBindVertexArray(this->rendererID);
 }
 
-static inline void vertexArrayUnbind()
+static inline void VertexArraySetIndexBuffer(VertexArray* this, IndexBuffer* indexBuffer)
+{
+    VertexArrayBind(this);
+    IndexBufferBind(indexBuffer);
+
+    this->indexBuffer = indexBuffer;
+}
+
+static inline void VertexArrayUnbind()
 {
     glBindVertexArray(0);
 }

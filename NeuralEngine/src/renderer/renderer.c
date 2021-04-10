@@ -7,15 +7,27 @@
 #include "src/core/window.h"
 #include "src/core/error.h"
 #include "src/core/Application.h"
+#include "Renderer2D.h"
 
+#include "src/utils/types.h"
+#include <stdio.h>
 
-
-static Camera* Cam = NULL;
+static mat4s viewProjMat = { 0 };
 static const Window* window = NULL;
+
+extern void RendererInit()
+{
+    Renderer2DInit();
+}
+
+extern void RendererShutdown()
+{
+    Renderer2DShutdown();
+}
 
 extern void RendererBeginScene(Camera* cam)
 {       
-    Cam = cam;
+    viewProjMat = orthographicCameraGetViewPosMat(cam);
 
     if(!window) 
         window = ApplicationGetWindow();
@@ -24,36 +36,38 @@ extern void RendererBeginScene(Camera* cam)
 extern void RendererClearScreen()
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    glClearColor(0.1f,1.0f, 1.0f,1.0f);
+    glClearColor(0.1f,0.1f, 0.1f,1.0f);
 }
 
 
+void RendererDrawIndexed(VertexArray* va)
+{
+    // Draw Elements
+    glDrawElements(GL_TRIANGLES, va->indexBuffer->count, GL_UNSIGNED_INT, NULL);
+}
+
 extern void RendererSubmit
-(VertexArray* va, IndexBuffer* ib, Shader* shader, mat4s transform)
+(VertexArray* va, Shader* shader, mat4s transform)
 {        
-
-    Assert(!Cam, "Camera must be defined with RendererBeginScene before Calling RendererSubmit"); 
-
-    vertexArrayBind(va);
-    indexBufferBind(ib);
-    shaderBind(shader);
+    ShaderBind(shader); // Bind Shader
 
     // Upload cameraViewPosMat to shader
-    shaderUploadUniform1m4(shader, "u_viewProj", orthographicCameraGetViewPosMat(Cam).raw);
+    ShaderUploadUniformMat4(shader, "u_viewProj", viewProjMat.raw);
 
     // Upload Transformationmatrix to shader
-    shaderUploadUniform1m4(shader, "u_Transform", transform.raw);
+    ShaderUploadUniformMat4(shader, "u_Transform", transform.raw);
 
 
-    // Draw Elements
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+    VertexArrayBind(va);
+    RendererDrawIndexed(va);
 }
 
 void RendererEndScene()
 {
-    Cam = NULL;
-    
-    // Swap Buffers 
-    glfwSwapBuffers(window->windowHandle);
-    glfwPollEvents();
+}
+
+
+extern void RendererSetViewPort(unsigned int width, unsigned int height)
+{
+    glViewport(0, 0, width, height);
 }

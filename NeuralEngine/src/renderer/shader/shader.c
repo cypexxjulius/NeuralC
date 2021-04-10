@@ -57,11 +57,11 @@ static int ShaderPreProcessAssetFile(char *File, char *outFiles[2])
                 break;
             }
             
-            return -1;
+            goto errorCleanup;
         }
 
         if(typeOfShader == ShaderTypeNone)
-            return -1;
+            goto errorCleanup;
 
         StartPosition = lineLength;
 
@@ -83,7 +83,7 @@ static int ShaderPreProcessAssetFile(char *File, char *outFiles[2])
 
         unsigned int ShaderStringLength = EndPosition;
 
-        outFiles[typeOfShader - 1] = MemCalloc(ShaderStringLength + 1, sizeof(char));
+        outFiles[typeOfShader - 1] = MemAlloc(ShaderStringLength + 1);
 
         MemCpy(outFiles[typeOfShader - 1], File + StartPosition, ShaderStringLength);
         
@@ -91,18 +91,26 @@ static int ShaderPreProcessAssetFile(char *File, char *outFiles[2])
         File += StartPosition + EndPosition;
         StartPosition = StringContainsString(File, "#type") + 5;
     }
-    if(outFiles[0] == NULL || outFiles[1] == NULL)
-    {
-        if(outFiles[0] != NULL)
-        {
-            MemFree(outFiles[0]);
-        }
-        else
-        {
-            MemFree(outFiles[1]);
-        }
-    }
+
+    if(outFiles[0] == NULL || outFiles[0] == NULL)
+        goto errorCleanup;
+
+    
+    // Success return point
     return 0;
+
+
+    errorCleanup:
+
+    // Check if both fragment and vertex shader have been extracted sucessfully
+
+    if(outFiles[0] != NULL)
+        MemFree(outFiles[0]);
+    
+    else if(outFiles[0] != NULL)
+        MemFree(outFiles[1]);
+
+    return -1;
 }
 
 static int CompileShader(char *shaderSrc, ShaderType type)
@@ -148,13 +156,12 @@ extern Shader* NewShader(char *ShaderName, char* ShaderPath)
 
     int status = ShaderPreProcessAssetFile(ShaderSrc, ShaderSources);
 
+    MemFree(ShaderSrc);
+    
     if(status == -1)
     {
-        MemFree(ShaderSrc);
         return NULL;
     }
-
-    MemFree(ShaderSrc);
 
   
     Assert(strlen(ShaderName) > 49, "Shadername to long");  // Checking for the shader name to be under 50 
@@ -162,6 +169,9 @@ extern Shader* NewShader(char *ShaderName, char* ShaderPath)
     
     char *vertexShader    = ShaderSources[VertexShaderType - 1];
     char *fragmentShader  = ShaderSources[FragmentShaderType - 1];    
+
+    // printf("VertexShader\n---\n%s\n---\n", vertexShader);
+    // printf("FragmentShader\n---\n%s\n---\n", fragmentShader);
 
     this->ShaderID = glCreateProgram();
 
@@ -217,15 +227,17 @@ extern Shader* NewShader(char *ShaderName, char* ShaderPath)
 Uniforms
 */
 
-extern int getUniform(Shader* this, char *name)
+extern int ShaderGetUniform(Shader* this, char *name)
 {
 
     int location = glGetUniformLocation(this->ShaderID, name);
-    if(location != -1)
+
+    if(location == -1)
     {
         char errorMessage[300];
         snprintf((char* const)errorMessage, 300, "Uniform '%s' not found", name);
-        Assert(location == -1, errorMessage);
+        Assert(1, errorMessage);
+        return -1;
     }
     return location;
 }

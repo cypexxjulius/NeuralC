@@ -14,7 +14,7 @@ typedef struct Application
     char *name;
 
     unsigned int shouldClose;
-
+    unsigned int minimized;
 } Application;
 
 void CreateApplication(char* ApplicationName);

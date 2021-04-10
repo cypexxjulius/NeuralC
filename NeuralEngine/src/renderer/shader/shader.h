@@ -6,7 +6,7 @@
 #include <cglm/struct.h>
 
 #include <glad/glad.h>
-
+#include "src/utils/types.h"
 struct Window;
 
 typedef struct Shader
@@ -19,12 +19,12 @@ typedef struct Shader
 extern Shader* NewShader(char* ShaderName, char* ShaderPath);
 
 
-static inline void shaderBind(Shader* this)
+static inline void ShaderBind(Shader* this)
 {   
     glUseProgram(this->ShaderID);
 }   
 
-static inline void shaderUnbind()
+static inline void ShaderUnbind()
 {
     glUseProgram(0);
 }
@@ -39,26 +39,26 @@ static inline void DeleteShader(Shader* this)
 Uniforms 
 */
 
-extern int getUniform(Shader* this, char *name);
+extern int ShaderGetUniform(Shader* this, char *name);
 
-static inline void shaderUploadUniform1m4(Shader* this, char* name, mat4 matrix)
+static inline void ShaderUploadUniformMat4(Shader* this, char* name, mat4 matrix)
 {
-    glUniformMatrix4fv(getUniform(this, name), 1, GL_FALSE, (const GLfloat *)matrix);
+    glUniformMatrix4fv(ShaderGetUniform(this, name), 1, GL_FALSE, (const GLfloat *)matrix);
 }
 
-static inline void shaderUploadUniform1f(Shader* this, char* name, float float0)
+static inline void ShaderUploadUniformFloat(Shader* this, char* name, float float0)
 {
-    glUniform1f(getUniform(this, name), float0);
+    glUniform1f(ShaderGetUniform(this, name), float0);
 }
 
-static inline void shaderUploadUniform1i(Shader* this, char* name, int number)
+static inline void ShaderUploadUniformInt(Shader* this, char* name, int number)
 {
-    glUniform1i(getUniform(this, name), number);
+    glUniform1i(ShaderGetUniform(this, name), number);
 }
 
-static inline void shaderUploadUniform4f(Shader* this, char* name, float x, float y, float z, float w)
+static inline void ShaderUploadUniformFloat4(Shader* this, char* name, v4 vec4)
 {
-    glUniform4f(getUniform(this, name), x, y, z, w);
+    glUniform4f(ShaderGetUniform(this, name), vec4.x, vec4.y, vec4.z, vec4.w);
 }
 
 #endif // __SHADER_H_

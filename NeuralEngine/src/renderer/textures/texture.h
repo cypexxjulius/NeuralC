@@ -9,7 +9,7 @@
 typedef struct Texture
 {
     unsigned int id;
-    int width, height, bpp;
+    int width, height, channels;
 } Texture;
 
 extern Texture* NewTexture(char *filepath);

@@ -61,3 +61,12 @@ extern void DeleteWindow(Window* window)
     MemFree(window->state.title);
     MemFree(window);
 }
+
+extern void WindowUpdate(Window* window, unsigned int SwapBuffers)
+{
+    if(SwapBuffers)
+        glfwSwapBuffers(window->windowHandle);
+
+    // Poll Events
+    glfwPollEvents();
+}

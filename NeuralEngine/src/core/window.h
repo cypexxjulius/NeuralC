@@ -47,4 +47,7 @@ extern Window* NewWindow(int width, int height, char *title);
 
 extern void DeleteWindow(Window* window);
 
+
+extern void WindowUpdate(Window* window, unsigned int SwapBuffers);
+
 #endif // __WINDOW_H_

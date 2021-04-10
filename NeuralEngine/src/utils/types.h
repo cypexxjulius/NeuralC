@@ -34,6 +34,7 @@ typedef struct v4 { float x,y,z,w; }v4;
 #define v3(x, y, z)    (v3){x, y, z}
 #define v4(x, y, z, w) (v4){x, y, z, w}
 
+
 void mat4print(mat4s mat);
 
 float GetUnsignedFloat(float x);
@@ -42,7 +43,7 @@ int RoundFloat(float num);
 
 #define ArraySize(array, type) (sizeof(array) / sizeof(type))
 
-inline static C_Max(float x , float y)
+inline static float C_Max(float x , float y)
 {
     return (x < y) ? y : x;
 }

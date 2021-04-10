@@ -8,7 +8,6 @@ static void _WindowSizeCallback(GLFWwindow* glWindow, int width, int height)
     Window* window = glfwGetWindowUserPointer(glWindow);
     window->state.height = height;
     window->state.width = width;
-    glViewport(0, 0, width, height);
 
     Event event = Event(WindowResizeEventType, .WindowResizeEvent = WindowResizeEvent(width, height));
 

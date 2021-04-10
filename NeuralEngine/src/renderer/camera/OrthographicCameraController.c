@@ -18,13 +18,9 @@ CameraController* NewOrthographicCameraController(float aspectRatio, CameraContr
                                             this->OrthoCamAssets.zoomLevel);
     this->OrthoCamAssets.cameraRotationSpeed = 1.0f;
     this->OrthoCamAssets.cameraTranslationSpeed = 5.0f;
-
-
     this->OrthoCamAssets.controllerType = controllertype;
-
     this->OrthoCamAssets.aspectRatio = aspectRatio;
 
-    printf("Aspect Ratio %f\n", (float)this->OrthoCamAssets.aspectRatio);
     orthographicCameraSetPosition(this->camera,  v2(0.0f, 0.0f));
     return this;
 }
@@ -73,6 +69,9 @@ void CameraControllerOnEvent(CameraController* this, const Event* event)
         case ScrolledEventType :
         {
             float zoomIntensity = 2.0f;
+            if(event->PosEvent.pos.y == 0)
+                return;
+
             if(event->PosEvent.pos.y < 0)
                 this->OrthoCamAssets.zoomLevel *=  GetUnsignedFloat(event->PosEvent.pos.y) * zoomIntensity;
             else 

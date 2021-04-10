@@ -6,22 +6,33 @@
 
 extern Texture* NewTexture(char *filepath)
 {
-    Texture *this = MemAlloc(sizeof(Texture));
+    Texture *this = CreateObject(Texture);
 
     stbi_set_flip_vertically_on_load(1);
-    byte *buffer = stbi_load(filepath, &this->width, &this->height, &this->bpp, 4);
+    byte *buffer = stbi_load(filepath, &this->width, &this->height, &this->channels, 0);
+    Assert(buffer == NULL, "Failed to read texture");
 
-    glGenTextures(1, &this->id);
-    glBindTexture(GL_TEXTURE_2D, this->id);
+    GLenum internalFormat = 0, dataFormat = 0;
+	if (this->channels == 4)
+	{
+		internalFormat = GL_RGBA8;
+		dataFormat = GL_RGBA;
+	}
+	else if (this->channels == 3)
+	{
+		internalFormat = GL_RGB8;
+		dataFormat = GL_RGB;
+	}
+    Assert(!(internalFormat & dataFormat), "Format not supported!");
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glCreateTextures(GL_TEXTURE_2D, 1, &this->id);
+	glTextureStorage2D(this->id, 1, internalFormat, this->width, this->height);
 
+	glTextureParameteri(this->id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTextureParameteri(this->id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-    glBindTexture(GL_TEXTURE_2D, 0);
+	glTextureSubImage2D(this->id, 0, 0, 0, this->width, this->height, dataFormat, GL_UNSIGNED_BYTE, buffer);
+
 
     if(buffer)
     {

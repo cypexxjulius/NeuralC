@@ -9,6 +9,7 @@
 
 #include "src/renderer/shader/shader.h"
 #include "src/renderer/shader/ShaderLibrary.h"
+#include "src/renderer/Renderer2D.h"
 
 // Camera
 #include "src/renderer/camera/Camera.h"
