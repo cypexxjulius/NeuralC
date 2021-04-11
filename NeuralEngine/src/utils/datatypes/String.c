@@ -4,8 +4,8 @@
 
 void StringAppend(char **dest, char *src)
 {
-    unsigned int destLen = strlen(*dest);
-    unsigned int srcLen = strlen(src);
+    unsigned int destLen = (unsigned int)strlen(*dest);
+    unsigned int srcLen = (unsigned int)strlen(src);
 
     *dest = MemRealloc(*dest, destLen + srcLen + 1);
 
@@ -14,7 +14,7 @@ void StringAppend(char **dest, char *src)
 
 char *NewString(char* string)
 {
-    unsigned int strLength = strlen(string);
+    unsigned int strLength = (unsigned int)strlen(string);
     char *NewString = MemAlloc(strLength + 1);
 
     MemCpy(NewString, string, strLength + 1);
@@ -24,7 +24,7 @@ char *NewString(char* string)
 
 unsigned int StringCountChar(char *string, char searchChar)
 {
-    unsigned int strLength = strlen(string);
+    unsigned int strLength = (unsigned int)strlen(string);
     unsigned int charCount = 0;
     for(unsigned int i = 0; i < strLength; i++)
     {
@@ -36,8 +36,8 @@ unsigned int StringCountChar(char *string, char searchChar)
 
 int StringContainsString(char* string, char* searchString)
 {
-    unsigned int strLength = strlen(string);
-    unsigned int searchStringLength = strlen(searchString);
+    unsigned int strLength = (unsigned int)strlen(string);
+    unsigned int searchStringLength = (unsigned int)strlen(searchString);
 
     if(searchStringLength > strLength)
         return -1;
@@ -59,7 +59,7 @@ int StringContainsString(char* string, char* searchString)
 
 int StringContainsChar(char *string, char searchChar)
 {
-    unsigned int strLen = strlen(string);
+    unsigned int strLen = (unsigned int)strlen(string);
 
     for(unsigned int i = 0; i < strLen; i++)
         if(string[i] == searchChar) 
@@ -70,7 +70,7 @@ int StringContainsChar(char *string, char searchChar)
 
 void StringReplace(char *string, char searchchar, char replaceChar)
 {
-    unsigned int strLen = strlen(string);
+    unsigned int strLen = (unsigned int)strlen(string);
     for(unsigned int i = 0; i < strLen; i++)
     {
         if(string[i] == searchchar)

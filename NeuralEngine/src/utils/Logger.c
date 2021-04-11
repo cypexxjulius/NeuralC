@@ -30,13 +30,13 @@ void Log(char *logMessage, ...)
 
     va_start(args, logMessage);
 
-    unsigned int strLen = strlen(logMessage);
+    unsigned int strLen = (unsigned int)strlen(logMessage);
 
     for(unsigned int i = 0; i < strLen; i++)
     {
         if(logMessage[i] == '{')
         {
-            fstringCompare();
+            //fstringCompare();
         }
 
     }

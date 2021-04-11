@@ -4,11 +4,6 @@
 #include "src/utils/types.h"
 #include <glad/glad.h>
 
-enum
-{
-    NOT_NORMALIZED, NORMALIZED
-};
-
 enum NEURAL_TYPES
 {
     NEURAL_NO_TYPE,
@@ -20,11 +15,10 @@ enum NEURAL_TYPES
 
 typedef struct VertexBufferElement
 {
-    unsigned int count, offset, normalized;
-    enum NEURAL_TYPES type;
+    unsigned int count, offset, normalized, type;
 } VertexBufferElement;
 
-#define BufferElement(type, count, isnormalized) (VertexBufferElement) { count, 0, isnormalized, type}
+#define BufferElement(itype, icount) (VertexBufferElement) { .count=icount, .offset=0, .normalized=(itype == GL_BYTE) ? 1 : 0, .type=itype}
 
 extern int GetGLTypeSize(unsigned int type);
 

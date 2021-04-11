@@ -8,6 +8,7 @@ typedef struct VertexArray
 {
     unsigned int rendererID, index;
     IndexBuffer* indexBuffer;
+    Vector* vertexBuffer;
 } VertexArray;
 
 
@@ -22,6 +23,14 @@ static inline void DeleteVertexArray(VertexArray* this)
 {
     glDeleteVertexArrays(1, &this->rendererID);
 
+    VertexBuffer* vb;
+    for(unsigned int i = 0; i < VectorLength(this->vertexBuffer); i++)
+    {
+        vb = VectorGet(this->vertexBuffer, i);
+        DeleteVertexBuffer(vb);
+    }
+
+    DeleteVector(this->vertexBuffer);
     DeleteIndexBuffer(this->indexBuffer);
     MemFree(this);
 }

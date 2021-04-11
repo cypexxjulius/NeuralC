@@ -25,6 +25,7 @@ typedef int8_t i8;
 #define vec3s(x, y, z)       (vec3s){{x, y, z}}
 #define vec4s(x, y, z, w)    (vec4s){{x, y, z, w}}
 
+#define StringLiteralLength(string) (sizeof(string) - 1)
 
 typedef struct v2 { float x,y; }    v2; 
 typedef struct v3 { float x,y,z; }  v3; 

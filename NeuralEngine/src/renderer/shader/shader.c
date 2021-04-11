@@ -25,7 +25,7 @@ static int ShaderPreProcessAssetFile(char *File, char *outFiles[2])
     int StartPosition = StringContainsString(File, "#type") + 5;// Get first #type in file; 5 for strlen("#type")
 
     if(StartPosition == -1)                                 // Return Error Code if no #type definition is found
-        return -1;          
+        goto errorCleanup;          
 
     while(StartPosition != -1)
     {
@@ -33,66 +33,69 @@ static int ShaderPreProcessAssetFile(char *File, char *outFiles[2])
         int lineLength = StringContainsChar(File, '\n');
 
         if(lineLength == -1)
-            return -1;        
+            goto errorCleanup;        
 
         ShaderType typeOfShader = ShaderTypeNone;
         unsigned int i = 0;
+
         while(File[i] != '\0' || File[i] != '\n') // Iterate through the rest of the line
         {
-            if(File[i] == ' ')       
+            if(File[i] == ' ')       // I dont care about white spaces
             {
-                i++;                                    // I dont care about white spaces
+                i++;                                    
                 continue;
             }
 
-            if(lineLength - i >= strlen("vertex") && MemCmp(File + i, "vertex", strlen("vertex")) == 0)
+            if(lineLength - i >= StringLiteralLength("vertex") && MemCmp(File + i, "vertex", StringLiteralLength("vertex")) == 0)
             {
                 typeOfShader = VertexShaderType;
                 break;
             }
             
-            if(lineLength - i >= strlen("fragment") && MemCmp(File + i, "fragment", strlen("fragment")) == 0)
+            if(lineLength - i >= StringLiteralLength("fragment") && MemCmp(File + i, "fragment", StringLiteralLength("fragment")) == 0)
             {
                 typeOfShader = FragmentShaderType;
                 break;
             }
-            
+
             goto errorCleanup;
         }
+        
 
         if(typeOfShader == ShaderTypeNone)
-            goto errorCleanup;
-
-        StartPosition = lineLength;
-
-        int EndPosition = StringContainsString(File + StartPosition, "#type"); 
-        if(EndPosition == -1)
         {
-            EndPosition = strlen(File);
-        
-            unsigned int ShaderStringLength = EndPosition - StartPosition;
+            goto errorCleanup; // Could not find a shader type in the file
+        }
+        // We have found the ShaderType 
+
+        File += lineLength + 1; // Set the "Cursor" to the beginning of the Shader
+
+        size_t ShaderStringLength = StringContainsString(File, "#type"); 
+
+        if(ShaderStringLength == -1)
+        {
+            size_t ShaderStringLength  = strlen(File);
 
             outFiles[typeOfShader - 1] = MemAlloc(ShaderStringLength + 1);
 
-            MemCpy(outFiles[typeOfShader - 1], File + StartPosition, ShaderStringLength);
+            MemCpy(outFiles[typeOfShader - 1], File, ShaderStringLength); 
         
             outFiles[typeOfShader - 1][ShaderStringLength] = '\0';      // Null terminating string
 
             break;
         }
-
-        unsigned int ShaderStringLength = EndPosition;
-
+        ShaderStringLength--; // Setting the length one char before the '#' of "#type"
+    
         outFiles[typeOfShader - 1] = MemAlloc(ShaderStringLength + 1);
 
-        MemCpy(outFiles[typeOfShader - 1], File + StartPosition, ShaderStringLength);
-        
-        
-        File += StartPosition + EndPosition;
-        StartPosition = StringContainsString(File, "#type") + 5;
+        MemCpy(outFiles[typeOfShader - 1], File, ShaderStringLength);
+        outFiles[typeOfShader - 1][ShaderStringLength] = '\0';      // Null terminating string
+
+        File += ShaderStringLength;
+        StartPosition = 1 + sizeof("#type"); 
     }
 
-    if(outFiles[0] == NULL || outFiles[0] == NULL)
+    if(outFiles[0] == NULL || outFiles[1] == NULL)
         goto errorCleanup;
 
     
@@ -107,7 +110,7 @@ static int ShaderPreProcessAssetFile(char *File, char *outFiles[2])
     if(outFiles[0] != NULL)
         MemFree(outFiles[0]);
     
-    else if(outFiles[0] != NULL)
+    else if(outFiles[1] != NULL)
         MemFree(outFiles[1]);
 
     return -1;
@@ -143,6 +146,7 @@ static int CompileShader(char *shaderSrc, ShaderType type)
         return -1 ;
     }   
 
+
     return id;
 }
 
@@ -159,9 +163,7 @@ extern Shader* NewShader(char *ShaderName, char* ShaderPath)
     MemFree(ShaderSrc);
     
     if(status == -1)
-    {
         return NULL;
-    }
 
   
     Assert(strlen(ShaderName) > 49, "Shadername to long");  // Checking for the shader name to be under 50 
@@ -170,8 +172,8 @@ extern Shader* NewShader(char *ShaderName, char* ShaderPath)
     char *vertexShader    = ShaderSources[VertexShaderType - 1];
     char *fragmentShader  = ShaderSources[FragmentShaderType - 1];    
 
-    // printf("VertexShader\n---\n%s\n---\n", vertexShader);
-    // printf("FragmentShader\n---\n%s\n---\n", fragmentShader);
+    //printf("VertexShader\n---\n%s\n---\n", vertexShader);
+    //printf("FragmentShader\n---\n%s\n---\n", fragmentShader);
 
     this->ShaderID = glCreateProgram();
 

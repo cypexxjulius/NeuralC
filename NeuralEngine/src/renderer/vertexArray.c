@@ -11,7 +11,7 @@ extern VertexArray* NewVertexArray()
     VertexArray* this = CreateObject(VertexArray);
     this->index = 0;
     glGenVertexArrays(1, &this->rendererID); 
-
+    this->vertexBuffer = NewVector(2, sizeof(VertexBuffer), VECTOR_POINTER);
     return this;
 }
 
@@ -21,20 +21,21 @@ extern void VertexArrayAddVertexBuffer
     VertexArrayBind(this);
     VertexBufferBind(vertexBuffer);
 
-    unsigned int offset = 0;
+    this->index = 0;
     for(unsigned int i = 0; i < VectorLength(vertexBuffer->elements); i++)
     {
         VertexBufferElement* element = VectorGet(vertexBuffer->elements, i);
 
+        
         glEnableVertexAttribArray(this->index);
         glVertexAttribPointer(this->index, 
                             element->count, 
                             element->type, 
-                            element->normalized, 
+                            element->normalized ? GL_TRUE : GL_FALSE, 
                             vertexBuffer->stride, 
-                            (const void*)(intptr_t)offset);
-
-        offset += GetGLTypeSize(element->type) * element->count;
+                            (const void*)(intptr_t)element->offset);
+        
         this->index++;
     }
+    VectorAdd(this->vertexBuffer, vertexBuffer);
 }

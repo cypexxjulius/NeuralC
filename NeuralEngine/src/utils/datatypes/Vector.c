@@ -23,7 +23,7 @@ void VectorAdd(Vector* this, void *element)
 {
     if(this->capacity <= this->used)
     {
-        unsigned int newAllocSize = this->capacity + (int)roundf(this->capacity / 2);
+        unsigned int newAllocSize = this->capacity + (int)roundf((float)this->capacity / 2);
         this->data = MemRealloc(this->data, this->type_size * newAllocSize);
         this->capacity = newAllocSize;
     }

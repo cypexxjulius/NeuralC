@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "src/events/keycode.h"
 #include "src/core/Application.h"
+#include "src/utils/types.h"
 
 const Window* localWindow;
 
@@ -76,6 +77,8 @@ void CameraControllerOnEvent(CameraController* this, const Event* event)
                 this->OrthoCamAssets.zoomLevel *=  GetUnsignedFloat(event->PosEvent.pos.y) * zoomIntensity;
             else 
                 this->OrthoCamAssets.zoomLevel /= event->PosEvent.pos.y * zoomIntensity; 
+
+            this->OrthoCamAssets.zoomLevel = C_Max(this->OrthoCamAssets.zoomLevel, 0.01f);
 
             orthographicCameraSetProjection(this->camera,   -this->OrthoCamAssets.aspectRatio * this->OrthoCamAssets.zoomLevel, 
                                                             this->OrthoCamAssets.aspectRatio * this->OrthoCamAssets.zoomLevel, 

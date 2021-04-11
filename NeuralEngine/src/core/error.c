@@ -12,7 +12,7 @@ void __ASSERT(char *message, char *file, unsigned int line)
 {
 #ifdef _WIN32
     // Convert message from type char* to type wchar_t* 
-    unsigned int strLen = strlen(message) + 1;
+    size_t strLen = strlen(message) + 1;
     wchar_t *wmessage = MemAlloc(sizeof(wchar_t) * strLen);
 
     size_t convertedChars = 0;

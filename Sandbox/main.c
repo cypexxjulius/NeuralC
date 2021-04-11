@@ -13,22 +13,23 @@ void NeuralInit()
     unsigned int width = 1280, height = 720;
     ApplicationCreateWindow(width, height, "Test Window"); 
 
-    camera = NewOrthographicCameraController(width / height, KeyboardController | MouseDragController);
+    camera = NewOrthographicCameraController((float)width / (float)height, KeyboardController | MouseDragController);
 }
 
 void NeuralOnUpdate(float deltaTime, const Window* window)
 {
     CameraControllerOnUpdate(camera, deltaTime);    
 
-
+    
     RendererClearScreen();
 
     Renderer2DBeginScene(camera->camera);
 
-    Renderer2DDrawQuad( v3(0.0f, 0.0f, 0.0f), v2(0.0f, 0.0f), v4(0.8f, 0.2f, 0.8f, 1.0f));
+    Renderer2DDrawQuad(v3(0.0f, 0.0f, 0.0f), v2(0.2f, 3.0f), v4(0.8f, 0.2f, 0.8f, 1.0f));
+    Renderer2DDrawQuad(v3(0.1f, 0.1f, 0.0f), v2(1.0f, 1.0f), v4(0.8f, 1.0f, 0.8f, 1.0f));
 
     Renderer2DEndScene();
-
+    
 }
 
 

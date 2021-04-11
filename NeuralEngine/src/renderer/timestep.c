@@ -6,7 +6,7 @@ static float last_time;
 
 extern float GetDeltaTime()
 {
-    float time = glfwGetTime(); 
+    float time = (float)glfwGetTime(); 
     float deltaTime = time - last_time;
     last_time = time;
     return deltaTime;

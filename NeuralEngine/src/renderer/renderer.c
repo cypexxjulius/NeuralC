@@ -52,10 +52,10 @@ extern void RendererSubmit
     ShaderBind(shader); // Bind Shader
 
     // Upload cameraViewPosMat to shader
-    ShaderUploadUniformMat4(shader, "u_viewProj", viewProjMat.raw);
+    ShaderSetMat4(shader, "u_viewProj", viewProjMat.raw);
 
     // Upload Transformationmatrix to shader
-    ShaderUploadUniformMat4(shader, "u_Transform", transform.raw);
+    ShaderSetMat4(shader, "u_Transform", transform.raw);
 
 
     VertexArrayBind(va);

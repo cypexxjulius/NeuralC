@@ -40,8 +40,10 @@ extern void VertexBufferSetLayout(VertexBuffer* this, unsigned int count, ...)
 
     for(unsigned int i = 0; i < count; i++)
     {
+        
         VertexBufferElement *StoredElement = CreateObject(VertexBufferElement);
         *StoredElement = va_arg(args, VertexBufferElement);
+        /*
 
         int size = GetGLTypeSize(StoredElement->type) * StoredElement->count; // Size of the Layout
 
@@ -50,6 +52,7 @@ extern void VertexBufferSetLayout(VertexBuffer* this, unsigned int count, ...)
         StoredElement->offset = this->offset;
         this->offset += size;
 
+        */
         VectorAdd(this->elements, StoredElement);
     }
 
@@ -60,7 +63,7 @@ extern void VertexBufferSetLayout(VertexBuffer* this, unsigned int count, ...)
 extern void VertexBufferPushLayout
 (VertexBuffer* this, VertexBufferElement layout)
 {
-    size_t size = 0;
+    unsigned int size = 0;
     VertexBufferElement *StoredElement = CreateObject(VertexBufferElement);
     *StoredElement = layout;
 
