@@ -28,6 +28,7 @@ extern void VertexArrayAddVertexBuffer
 
         
         glEnableVertexAttribArray(this->index);
+
         glVertexAttribPointer(this->index, 
                             element->count, 
                             element->type, 

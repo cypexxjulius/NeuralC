@@ -18,6 +18,11 @@ static const Window* window = NULL;
 extern void RendererInit()
 {
     Renderer2DInit();
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glEnable(GL_DEPTH_TEST);
 }
 
 extern void RendererShutdown()
@@ -35,7 +40,7 @@ extern void RendererBeginScene(Camera* cam)
 
 extern void RendererClearScreen()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.1f,0.1f, 0.1f,1.0f);
 }
 
@@ -44,22 +49,6 @@ void RendererDrawIndexed(VertexArray* va)
 {
     // Draw Elements
     glDrawElements(GL_TRIANGLES, va->indexBuffer->count, GL_UNSIGNED_INT, NULL);
-}
-
-extern void RendererSubmit
-(VertexArray* va, Shader* shader, mat4s transform)
-{        
-    ShaderBind(shader); // Bind Shader
-
-    // Upload cameraViewPosMat to shader
-    ShaderSetMat4(shader, "u_viewProj", viewProjMat.raw);
-
-    // Upload Transformationmatrix to shader
-    ShaderSetMat4(shader, "u_Transform", transform.raw);
-
-
-    VertexArrayBind(va);
-    RendererDrawIndexed(va);
 }
 
 void RendererEndScene()

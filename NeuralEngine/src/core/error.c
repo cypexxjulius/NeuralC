@@ -11,21 +11,8 @@
 void __ASSERT(char *message, char *file, unsigned int line)
 {
 #ifdef _WIN32
-    // Convert message from type char* to type wchar_t* 
-    size_t strLen = strlen(message) + 1;
-    wchar_t *wmessage = MemAlloc(sizeof(wchar_t) * strLen);
-
-    size_t convertedChars = 0;
-    mbstowcs_s(&convertedChars, wmessage, strLen, message, _TRUNCATE);
-
-    //Convert file from type char* to type wchar_t*
-    strLen = strlen(file) + 1;
-    wchar_t *wfile = MemAlloc(sizeof(wchar_t) * strLen);
-
-    convertedChars = 0;
-    mbstowcs_s(&convertedChars, wfile, strLen, file, _TRUNCATE);
-
-    _wassert(wmessage, wfile, line);
+    printf("[ASSERTION TRIGGERED] In %s, %i\n%s\n", file, line, message);
+    exit(1);
 #else
     __assert(message, file, line);
 #endif
@@ -34,6 +21,10 @@ void __ASSERT(char *message, char *file, unsigned int line)
 
 void APIENTRY errorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
+    if(severity <= 0x826b)
+        return;
+
+
     source = source;
     length = length;
     userParam = userParam;
@@ -53,8 +44,10 @@ static void glfwErrorCallback(int error, const char *description)
 void InitError()
 {
     glEnable(GL_DEBUG_OUTPUT);
-    glDebugMessageCallback(errorCallback, 0);
+
     GLuint unusedIds = 0;
-    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0,&unusedIds,1);
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_HIGH, 0,&unusedIds, 1);
+    glDebugMessageCallback(errorCallback, 0);
+    
     glfwSetErrorCallback(glfwErrorCallback);
 }

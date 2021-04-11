@@ -90,6 +90,11 @@ extern void ApplicationLoop()
     }
 
     MemFree(App.name);
+    
+    // Shutdown Renderer
+    RendererShutdown();
+
+
     DeleteVector(App.layerStack);
     DeleteWindow(App.window);
 }
@@ -108,7 +113,6 @@ const Window* ApplicationGetWindow()
 
 void ApplicationTerminate()
 {
-    RendererShutdown();
     App.shouldClose = 1;
 }
 

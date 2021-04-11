@@ -6,7 +6,9 @@
 #include "src/renderer/shader/shader.h"
 #include "src/platform/memory.h"
 
-static CameraController* camera;
+static CameraController* camera = NULL;
+
+static Texture2D* texture = NULL;
 
 void NeuralInit()
 {
@@ -14,6 +16,8 @@ void NeuralInit()
     ApplicationCreateWindow(width, height, "Test Window"); 
 
     camera = NewOrthographicCameraController((float)width / (float)height, KeyboardController | MouseDragController);
+
+    texture = NewTexture2D("res/textures/Checkerboard.png");
 }
 
 void NeuralOnUpdate(float deltaTime, const Window* window)
@@ -25,8 +29,9 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
 
     Renderer2DBeginScene(camera->camera);
 
-    Renderer2DDrawQuad(v3(0.0f, 0.0f, 0.0f), v2(0.2f, 3.0f), v4(0.8f, 0.2f, 0.8f, 1.0f));
-    Renderer2DDrawQuad(v3(0.1f, 0.1f, 0.0f), v2(1.0f, 1.0f), v4(0.8f, 1.0f, 0.8f, 1.0f));
+    Renderer2DDrawColoredQuad(v3(0.0f, 0.0f, 0.0f), v2(0.8f, 0.8f), v4(0.3f, 1.0f, 1.0f, 1.0f));
+    Renderer2DDrawColoredQuad(v3(2.0f, 0.3f, 0.0f), v2(0.5f, 0.5f), v4(0.8f, 0.2f, 0.8f, 1.0f));
+    Renderer2DDrawTexturedQuad(v3(0.0f, 0.0f, -0.1f), v2(100.0f, 100.0f), texture);
 
     Renderer2DEndScene();
     
@@ -58,6 +63,7 @@ bool NeuralOnEvent(const Event* event)
 
 void NeuralDelete()
 {
+    DeleteTexture2D(texture);
     DeleteOrthographicCameraController(camera);
 }
 

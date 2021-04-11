@@ -35,19 +35,21 @@ void CameraControllerOnUpdate(CameraController* this, float deltaTime)
             float speed = this->OrthoCamAssets.cameraTranslationSpeed * this->OrthoCamAssets.zoomLevel;
             v2 pos = {0};
 
+            unsigned int isPressed = InputIsMouseButtonPressed(NL_MOUSE_BUTTON_LEFT);
+            
             if(InputIsButtonPressed(NL_KEY_W))
-                pos.y -= speed * deltaTime;
+                pos.y -= speed * deltaTime * !isPressed;
             
             
             else if(InputIsButtonPressed(NL_KEY_S))
-                pos.y += speed * deltaTime;
+                pos.y += speed * deltaTime * !isPressed;
             
             
             if(InputIsButtonPressed(NL_KEY_A))
-                pos.x += speed * deltaTime;
+                pos.x += speed * deltaTime * !isPressed;
             
             else if(InputIsButtonPressed(NL_KEY_D))
-                pos.x -= speed * deltaTime;
+                pos.x -= speed * deltaTime * !isPressed;
 
 
             orthgraphicCameraAddVector(this->camera,  pos);

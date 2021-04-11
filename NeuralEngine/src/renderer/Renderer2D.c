@@ -1,12 +1,12 @@
 #include "Renderer2D.h"
-#include "shader/shader.h"
+#include "shader/ShaderLibrary.h"
 #include "src/core/error.h"
 #include "vertexArray.h"
 #include "renderer.h"
-#include "textures/texture.h"
 
-static Shader* FlatColorShader = NULL;
+static ShaderLibrary* Shaders = NULL;
 static VertexArray* QuadVertexArray = NULL; 
+static Texture2D* WhiteTexture = NULL;
 
 void Renderer2DInit()
 {
@@ -14,18 +14,19 @@ void Renderer2DInit()
 
     // Quad Vertex Buffer 
         {
-        float SquareVertices[5 * 4] = 
+        float SquareVertices[] = 
         {
-            -0.5, -0.5, 0.0f, 
-            0.5, -0.5,  0.0f,
-            0.5,  0.5,  0.0f,
-            -0.5,  0.5, 0.0f
+            -0.5, -0.5, 0.0f, 0.0f, 0.0f,
+            0.5, -0.5,  0.0f, 1.0f, 0.0f,
+            0.5,  0.5,  0.0f, 1.0f, 1.0f,
+            -0.5,  0.5, 0.0f, 0.0f, 1.0f
         };
 
         VertexBuffer* vertexBuffer = NewVertexBuffer(SquareVertices, sizeof(SquareVertices));
 
-        VertexBufferSetLayout(vertexBuffer, 1,
-            BufferElement(NEURAL_FLOAT, 3)
+        VertexBufferSetLayout(vertexBuffer, 2,
+            BufferElement(NEURAL_FLOAT, 3),
+            BufferElement(NEURAL_FLOAT, 2)
         );
         
         VertexArrayAddVertexBuffer(QuadVertexArray, vertexBuffer);
@@ -45,33 +46,45 @@ void Renderer2DInit()
         VertexArraySetIndexBuffer(QuadVertexArray, ib);
     }
 
+    WhiteTexture = NewTexture2DEmpty(1, 1);
+        
+    uint32_t WhiteTextureData = 0xffffffff;
+    Texture2DSetData(WhiteTexture, &WhiteTextureData, sizeof(uint32_t));
+    Texture2DBind(WhiteTexture, 1);
 
 
-    FlatColorShader = NewShader("FlatColorShader", "res/shader/FlatColor.glsl");
+    Shaders = NewShaderLibrary(3);
+    Shader* TextureShader = ShaderLibraryLoadShader(Shaders, "TextureShader", "res/shader/TextureShader.glsl");
 
-    Assert(FlatColorShader == NULL, "Failed to Create FlatColor Shader");
+    Assert(TextureShader == NULL, "Failed to create Shader");
 }
 
 void Renderer2DShutdown()
 {
     DeleteVertexArray(QuadVertexArray);
-    DeleteShader(FlatColorShader);
+    DeleteShaderLibrary(Shaders);
+    DeleteTexture2D(WhiteTexture);
 }
 
 
 void Renderer2DBeginScene(Camera* camera)
 {
-    ShaderBind(FlatColorShader);
-    
+    Shader *TextureShader = ShaderLibraryGetShader(Shaders, "TextureShader");
 
-    ShaderSetMat4(FlatColorShader, "u_ViewProj", orthographicCameraGetViewPosMat(camera).raw);
-    ShaderSetMat4(FlatColorShader, "u_Transform", NO_TRANSFORM.raw);
+    mat4s viewProjmat = orthographicCameraGetViewPosMat(camera);
+
+    ShaderBind(TextureShader);
+    ShaderSetMat4(TextureShader, "u_ViewProj", viewProjmat.raw);
+    ShaderSetInt(TextureShader, "u_Texture", 0);
 }
 
 void Renderer2DDrawColoredQuad(v3 position, v2 scale, v4 color)
 {
-    ShaderBind(FlatColorShader);
-    ShaderSetFloat4(FlatColorShader, "u_Color", color);   // Upload Color to Shader
+    Shader* TextureShader = ShaderLibraryGetShader(Shaders, "TextureShader");
+
+    // Upload Color to Shader and neutral Image
+    ShaderSetInt(TextureShader, "u_Texture", 1);
+    ShaderSetFloat4(TextureShader, "u_Color", color);   
     
     // Calculation Transform Matrix
 
@@ -84,20 +97,26 @@ void Renderer2DDrawColoredQuad(v3 position, v2 scale, v4 color)
 
     // Multiplicate those 2 matrices together
     mat4s resultTransform = glms_mat4_mul(transform_temp, scaleTransform);
-    ShaderSetMat4(FlatColorShader, "u_Transform", resultTransform.raw);
+    ShaderSetMat4(TextureShader, "u_Transform", resultTransform.raw);
     
 
     VertexArrayBind(QuadVertexArray);
     RendererDrawIndexed(QuadVertexArray);
 }
 
-void Renderer2DDrawTexturedQuad(v3 position, v2 scale, Texture* texture)
-{
-    ShaderBind(FlatColorShader);
-    ShaderSetInt()
-    
-    // Calculation Transform Matrix
 
+void Renderer2DDrawTexturedQuad(v3 position, v2 scale, Texture2D* texture)
+{
+    Shader* TextureShader = ShaderLibraryGetShader(Shaders, "TextureShader");
+    
+
+    // Setting Texture and Color for the TextureShader
+    ShaderSetInt(TextureShader, "u_Texture", 0);
+    ShaderSetFloat4(TextureShader, "u_Color", v4(1.0f, 1.0f, 1.0f, 1.0f));   
+    
+
+
+    // Calculation Transform Matrix 
     // Scale Transform
     mat4s scaleTransform = GLMS_MAT4_IDENTITY_INIT; 
     scaleTransform = glms_scale(scaleTransform, vec3s(scale.x, scale.y, 1.0f ));
@@ -107,8 +126,9 @@ void Renderer2DDrawTexturedQuad(v3 position, v2 scale, Texture* texture)
 
     // Multiplicate those 2 matrices together
     mat4s resultTransform = glms_mat4_mul(transform_temp, scaleTransform);
-    ShaderSetMat4(FlatColorShader, "u_Transform", resultTransform.raw);
+    ShaderSetMat4(TextureShader, "u_Transform", resultTransform.raw);
     
+    Texture2DBind(texture, 0);
 
     VertexArrayBind(QuadVertexArray);
     RendererDrawIndexed(QuadVertexArray);

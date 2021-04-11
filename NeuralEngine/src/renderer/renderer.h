@@ -6,7 +6,6 @@
 #include "timestep.h"
 #include "shader/shader.h"
 #include "camera/Camera.h"
-#include "textures/texture.h"
 #include "src/utils/types.h"
 #include <cglm/mat4.h>
 

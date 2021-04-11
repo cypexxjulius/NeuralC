@@ -11,6 +11,9 @@
 #include "src/renderer/shader/ShaderLibrary.h"
 #include "src/renderer/Renderer2D.h"
 
+// Textures
+#include "src/renderer/textures/Texture2D.h"
+
 // Camera
 #include "src/renderer/camera/Camera.h"
 #include "src/renderer/camera/OrthographicCameraController.h"
