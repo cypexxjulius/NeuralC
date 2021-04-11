@@ -70,7 +70,7 @@ static int ShaderPreProcessAssetFile(char *File, char *outFiles[2])
 
         File += lineLength + 1; // Set the "Cursor" to the beginning of the Shader
 
-        size_t ShaderStringLength = StringContainsString(File, "#type"); 
+        int ShaderStringLength = StringContainsString(File, "#type"); 
 
         if(ShaderStringLength == -1)
         {

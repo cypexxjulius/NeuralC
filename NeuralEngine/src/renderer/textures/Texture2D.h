@@ -4,7 +4,7 @@
 typedef struct Texture2D
 {   
     unsigned int id, slot;
-    unsigned int width, height, channels;
+    int width, height, channels;
     unsigned int format, internalFormat;
 } Texture2D;
 

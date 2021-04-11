@@ -3,8 +3,7 @@
 
 #include <Neural.h>
 
-#include "src/renderer/shader/shader.h"
-#include "src/platform/memory.h"
+#include "src/utils/Timer.h"
 
 static CameraController* camera = NULL;
 
@@ -22,19 +21,22 @@ void NeuralInit()
 
 void NeuralOnUpdate(float deltaTime, const Window* window)
 {
-    CameraControllerOnUpdate(camera, deltaTime);    
-
     
-    RendererClearScreen();
+    Profile("GameLoop")
+    {
+        CameraControllerOnUpdate(camera, deltaTime);    
 
-    Renderer2DBeginScene(camera->camera);
+        
+        RendererClearScreen();
 
-    Renderer2DDrawColoredQuad(v3(0.0f, 0.0f, 0.0f), v2(0.8f, 0.8f), v4(0.3f, 1.0f, 1.0f, 1.0f));
-    Renderer2DDrawColoredQuad(v3(2.0f, 0.3f, 0.0f), v2(0.5f, 0.5f), v4(0.8f, 0.2f, 0.8f, 1.0f));
-    Renderer2DDrawTexturedQuad(v3(0.0f, 0.0f, -0.1f), v2(100.0f, 100.0f), texture);
+        Renderer2DBeginScene(camera->camera);
 
-    Renderer2DEndScene();
-    
+        Renderer2DDrawColoredQuad(v3(0.0f, 0.0f, 0.0f), v2(0.8f, 0.8f), v4(0.3f, 1.0f, 1.0f, 1.0f));
+        Renderer2DDrawColoredQuad(v3(2.0f, 0.3f, 0.0f), v2(0.5f, 0.5f), v4(0.8f, 0.2f, 0.8f, 1.0f));
+        Renderer2DDrawTexturedQuad(v3(0.0f, 0.0f, -0.1f), v2(100.0f, 100.0f), texture);
+
+        Renderer2DEndScene();
+    }
 }
 
 
