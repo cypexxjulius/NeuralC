@@ -75,7 +75,6 @@ void Renderer2DBeginScene(Camera* camera)
 
     ShaderBind(TextureShader);
     ShaderSetMat4(TextureShader, "u_ViewProj", viewProjmat.raw);
-    ShaderSetInt(TextureShader, "u_Texture", 0);
 }
 
 extern void Renderer2DDrawQuad(Quad2D initializer)

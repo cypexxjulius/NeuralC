@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <stdarg.h>
+#include "src/core/error.h"
 #include "src/platform/memory.h"
 
 extern int GetGLTypeSize(unsigned int type)

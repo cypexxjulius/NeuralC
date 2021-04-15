@@ -41,7 +41,8 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
 
             Renderer2DDrawQuad((Quad2D){ 
                 .position = v3(0.0f, 0.0f, 0.0f), 
-                .color = v4(0.3f, 1.0f, 1.0f, 1.0f) 
+                .color = v4(0.3f, 1.0f, 1.0f, 1.0f)
+
             }); 
             
             Renderer2DDrawQuad((Quad2D){ 
@@ -53,8 +54,8 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
             Renderer2DDrawQuad((Quad2D){ 
                 .position = v3(0.0f, 0.0f, -0.1f), 
                 .scale = v2(100.0f, 100.0f), 
+                .color = v4(1.0f, 1.0f, 1.0f, 0.2f),
                 .texture= texture,
-                .color = v4(1.0f, 1.0f, 1.0f, 1.0f),
                 .tilling = 10.0f,
                 .rotation = 45.0f
             });

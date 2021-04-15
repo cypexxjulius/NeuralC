@@ -1,6 +1,6 @@
 #include "String.h"
 #include "src/core/error.h"
-
+#include <string.h>
 
 void StringAppend(char **dest, char *src)
 {

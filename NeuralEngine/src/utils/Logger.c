@@ -1,6 +1,6 @@
 #include "Logger.h"
-
 #include <stdarg.h>
+#include <string.h>
 
 struct LogFormatParse 
 {

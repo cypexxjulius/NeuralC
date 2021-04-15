@@ -5,9 +5,11 @@
 #include "src/core/window.h"
 #include "src/platform/memory.h"
 #include "src/utils/types.h"
+#include "src/core/error.h"
 
 #include "cglm/common.h"
 
+#include <string.h>
 #include <stdio.h>
 
 typedef enum ShaderType 

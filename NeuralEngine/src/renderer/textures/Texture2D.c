@@ -1,5 +1,6 @@
 #include "Texture2D.h"
 #include "src/platform/memory.h"
+#include "src/core/error.h"
 #include <stb_image.h>
 #include <glad/glad.h>
 

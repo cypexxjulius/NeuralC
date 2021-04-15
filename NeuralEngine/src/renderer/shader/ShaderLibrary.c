@@ -2,6 +2,8 @@
 #include "src/platform/memory.h"
 #include "src/core/error.h"
 
+#include <string.h>
+
 ShaderLibrary* NewShaderLibrary(unsigned int startCapacity)
 {
     ShaderLibrary* this = CreateObject(ShaderLibrary);

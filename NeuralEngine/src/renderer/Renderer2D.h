@@ -8,7 +8,6 @@
 typedef struct Renderer2DQuadInitializer
 {
     v3 position;
-
     v2 scale;
     v4 color;
     float tilling;
