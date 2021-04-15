@@ -113,5 +113,5 @@ void CameraControllerOnEvent(CameraController* this, const Event* event)
 void DeleteOrthographicCameraController(CameraController* this)
 {
     DeleteOrthographicCamera(this->camera);
-    MemFree(this);
+    Memory.Free(this);
 }

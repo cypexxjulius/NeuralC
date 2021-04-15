@@ -18,7 +18,7 @@ Frees string, only for Heap allocated Strings
 */
 static inline void DeleteString(char* string)
 {
-    MemFree(string);
+    Memory.Free(string);
 }
 
 /*

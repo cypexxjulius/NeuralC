@@ -4,7 +4,7 @@
 #include "src/core/error.h"
 #include "src/core/window.h"
 #include "src/platform/memory.h"
-
+#include "src/utils/types.h"
 
 #include "cglm/common.h"
 
@@ -16,6 +16,17 @@ typedef enum ShaderType
     VertexShaderType = 1,
     FragmentShaderType = 2
 } ShaderType;
+
+extern void ShaderBind(Shader* this)
+{   
+    static u32 BoundShaderID = 0;
+    if(this->ShaderID == BoundShaderID)
+        return;
+    
+    glUseProgram(this->ShaderID);
+    BoundShaderID = this->ShaderID;
+}   
+
 
 static int ShaderPreProcessAssetFile(char *File, char *outFiles[2])
 {
@@ -46,13 +57,13 @@ static int ShaderPreProcessAssetFile(char *File, char *outFiles[2])
                 continue;
             }
 
-            if(lineLength - i >= StringLiteralLength("vertex") && MemCmp(File + i, "vertex", StringLiteralLength("vertex")) == 0)
+            if(lineLength - i >= StringLiteralLength("vertex") && Memory.Compare(File + i, "vertex", StringLiteralLength("vertex")) == 0)
             {
                 typeOfShader = VertexShaderType;
                 break;
             }
             
-            if(lineLength - i >= StringLiteralLength("fragment") && MemCmp(File + i, "fragment", StringLiteralLength("fragment")) == 0)
+            if(lineLength - i >= StringLiteralLength("fragment") && Memory.Compare(File + i, "fragment", StringLiteralLength("fragment")) == 0)
             {
                 typeOfShader = FragmentShaderType;
                 break;
@@ -76,9 +87,9 @@ static int ShaderPreProcessAssetFile(char *File, char *outFiles[2])
         {
             size_t ShaderStringLength  = strlen(File);
 
-            outFiles[typeOfShader - 1] = MemAlloc(ShaderStringLength + 1);
+            outFiles[typeOfShader - 1] = Memory.Alloc(ShaderStringLength + 1);
 
-            MemCpy(outFiles[typeOfShader - 1], File, ShaderStringLength); 
+            Memory.Copy(outFiles[typeOfShader - 1], File, ShaderStringLength); 
         
             outFiles[typeOfShader - 1][ShaderStringLength] = '\0';      // Null terminating string
 
@@ -86,9 +97,9 @@ static int ShaderPreProcessAssetFile(char *File, char *outFiles[2])
         }
         ShaderStringLength--; // Setting the length one char before the '#' of "#type"
     
-        outFiles[typeOfShader - 1] = MemAlloc(ShaderStringLength + 1);
+        outFiles[typeOfShader - 1] = Memory.Alloc(ShaderStringLength + 1);
 
-        MemCpy(outFiles[typeOfShader - 1], File, ShaderStringLength);
+        Memory.Copy(outFiles[typeOfShader - 1], File, ShaderStringLength);
         outFiles[typeOfShader - 1][ShaderStringLength] = '\0';      // Null terminating string
 
         File += ShaderStringLength;
@@ -108,10 +119,10 @@ static int ShaderPreProcessAssetFile(char *File, char *outFiles[2])
     // Check if both fragment and vertex shader have been extracted sucessfully
 
     if(outFiles[0] != NULL)
-        MemFree(outFiles[0]);
+        Memory.Free(outFiles[0]);
     
     else if(outFiles[1] != NULL)
-        MemFree(outFiles[1]);
+        Memory.Free(outFiles[1]);
 
     return -1;
 }
@@ -134,7 +145,7 @@ static int CompileShader(char *shaderSrc, ShaderType type)
         int length;
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 
-        char *message = MemAlloc(length * sizeof(char));
+        char *message = Memory.Alloc(length * sizeof(char));
         glGetShaderInfoLog(id, length, &length, message);
 
 
@@ -142,7 +153,7 @@ static int CompileShader(char *shaderSrc, ShaderType type)
 
 
 
-        MemFree(message);
+        Memory.Free(message);
         return -1 ;
     }   
 
@@ -160,14 +171,14 @@ extern Shader* NewShader(char *ShaderName, char* ShaderPath)
 
     int status = ShaderPreProcessAssetFile(ShaderSrc, ShaderSources);
 
-    MemFree(ShaderSrc);
+    Memory.Free(ShaderSrc);
     
     if(status == -1)
         return NULL;
 
   
     Assert(strlen(ShaderName) > 49, "Shadername to long");  // Checking for the shader name to be under 50 
-    MemCpy(this->name, ShaderName, strlen(ShaderName) + 1);     // Copying the shader Name
+    Memory.Copy(this->name, ShaderName, strlen(ShaderName) + 1);     // Copying the shader Name
     
     char *vertexShader    = ShaderSources[VertexShaderType - 1];
     char *fragmentShader  = ShaderSources[FragmentShaderType - 1];    
@@ -185,8 +196,8 @@ extern Shader* NewShader(char *ShaderName, char* ShaderPath)
         return NULL;
     }
 
-    MemFree(vertexShader);
-    MemFree(fragmentShader);
+    Memory.Free(vertexShader);
+    Memory.Free(fragmentShader);
 
     glAttachShader(this->ShaderID, vertexShaderID);
     glAttachShader(this->ShaderID, fragmentShaderID);
@@ -201,7 +212,7 @@ extern Shader* NewShader(char *ShaderName, char* ShaderPath)
         int errorMessageLength = 0;
         glGetProgramiv(this->ShaderID, GL_INFO_LOG_LENGTH, &errorMessageLength);
 
-        char* errorMessage = MemAlloc(errorMessageLength);
+        char* errorMessage = Memory.Alloc(errorMessageLength);
         Assert(!errorMessage, "Memory allocation failed");
 
         

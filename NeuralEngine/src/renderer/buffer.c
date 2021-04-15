@@ -80,7 +80,7 @@ extern void DeleteVertexBuffer(VertexBuffer* this)
     glDeleteBuffers(1, &this->id);
 
     DeleteVector(this->elements);
-    MemFree(this);
+    Memory.Free(this);
 }
 
 /*
@@ -100,6 +100,6 @@ extern IndexBuffer* NewIndexBuffer(unsigned int *data, unsigned int count)
 extern void DeleteIndexBuffer(IndexBuffer* this)
 {
     glDeleteBuffers(1, &this->id);
-    MemFree(this);
+    Memory.Free(this);
 }
 

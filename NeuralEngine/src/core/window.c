@@ -19,8 +19,8 @@ extern Window* NewWindow(int width, int height, char *title)
     window->state.width = width;
 
     // Storing the title
-    window->state.title = MemAlloc(strlen(title) + 1);
-    MemCpy(window->state.title, title, strlen(title) + 1);
+    window->state.title = Memory.Alloc(strlen(title) + 1);
+    Memory.Copy(window->state.title, title, strlen(title) + 1);
 
 
     if(!glfwInit())
@@ -58,8 +58,8 @@ extern Window* NewWindow(int width, int height, char *title)
 extern void DeleteWindow(Window* window)
 {
     glfwTerminate();
-    MemFree(window->state.title);
-    MemFree(window);
+    Memory.Free(window->state.title);
+    Memory.Free(window);
 }
 
 extern void WindowUpdate(Window* window, unsigned int SwapBuffers)

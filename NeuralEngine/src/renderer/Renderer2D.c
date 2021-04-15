@@ -78,61 +78,65 @@ void Renderer2DBeginScene(Camera* camera)
     ShaderSetInt(TextureShader, "u_Texture", 0);
 }
 
-void Renderer2DDrawColoredQuad(v3 position, v2 scale, v4 color)
+extern void Renderer2DDrawQuad(Quad2D initializer)
 {
-    Shader* TextureShader = ShaderLibraryGetShader(Shaders, "TextureShader");
+    Shader* shader = ShaderLibraryGetShader(Shaders, "TextureShader");
+    ShaderBind(shader);
+    // Color and Texture
 
-    // Upload Color to Shader and neutral Image
-    ShaderSetInt(TextureShader, "u_Texture", 1);
-    ShaderSetFloat4(TextureShader, "u_Color", color);   
-    
+    // Upload Image if defined
+    if(initializer.texture == NULL)
+        ShaderSetInt(shader, "u_Texture", 1);
+    else 
+    {
+        Texture2DBind(initializer.texture, 0);
+        ShaderSetInt(shader, "u_Texture", 0);
+    }
+
+    // Upload tilling Factor
+    ShaderSetFloat(shader, "u_TillingFactor", initializer.tilling != 0 ? initializer.tilling : 1.0f);
+
+    // Upload Color
+    if( initializer.color.x == 0 && 
+        initializer.color.y == 0 && 
+        initializer.color.z == 0 && 
+        initializer.color.w == 0) // Check for a non defined Color
+        ShaderSetFloat4(shader, "u_Color", (v4){1.0f, 1.0f, 1.0f, 1.0f});
+    else    
+        ShaderSetFloat4(shader, "u_Color", initializer.color);
+
+
     // Calculation Transform Matrix
 
     // Scale Transform
     mat4s scaleTransform = GLMS_MAT4_IDENTITY_INIT; 
-    scaleTransform = glms_scale(scaleTransform, vec3s(scale.x, scale.y, 1.0f ));
     
+    if(initializer.scale.x == 0 && initializer.scale.y == 0)
+    {
+        scaleTransform = glms_scale(scaleTransform, vec3s(1.0f, 1.0f, 1.0f ));
+    } else 
+    {
+        scaleTransform = glms_scale(scaleTransform, vec3s(initializer.scale.x, initializer.scale.y, 1.0f ));
+    }
+
     // Position Translation
-    mat4s transform_temp = glms_translate_make(vec3s(position.x, position.y, position.z));
+
+    mat4s transform_temp = glms_translate_make(vec3s(initializer.position.x, initializer.position.y, initializer.position.z));
+
+    if(initializer.rotation != 0)
+    {
+        mat4s rotation_matrix = glms_rotate_make(initializer.rotation, (vec3s){ 0.0f, 0.0f, 1.0f});
+        transform_temp = glms_mat4_mul(transform_temp, rotation_matrix);
+    }
 
     // Multiplicate those 2 matrices together
     mat4s resultTransform = glms_mat4_mul(transform_temp, scaleTransform);
-    ShaderSetMat4(TextureShader, "u_Transform", resultTransform.raw);
+    ShaderSetMat4(shader, "u_Transform", resultTransform.raw);
     
 
     VertexArrayBind(QuadVertexArray);
     RendererDrawIndexed(QuadVertexArray);
-}
-
-
-void Renderer2DDrawTexturedQuad(v3 position, v2 scale, Texture2D* texture)
-{
-    Shader* TextureShader = ShaderLibraryGetShader(Shaders, "TextureShader");
-    
-
-    // Setting Texture and Color for the TextureShader
-    ShaderSetInt(TextureShader, "u_Texture", 0);
-    ShaderSetFloat4(TextureShader, "u_Color", v4(1.0f, 1.0f, 1.0f, 1.0f));   
-    
-
-
-    // Calculation Transform Matrix 
-    // Scale Transform
-    mat4s scaleTransform = GLMS_MAT4_IDENTITY_INIT; 
-    scaleTransform = glms_scale(scaleTransform, vec3s(scale.x, scale.y, 1.0f ));
-    
-    // Position Translation
-    mat4s transform_temp = glms_translate_make(vec3s(position.x, position.y, position.z));
-
-    // Multiplicate those 2 matrices together
-    mat4s resultTransform = glms_mat4_mul(transform_temp, scaleTransform);
-    ShaderSetMat4(TextureShader, "u_Transform", resultTransform.raw);
-    
-    Texture2DBind(texture, 0);
-
-    VertexArrayBind(QuadVertexArray);
-    RendererDrawIndexed(QuadVertexArray);
-}
+} 
 
 void Renderer2DEndScene()
 {

@@ -14,7 +14,7 @@ Vector *NewVector(unsigned int count, unsigned int type_size, VECTOR_FLAGS flags
     this->type_size = (flags & VECTOR_POINTER) ? sizeof(void *) : type_size;
     this->flags = flags;
 
-    this->data = MemAlloc(type_size * count);
+    this->data = Memory.Alloc(type_size * count);
 
     return this;
 }
@@ -24,7 +24,7 @@ void VectorAdd(Vector* this, void *element)
     if(this->capacity <= this->used)
     {
         unsigned int newAllocSize = this->capacity + (int)roundf((float)this->capacity / 2);
-        this->data = MemRealloc(this->data, this->type_size * newAllocSize);
+        this->data = Memory.Realloc(this->data, this->type_size * newAllocSize);
         this->capacity = newAllocSize;
     }
 
@@ -36,7 +36,7 @@ void VectorAdd(Vector* this, void *element)
         return;
     }
 
-    MemCpy((byte*)this->data + this->type_size * this->used, element, this->type_size);
+    Memory.Copy((byte*)this->data + this->type_size * this->used, element, this->type_size);
     this->used++;
 }
 void VectorRemove(Vector* this, unsigned int index)
@@ -48,7 +48,7 @@ void VectorRemove(Vector* this, unsigned int index)
         void **temp = this->data;
 
         if(this->flags & VECTOR_FREE)
-            MemFree(temp[index]);
+            Memory.Free(temp[index]);
 
         for(unsigned int i = index; i < VectorLength(this) - 1; i++)
         {
@@ -58,7 +58,7 @@ void VectorRemove(Vector* this, unsigned int index)
         this->used--;
         return;
     }
-    MemCpy( 
+    Memory.Copy( 
             (byte*)this->data + index * this->type_size,  
             (byte*)this->data + (index +1) * this->type_size, 
             this->type_size * (this->used - index - 1)
@@ -89,10 +89,10 @@ void DeleteVector(Vector *this)
         void **temp = this->data;
         for(unsigned int i= 0; i < this->used; i++)
         {
-            MemFree(temp[i]);
+            Memory.Free(temp[i]);
         }
     }
-    MemFree(this->data);
+    Memory.Free(this->data);
 
-    MemFree(this);
+    Memory.Free(this);
 }

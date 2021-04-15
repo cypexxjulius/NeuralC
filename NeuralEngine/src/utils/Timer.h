@@ -1,10 +1,19 @@
 #ifndef __TIMER_H_
 #define __TIMER_H_
 
-void _TimerStop();
+#include "src/utils/types.h"
 
-int _TimerStart(char *string);
 
-#define Profile(string) for(; _TimerStart(string); _TimerStop())
+typedef struct TimeProfilerStruct
+{
+    char *name;
+    u64 StartTime;
+} TimeProfilerStruct;
+
+void _TimerStop(TimeProfilerStruct *timer);
+
+int _TimerStart(TimeProfilerStruct *timer);
+
+#define Profile(string) for(TimeProfilerStruct string##__LINE__##__FILE__ = {#string, 0}; _TimerStart(&string##__LINE__##__FILE__); _TimerStop(&string##__LINE__##__FILE__))
 
 #endif // __TIMER_H_

@@ -56,5 +56,5 @@ extern void orthographicCameraSetPosition(Camera* this, v2 newPos)
 extern void DeleteOrthographicCamera(Camera* this)
 {
     Assert(this->camType != OrthographicCameraType, "Wrong camera type");  
-    MemFree(this);
+    Memory.Free(this);
 }

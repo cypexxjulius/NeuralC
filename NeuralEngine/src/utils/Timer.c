@@ -1,28 +1,52 @@
 #include "Timer.h"
 #include "src/platform/memory.h"
 #include <time.h>
+#include "src/platform/platform.h"
 
-static double startTime = 0;
-static int isactive = 0;
-static char *ActiveName = NULL;
 
-void _TimerStop()
+#ifdef NEURAL_WINDOWS
+
+    #include <Windows.h>
+
+#endif 
+
+static double TicksPerMiliSecond = 0;
+
+static inline void GetCPUTime(i64* outTime)
 {
-    double now = clock();
+#ifdef NEURAL_WINDOWS
 
-    printf("%s %f ms\n", ActiveName, ((float)(now - startTime) / CLOCKS_PER_SEC) * 1000.0f);
-    isactive = 1;
+    if(TicksPerMiliSecond == 0)
+    {
+        LARGE_INTEGER PerfCountFrequency;
+        QueryPerformanceFrequency(&PerfCountFrequency);
+        TicksPerMiliSecond = 1000.0f / (float)PerfCountFrequency.QuadPart;
+    }
+
+
+    LARGE_INTEGER ticks;
+    QueryPerformanceCounter(&ticks);
+
+    *outTime = ticks.QuadPart;
+#else 
+    *outTime = (i64)clock();
+#endif
 }
 
-int _TimerStart(char *string)
+void _TimerStop(TimeProfilerStruct *timer)
 {
-    if(isactive)
-        return isactive = 0;
+    i64 EndTime;
+    GetCPUTime(&EndTime); // Stores CPU Time in EndTime;
+
+    printf("%s %.3fms\n", timer->name, (EndTime - timer->StartTime) * TicksPerMiliSecond); // Prints the elapsed time to Screen
+}
+
+int _TimerStart(TimeProfilerStruct* timer)
+{
+    if(timer->StartTime != 0)
+        return 0;
     
-    ActiveName = string;
-
-    startTime = clock();
-
+    GetCPUTime(&timer->StartTime);
     return 1;
 }
 

@@ -32,7 +32,7 @@ static inline void DeleteVertexArray(VertexArray* this)
 
     DeleteVector(this->vertexBuffer);
     DeleteIndexBuffer(this->indexBuffer);
-    MemFree(this);
+    Memory.Free(this);
 }
 
 static inline void VertexArrayBind(VertexArray* this)

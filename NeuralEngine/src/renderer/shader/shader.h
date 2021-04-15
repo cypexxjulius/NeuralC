@@ -19,15 +19,8 @@ typedef struct Shader
 extern Shader* NewShader(char* ShaderName, char* ShaderPath);
 
 
-static inline void ShaderBind(Shader* this)
-{   
-    glUseProgram(this->ShaderID);
-}   
+extern void ShaderBind(Shader* this);
 
-static inline void ShaderUnbind()
-{
-    glUseProgram(0);
-}
 
 static inline void DeleteShader(Shader* this)
 {

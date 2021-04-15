@@ -14,8 +14,8 @@ static Application App = { 0 };
 extern void CreateApplication(char *ApplicationName)
 {
     u32 NameLength = sizeof(ApplicationName) + 1;
-    App.name = MemAlloc(NameLength);
-    MemCpy(App.name, ApplicationName, NameLength);
+    App.name = Memory.Alloc(NameLength);
+    Memory.Copy(App.name, ApplicationName, NameLength);
     
     App.layerStack = NewVector(2, sizeof(Layer *), VECTOR_POINTER | VECTOR_FREE);
 }
@@ -89,7 +89,7 @@ extern void ApplicationLoop()
         activeLayer->Delete();
     }
 
-    MemFree(App.name);
+    Memory.Free(App.name);
     
     // Shutdown Renderer
     RendererShutdown();

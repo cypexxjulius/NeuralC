@@ -7,17 +7,17 @@ void StringAppend(char **dest, char *src)
     unsigned int destLen = (unsigned int)strlen(*dest);
     unsigned int srcLen = (unsigned int)strlen(src);
 
-    *dest = MemRealloc(*dest, destLen + srcLen + 1);
+    *dest = Memory.Realloc(*dest, destLen + srcLen + 1);
 
-    MemCpy(*dest + destLen, src, srcLen + 1);
+    Memory.Copy(*dest + destLen, src, srcLen + 1);
 }
 
 char *NewString(char* string)
 {
     unsigned int strLength = (unsigned int)strlen(string);
-    char *NewString = MemAlloc(strLength + 1);
+    char *NewString = Memory.Alloc(strLength + 1);
 
-    MemCpy(NewString, string, strLength + 1);
+    Memory.Copy(NewString, string, strLength + 1);
 
     return NewString;   
 }
@@ -48,7 +48,7 @@ int StringContainsString(char* string, char* searchString)
         if(string[i] != searchString[0])
             continue;
         
-        if(MemCmp(string+i+1, searchString + 1, searchStringLength - 1) == 0)
+        if(Memory.Compare(string+i+1, searchString + 1, searchStringLength - 1) == 0)
         {
             return i;  
         }

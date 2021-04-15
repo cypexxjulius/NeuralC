@@ -53,6 +53,6 @@ void DeleteShaderLibrary(ShaderLibrary* this)
         temp = VectorGet(this->ShaderCollection, i);
         DeleteShader(temp);
     }
-    MemFree(this);
+    Memory.Free(this);
 }
 

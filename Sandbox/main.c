@@ -22,20 +22,45 @@ void NeuralInit()
 void NeuralOnUpdate(float deltaTime, const Window* window)
 {
     
-    Profile("GameLoop")
+
+    Profile(NeuralOnUpdate)
     {
-        CameraControllerOnUpdate(camera, deltaTime);    
+        Profile(CameraControllerOnUpdate)
+        {
+            CameraControllerOnUpdate(camera, deltaTime);    
+        }
 
-        
-        RendererClearScreen();
+        Profile(RendererPrep)
+        {
+            RendererClearScreen();
+        }
 
-        Renderer2DBeginScene(camera->camera);
+        Profile(RendererDraw)
+        {
+            Renderer2DBeginScene(camera->camera);
 
-        Renderer2DDrawColoredQuad(v3(0.0f, 0.0f, 0.0f), v2(0.8f, 0.8f), v4(0.3f, 1.0f, 1.0f, 1.0f));
-        Renderer2DDrawColoredQuad(v3(2.0f, 0.3f, 0.0f), v2(0.5f, 0.5f), v4(0.8f, 0.2f, 0.8f, 1.0f));
-        Renderer2DDrawTexturedQuad(v3(0.0f, 0.0f, -0.1f), v2(100.0f, 100.0f), texture);
+            Renderer2DDrawQuad((Quad2D){ 
+                .position = v3(0.0f, 0.0f, 0.0f), 
+                .color = v4(0.3f, 1.0f, 1.0f, 1.0f) 
+            }); 
+            
+            Renderer2DDrawQuad((Quad2D){ 
+                .position = v3(2.0f, 0.3f, 0.0f), 
+                .scale = v2(0.5f, 0.5f), 
+                .color = v4(0.8f, 0.2f, 0.0f, 1.0f)
+            });
 
-        Renderer2DEndScene();
+            Renderer2DDrawQuad((Quad2D){ 
+                .position = v3(0.0f, 0.0f, -0.1f), 
+                .scale = v2(100.0f, 100.0f), 
+                .texture= texture,
+                .color = v4(1.0f, 1.0f, 1.0f, 1.0f),
+                .tilling = 10.0f,
+                .rotation = 45.0f
+            });
+
+            Renderer2DEndScene();
+        }
     }
 }
 

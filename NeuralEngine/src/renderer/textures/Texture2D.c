@@ -86,7 +86,7 @@ void Texture2DSetData(Texture2D *this, void *data, unsigned int size)
 void DeleteTexture2D(Texture2D *this)
 {
     glDeleteTextures(1, &this->id);
-    MemFree(this);
+    Memory.Free(this);
 }
 
 void Texture2DBind(Texture2D* this, unsigned int slot)
