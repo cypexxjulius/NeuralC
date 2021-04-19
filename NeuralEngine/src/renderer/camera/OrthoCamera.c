@@ -33,7 +33,7 @@ extern void orthographicCameraSetProjection(Camera* this, float left, float righ
 }
 
 
-extern mat4s orthographicCameraGetViewPosMat(Camera *this)
+extern mat4s orthographicCameraGetViewProjMat(Camera *this)
 {
     Assert(this->camType != OrthographicCameraType, "Wrong camera type");
     return glms_mat4_mul(this->orthoCam.view_proj.proj, this->orthoCam.view_proj.view);

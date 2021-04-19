@@ -2,16 +2,14 @@
 #define __ENTRYPOINT_H_
 
 #include "Application.h"
+#include "src/platform/memory.h"
 
-
-Layer* SetGameLayer();
+void CreateApplication();
 
 
 int main()
 {   
-    CreateApplication("Test Layer");
-
-    ApplicationLayerAdd(SetGameLayer());    
+    CreateApplication();    
 
     ApplicationLoop();
     

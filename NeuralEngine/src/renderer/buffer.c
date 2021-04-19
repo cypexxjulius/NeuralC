@@ -1,11 +1,12 @@
-#include "buffer.h"
+#include "Buffer.h"
 
 #include <stdlib.h>
 #include <stdarg.h>
+#include <glad/glad.h>
 #include "src/core/error.h"
 #include "src/platform/memory.h"
 
-extern int GetGLTypeSize(unsigned int type)
+int GetGLTypeSize(unsigned int type)
 {
     switch(type)
     {
@@ -18,7 +19,7 @@ extern int GetGLTypeSize(unsigned int type)
     return 0;
 }
 
-extern VertexBuffer* NewVertexBuffer(void *data, unsigned int size)
+VertexBuffer* NewVertexBuffer(void *data, unsigned int size)
 {
     VertexBuffer* this = CreateObject(VertexBuffer);
 
@@ -29,7 +30,18 @@ extern VertexBuffer* NewVertexBuffer(void *data, unsigned int size)
     return this;
 }
 
-extern void VertexBufferSetLayout(VertexBuffer* this, unsigned int count, ...)
+VertexBuffer* NewVertexBufferEmpty(unsigned int size)
+{
+    VertexBuffer* this = CreateObject(VertexBuffer);
+
+    glGenBuffers(1, &this->id);
+    glBindBuffer(GL_ARRAY_BUFFER, this->id);
+    glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
+
+    return this;
+}
+
+void VertexBufferSetLayout(VertexBuffer* this, unsigned int count, ...)
 {
 
     va_list args;
@@ -60,7 +72,7 @@ extern void VertexBufferSetLayout(VertexBuffer* this, unsigned int count, ...)
 }
 
 
-extern void VertexBufferPushLayout
+void VertexBufferPushLayout
 (VertexBuffer* this, VertexBufferElement layout)
 {
     unsigned int size = 0;
@@ -76,7 +88,7 @@ extern void VertexBufferPushLayout
     
 }
 
-extern void DeleteVertexBuffer(VertexBuffer* this)
+inline void DeleteVertexBuffer(VertexBuffer* this)
 {
     glDeleteBuffers(1, &this->id);
 
@@ -84,11 +96,29 @@ extern void DeleteVertexBuffer(VertexBuffer* this)
     Memory.Free(this);
 }
 
+
+inline void VertexBufferBind(VertexBuffer* this)
+{
+    glBindBuffer(GL_ARRAY_BUFFER, this->id);
+}
+
+inline void VertexBufferUnbind()
+{
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+inline void VertexBufferSetData(VertexBuffer* this, const void* data, u32 size)
+{
+    glBindBuffer(GL_ARRAY_BUFFER, this->id);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+}
+
+
 /*
 IndexBuffer
 */
 
-extern IndexBuffer* NewIndexBuffer(unsigned int *data, unsigned int count)
+IndexBuffer* NewIndexBuffer(unsigned int *data, unsigned int count)
 {
     IndexBuffer* this = CreateObject(IndexBuffer);
     glGenBuffers(1, &this->id);
@@ -98,7 +128,18 @@ extern IndexBuffer* NewIndexBuffer(unsigned int *data, unsigned int count)
     return this;
 }
 
-extern void DeleteIndexBuffer(IndexBuffer* this)
+
+extern inline void IndexBufferBind(IndexBuffer* this)
+{
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
+}
+
+void inline IndexBufferUnbind()
+{
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void inline DeleteIndexBuffer(IndexBuffer* this)
 {
     glDeleteBuffers(1, &this->id);
     Memory.Free(this);

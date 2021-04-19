@@ -11,7 +11,7 @@ extern Camera* NewOrthographicCamera(float left, float right, float top, float b
 
 extern void DeleteOrthographicCamera(Camera* this);
 
-extern mat4s orthographicCameraGetViewPosMat(Camera *this);
+extern mat4s orthographicCameraGetViewProjMat(Camera *this);
 
 extern void orthographicCameraSetProjection(Camera* this, float left, float right, float top, float bottom);
 

@@ -11,6 +11,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <glad/glad.h>
 
 typedef enum ShaderType 
 {
@@ -148,9 +149,8 @@ static int CompileShader(char *shaderSrc, ShaderType type)
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 
         char *message = Memory.Alloc(length * sizeof(char));
+
         glGetShaderInfoLog(id, length, &length, message);
-
-
         fprintf(stderr, "[SHADER COMPILATION ERROR] %s\n%s\n",(type == VertexShaderType) ? "Vertex" : "Fragment", message);
 
 
@@ -176,17 +176,20 @@ extern Shader* NewShader(char *ShaderName, char* ShaderPath)
     Memory.Free(ShaderSrc);
     
     if(status == -1)
+    {
         return NULL;
+    }
 
-  
+
     Assert(strlen(ShaderName) > 49, "Shadername to long");  // Checking for the shader name to be under 50 
     Memory.Copy(this->name, ShaderName, strlen(ShaderName) + 1);     // Copying the shader Name
     
     char *vertexShader    = ShaderSources[VertexShaderType - 1];
     char *fragmentShader  = ShaderSources[FragmentShaderType - 1];    
 
-    //printf("VertexShader\n---\n%s\n---\n", vertexShader);
-    //printf("FragmentShader\n---\n%s\n---\n", fragmentShader);
+    // For Debug Purposes
+    // printf("VertexShader\n---\n%s\n---\n", vertexShader);
+    // printf("FragmentShader\n---\n%s\n---\n", fragmentShader);
 
     this->ShaderID = glCreateProgram();
 
@@ -215,15 +218,15 @@ extern Shader* NewShader(char *ShaderName, char* ShaderPath)
         glGetProgramiv(this->ShaderID, GL_INFO_LOG_LENGTH, &errorMessageLength);
 
         char* errorMessage = Memory.Alloc(errorMessageLength);
-        Assert(!errorMessage, "Memory allocation failed");
-
         
+
+        glGetProgramInfoLog(this->ShaderID, errorMessageLength, &errorMessageLength, errorMessage);
         glDeleteProgram(this->ShaderID);
 
         glDeleteShader(vertexShaderID);
         glDeleteShader(fragmentShaderID);
 
-        CoreWarn(errorMessage);
+        printf(errorMessage);
 
         return NULL;
     }
@@ -238,11 +241,17 @@ extern Shader* NewShader(char *ShaderName, char* ShaderPath)
 }
 
 
+inline void DeleteShader(Shader* this)
+{
+    glDeleteProgram(this->ShaderID);
+}
+
+
 /*
 Uniforms
 */
 
-extern int ShaderGetUniform(Shader* this, char *name)
+static inline int ShaderGetUniform(Shader* this, char *name)
 {
 
     int location = glGetUniformLocation(this->ShaderID, name);
@@ -255,4 +264,31 @@ extern int ShaderGetUniform(Shader* this, char *name)
         return -1;
     }
     return location;
+}
+
+
+inline void ShaderSetFloat4(Shader* this, char* name, v4 vec4)
+{
+    glUniform4f(ShaderGetUniform(this, name), vec4.x, vec4.y, vec4.z, vec4.w);
+}
+
+inline void ShaderSetIntArray(Shader* this, char* name, int* values, u32 count)
+{
+    glUniform1iv(ShaderGetUniform(this, name), count, values);
+
+}
+
+inline void ShaderSetMat4(Shader* this, char* name, mat4 matrix)
+{
+    glUniformMatrix4fv(ShaderGetUniform(this, name), 1, GL_FALSE, (const GLfloat *)matrix);
+}
+
+inline void ShaderSetFloat(Shader* this, char* name, float float0)
+{
+    glUniform1f(ShaderGetUniform(this, name), float0);
+}
+
+inline void ShaderSetInt(Shader* this, char* name, int number)
+{
+    glUniform1i(ShaderGetUniform(this, name), number);
 }

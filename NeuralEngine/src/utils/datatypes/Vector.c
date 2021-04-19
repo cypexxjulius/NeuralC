@@ -23,7 +23,7 @@ void VectorAdd(Vector* this, void *element)
 {
     if(this->capacity <= this->used)
     {
-        unsigned int newAllocSize = this->capacity + (int)roundf((float)this->capacity / 2);
+        unsigned int newAllocSize = this->capacity * 2;
         this->data = Memory.Realloc(this->data, this->type_size * newAllocSize);
         this->capacity = newAllocSize;
     }
@@ -93,6 +93,10 @@ void DeleteVector(Vector *this)
         }
     }
     Memory.Free(this->data);
-
     Memory.Free(this);
+}
+
+inline unsigned int VectorLength(Vector *this)
+{
+    return this->used;
 }

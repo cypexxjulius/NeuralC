@@ -1,8 +1,7 @@
 #ifndef __VERTEX_ARRAY_H_
 #define __VERTEX_ARRAY_H_
 
-#include "buffer.h"
-#include "src/platform/memory.h"
+#include "Buffer.h"
 
 typedef struct VertexArray
 {
@@ -19,39 +18,14 @@ extern void VertexArrayAddVertexBuffer
 
 
 
-static inline void DeleteVertexArray(VertexArray* this)
-{
-    glDeleteVertexArrays(1, &this->rendererID);
+extern inline void DeleteVertexArray(VertexArray* this);
 
-    VertexBuffer* vb;
-    for(unsigned int i = 0; i < VectorLength(this->vertexBuffer); i++)
-    {
-        vb = VectorGet(this->vertexBuffer, i);
-        DeleteVertexBuffer(vb);
-    }
+extern inline void VertexArrayBind(VertexArray* this);
 
-    DeleteVector(this->vertexBuffer);
-    DeleteIndexBuffer(this->indexBuffer);
-    Memory.Free(this);
-}
+extern inline void VertexArraySetIndexBuffer(VertexArray* this, IndexBuffer* indexBuffer);
 
-static inline void VertexArrayBind(VertexArray* this)
-{
-    glBindVertexArray(this->rendererID);
-}
+extern inline VertexBuffer* VertexArrayGetVertexBuffer(VertexArray* this, u32 index);
 
-static inline void VertexArraySetIndexBuffer(VertexArray* this, IndexBuffer* indexBuffer)
-{
-    VertexArrayBind(this);
-    IndexBufferBind(indexBuffer);
-
-    this->indexBuffer = indexBuffer;
-}
-
-static inline void VertexArrayUnbind()
-{
-    glBindVertexArray(0);
-}
-
+extern inline void VertexArrayUnbind();
 
 #endif // __VERTEX_ARRAY_H_

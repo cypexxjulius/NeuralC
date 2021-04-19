@@ -3,141 +3,226 @@
 #include "src/core/error.h"
 #include "vertexArray.h"
 #include "renderer.h"
+#include "src/utils/types.h"
 
-static ShaderLibrary* Shaders = NULL;
+static Shader* TextureShader = NULL;
 static VertexArray* QuadVertexArray = NULL; 
-static Texture2D* WhiteTexture = NULL;
+static Texture2D* IdentityTexture = NULL;
+
+#define MaxQuads 10000
+#define MaxVertices MaxQuads * 4
+#define MaxIndices MaxQuads * 6
+
+struct QuadVertex
+{
+    v3 Position;
+    v4 Color;
+    v2 TexCoord;
+    float TextureSlot;
+    float Tiling;
+};
+
+static u32 QuadIndexCount = 0;
+
+static struct QuadVertex* QuadVertexBufferBase = NULL;
+static struct QuadVertex* QuadVertexBufferPtr = NULL;
+
+// TextureSlot Array
+
+#define MaxTextureSlots 32
+static Texture2D* TextureSlots[MaxTextureSlots];
+u32 TextureSlotIndex = 1;
+
+
 
 void Renderer2DInit()
 {
     QuadVertexArray = NewVertexArray();
 
     // Quad Vertex Buffer 
-        {
-        float SquareVertices[] = 
-        {
-            -0.5, -0.5, 0.0f, 0.0f, 0.0f,
-            0.5, -0.5,  0.0f, 1.0f, 0.0f,
-            0.5,  0.5,  0.0f, 1.0f, 1.0f,
-            -0.5,  0.5, 0.0f, 0.0f, 1.0f
-        };
+    
+    VertexBuffer* vertexBuffer = NewVertexBufferEmpty(MaxVertices * sizeof(struct QuadVertex));
 
-        VertexBuffer* vertexBuffer = NewVertexBuffer(SquareVertices, sizeof(SquareVertices));
-
-        VertexBufferSetLayout(vertexBuffer, 2,
-            BufferElement(NEURAL_FLOAT, 3),
-            BufferElement(NEURAL_FLOAT, 2)
-        );
+    VertexBufferSetLayout(vertexBuffer, 5,
+        BufferElement("a_Position", NEURAL_FLOAT, 3),
+        BufferElement("a_Color", NEURAL_FLOAT, 4),
+        BufferElement("a_TexCoord", NEURAL_FLOAT, 2),
+        BufferElement("a_TextureSlot", NEURAL_FLOAT, 1),
+        BufferElement("a_TilingFactor", NEURAL_FLOAT, 1)
+    );
         
-        VertexArrayAddVertexBuffer(QuadVertexArray, vertexBuffer);
-    }
+        
+    VertexArrayAddVertexBuffer(QuadVertexArray, vertexBuffer);
 
 
     // Index Buffer
+    QuadVertexBufferBase = Memory.Calloc(MaxVertices, sizeof(struct QuadVertex));
+
+    u32 QuadIndices[MaxIndices];
+
+    u32 offset = 0;
+    for(u32 i = 0; i < MaxIndices; i += 6)
     {
-        u32 SquareIndices[6] = {
-            0, 1, 2, 
-            2, 3, 0
-        };
+            QuadIndices[i + 0] = offset + 0;
+            QuadIndices[i + 1] = offset + 1;
+            QuadIndices[i + 2] = offset + 2;
 
-        IndexBuffer* ib = NewIndexBuffer(SquareIndices, sizeof(SquareIndices) / sizeof(u32));
+            QuadIndices[i + 3] = offset + 2;
+            QuadIndices[i + 4] = offset + 3;
+            QuadIndices[i + 5] = offset + 0;
 
-
-        VertexArraySetIndexBuffer(QuadVertexArray, ib);
+            offset += 4;
     }
 
-    WhiteTexture = NewTexture2DEmpty(1, 1);
-        
+    IndexBuffer* quadIndexBuffer = NewIndexBuffer(QuadIndices, MaxIndices);
+    VertexArraySetIndexBuffer(QuadVertexArray, quadIndexBuffer);
+
+    IdentityTexture = NewTexture2DEmpty(1, 1);
+    
+
+    // Set Identity (white) Image for pure Color Quads
     uint32_t WhiteTextureData = 0xffffffff;
-    Texture2DSetData(WhiteTexture, &WhiteTextureData, sizeof(uint32_t));
-    Texture2DBind(WhiteTexture, 1);
+    Texture2DSetData(IdentityTexture, &WhiteTextureData, sizeof(uint32_t));
+    TextureSlots[0] = IdentityTexture;
+    Texture2DBind(TextureSlots[0], 0);
+
+    u32 samplers[MaxTextureSlots];
+    for(u32 i = 0; i < MaxTextureSlots; i++)
+        samplers[i] = i;
 
 
-    Shaders = NewShaderLibrary(3);
-    Shader* TextureShader = ShaderLibraryLoadShader(Shaders, "TextureShader", "res/shader/TextureShader.glsl");
-
+    TextureShader = NewShader("TextureShader", "res/shader/TextureShader.glsl");
     Assert(TextureShader == NULL, "Failed to create Shader");
+    
+    ShaderBind(TextureShader);
+    ShaderSetIntArray(TextureShader, "u_Textures", samplers, MaxTextureSlots);
+
 }
 
 void Renderer2DShutdown()
 {
     DeleteVertexArray(QuadVertexArray);
-    DeleteShaderLibrary(Shaders);
-    DeleteTexture2D(WhiteTexture);
+    DeleteShader(TextureShader);
+    DeleteTexture2D(IdentityTexture);
 }
 
 
 void Renderer2DBeginScene(Camera* camera)
 {
-    Shader *TextureShader = ShaderLibraryGetShader(Shaders, "TextureShader");
+    
+    ShaderSetMat4(TextureShader, "u_ViewProj", camera ? orthographicCameraGetViewProjMat(camera).raw : GLMS_MAT4_IDENTITY.raw );
 
-    mat4s viewProjmat = orthographicCameraGetViewPosMat(camera);
+    QuadIndexCount = 0;
+    QuadVertexBufferPtr = QuadVertexBufferBase;
 
-    ShaderBind(TextureShader);
-    ShaderSetMat4(TextureShader, "u_ViewProj", viewProjmat.raw);
+    TextureSlotIndex = 1;
+}
+
+static inline void Renderer2DUploadBatch()
+{
+    // Bindung all Textures
+    for(u32 i = 0; i < TextureSlotIndex; i++)
+        Texture2DBind(TextureSlots[i], i);
+
+    VertexBufferSetData(
+        VertexArrayGetVertexBuffer(QuadVertexArray, 0), // VertexBuffer 
+        QuadVertexBufferBase,   // VertexBuffer buffer start
+        (u32)((u8 *)QuadVertexBufferPtr - (u8 *)QuadVertexBufferBase) // Length of the buffer
+    );
+
+    RendererDrawIndexed(QuadVertexArray, QuadIndexCount);
+
+}
+
+void Renderer2DEndScene()
+{
+    if(QuadIndexCount != 0)
+        Renderer2DUploadBatch();
 }
 
 extern void Renderer2DDrawQuad(Quad2D initializer)
 {
-    Shader* shader = ShaderLibraryGetShader(Shaders, "TextureShader");
-    ShaderBind(shader);
-    // Color and Texture
 
-    // Upload Image if defined
-    if(initializer.texture == NULL)
-        ShaderSetInt(shader, "u_Texture", 1);
-    else 
+    if(QuadIndexCount + 6 >= MaxIndices || initializer.texture != NULL && TextureSlotIndex == 31)
     {
-        Texture2DBind(initializer.texture, 0);
-        ShaderSetInt(shader, "u_Texture", 0);
+        Renderer2DUploadBatch();
+
+        // Resetting Buffer Indexes
+        QuadIndexCount = 0;
+        QuadVertexBufferPtr = QuadVertexBufferBase;
+
+        TextureSlotIndex = 1;
     }
-
-    // Upload tilling Factor
-    ShaderSetFloat(shader, "u_TillingFactor", initializer.tilling != 0 ? initializer.tilling : 1.0f);
-
-    // Upload Color
-    if( initializer.color.x == 0 && 
-        initializer.color.y == 0 && 
-        initializer.color.z == 0 && 
-        initializer.color.w == 0) // Check for a non defined Color
-        ShaderSetFloat4(shader, "u_Color", (v4){1.0f, 1.0f, 1.0f, 1.0f});
-    else    
-        ShaderSetFloat4(shader, "u_Color", initializer.color);
-
-
-    // Calculation Transform Matrix
-
-    // Scale Transform
-    mat4s scaleTransform = GLMS_MAT4_IDENTITY_INIT; 
     
-    if(initializer.scale.x == 0 && initializer.scale.y == 0)
-    {
-        scaleTransform = glms_scale(scaleTransform, vec3s(1.0f, 1.0f, 1.0f ));
-    } else 
-    {
-        scaleTransform = glms_scale(scaleTransform, vec3s(initializer.scale.x, initializer.scale.y, 1.0f ));
-    }
+    // Set position
+    v2 position = initializer.position;
 
-    // Position Translation
-
-    mat4s transform_temp = glms_translate_make(vec3s(initializer.position.x, initializer.position.y, initializer.position.z));
-
-    if(initializer.rotation != 0)
-    {
-        mat4s rotation_matrix = glms_rotate_make(initializer.rotation, (vec3s){ 0.0f, 0.0f, 1.0f});
-        transform_temp = glms_mat4_mul(transform_temp, rotation_matrix);
-    }
-
-    // Multiplicate those 2 matrices together
-    mat4s resultTransform = glms_mat4_mul(transform_temp, scaleTransform);
-    ShaderSetMat4(shader, "u_Transform", resultTransform.raw);
+    // Check color
+    v4 color = (initializer.color.x != 0 || initializer.color.y != 0 || initializer.color.z != 0 || initializer.color.w != 0) // Check for a non defined Color
+         ? color = initializer.color :  v4(1.0f, 1.0f, 1.0f, 1.0f);
     
+    // Set Image if defined
+    float TextureID = 0;
+    if(initializer.texture != NULL)
+    {
+        for(u32 i = 0; i < TextureSlotIndex; i++)
+        {
+            if(TextureSlots[i]->id == initializer.texture->id)
+            {
+                TextureID = (float)i;
+                goto out;
+            }
+        }
 
-    VertexArrayBind(QuadVertexArray);
-    RendererDrawIndexed(QuadVertexArray);
+        TextureID = (float)TextureSlotIndex;
+        TextureSlots[TextureSlotIndex++] = initializer.texture;
+    }
+    out:
+
+    v2 scale = {
+        .x = initializer.scale.x ? initializer.scale.x : 1.0f,
+        .y = initializer.scale.y ? initializer.scale.y : 1.0f
+    };
+
+    float tiling = initializer.tiling ? initializer.tiling : 1.0f;
+    float zIndex = -initializer.zIndex / 100;
+
+    // Dont put this in a for loop it will slow down the rendering process
+
+    // Bottom left
+    QuadVertexBufferPtr->Position = v3(position.x, position.y, zIndex);
+    QuadVertexBufferPtr->Color = color;
+    QuadVertexBufferPtr->TexCoord = v2(0.0f, 0.0f);
+    QuadVertexBufferPtr->TextureSlot = TextureID;
+    QuadVertexBufferPtr->Tiling = tiling;
+    QuadVertexBufferPtr++;
+
+    // Bottom Right
+    QuadVertexBufferPtr->Position = v3(position.x + scale.x, position.y, zIndex);
+    QuadVertexBufferPtr->Color = color;
+    QuadVertexBufferPtr->TexCoord = v2(1.0f, 0.0f);
+    QuadVertexBufferPtr->TextureSlot = TextureID;
+    QuadVertexBufferPtr->Tiling = tiling;
+    QuadVertexBufferPtr++;
+    
+    // Top Left
+    QuadVertexBufferPtr->Position = v3(position.x + scale.x, position.y + scale.y, zIndex);
+    QuadVertexBufferPtr->Color = color;
+    QuadVertexBufferPtr->TexCoord = v2(1.0f, 1.0f);
+    QuadVertexBufferPtr->TextureSlot = TextureID;
+    QuadVertexBufferPtr->Tiling = tiling;
+    QuadVertexBufferPtr++;
+    
+    // Top Right
+    QuadVertexBufferPtr->Position = v3(position.x, position.y + scale.y, zIndex);
+    QuadVertexBufferPtr->Color = color;
+    QuadVertexBufferPtr->TexCoord = v2(0.0f, 1.0f);
+    QuadVertexBufferPtr->TextureSlot = TextureID;
+    QuadVertexBufferPtr->Tiling = tiling;
+    QuadVertexBufferPtr++;
+
+
+    QuadIndexCount += 6;
 } 
 
-void Renderer2DEndScene()
-{
 
-}

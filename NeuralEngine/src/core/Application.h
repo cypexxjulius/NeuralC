@@ -17,14 +17,13 @@ typedef struct Application
     unsigned int minimized;
 } Application;
 
-void CreateApplication(char* ApplicationName);
-
+extern void NewApplication(char *ApplicationName);
 
 void ApplicationCreateWindow(int width, int height, char* title);
 
 void ApplicationTerminate();
 
-void ApplicationLayerAdd(Layer* layer);
+extern void ApplicationPushLayer(Layer* layer);
 
 const Window* ApplicationGetWindow();
 

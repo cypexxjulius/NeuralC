@@ -11,7 +11,7 @@
 
 static Application App = { 0 };
 
-extern void CreateApplication(char *ApplicationName)
+extern void NewApplication(char *ApplicationName)
 {
     u32 NameLength = sizeof(ApplicationName) + 1;
     App.name = Memory.Alloc(NameLength);
@@ -99,7 +99,7 @@ extern void ApplicationLoop()
     DeleteWindow(App.window);
 }
 
-extern void ApplicationLayerAdd(Layer* layer)
+extern void ApplicationPushLayer(Layer* layer)
 {
     VectorAdd(App.layerStack, layer);
     layer->Init();

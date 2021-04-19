@@ -21,6 +21,7 @@ typedef int32_t i32;
 typedef int16_t i16;
 typedef int8_t i8;
 
+typedef float_t f32;
 
 #define vec3s(x, y, z)       (vec3s){{x, y, z}}
 #define vec4s(x, y, z, w)    (vec4s){{x, y, z, w}}

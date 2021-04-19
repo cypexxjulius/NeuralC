@@ -20,7 +20,7 @@ Shader* ShaderLibraryLoadShader(ShaderLibrary* this, char* ShaderName,  char* Sh
     
     
     
-    Assert(!shader, "Shader Creation Failed");
+    Assert(shader == 0, "Shader Creation Failed");
         
 
     VectorAdd(this->ShaderCollection, shader);

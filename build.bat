@@ -60,7 +60,7 @@ for /R %%f IN ("*.c") DO (
 
     set NeuralCompiledFiles=!!NeuralCompiledFiles! !outfile!!
 
-    call cl /Fo!outfile! !CompilerFlags! !file! !NeuralIncludePath! 2> nul
+    call cl /Zi /Debug /Fo!outfile! !CompilerFlags! !file! !NeuralIncludePath! 2> nul
 )
 popd
 
@@ -72,9 +72,10 @@ set PlatformLibs=kernel32.lib user32.lib gdi32.lib shell32.lib
 
 echo -- Linking
 
-call cl /FeSandbox/program.exe /MDd -I NeuralEngine/src/ %NeuralIncludePath% Sandbox/main.c /link /nologo /NODEFAULTLIB:LIBCMT NeuralEngine/bin/NeuralEngine.lib %PlatformLibs% 2> nul && (
+call cl /Zi /FeSandbox/program.exe /Zi /MDd -I NeuralEngine/src/ %NeuralIncludePath% Sandbox/main.c /link /DEBUG:FASTLINK /nologo /NODEFAULTLIB:LIBCMT NeuralEngine/bin/NeuralEngine.lib %PlatformLibs% 2> nul && (
 
     echo --- Compiled Succesfully
+    move *.pdb Sanbox\
     pushd "Sandbox/"
         call program.exe
     popd 
@@ -83,4 +84,6 @@ call cl /FeSandbox/program.exe /MDd -I NeuralEngine/src/ %NeuralIncludePath% San
     echo --- Compilation failed
     goto end
 )
+
+
 :end

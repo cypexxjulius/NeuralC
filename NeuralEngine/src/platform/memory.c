@@ -6,6 +6,19 @@
 #include <stdio.h>
 
 #include "src/core/error.h"
+#include "src/utils/types.h"
+
+static i32 s_count = 0;
+
+static inline void IncrementMemoryCount()
+{
+    s_count++;
+}
+
+static inline void DecrementMemoryCount()
+{
+    s_count--;
+}
 
 /*
 Wrappers for Memory managment
@@ -51,17 +64,6 @@ struct memoryPointers Memory = {
     .Set = memset
 };
 
-static unsigned int s_count = 0;
-
-void IncrementMemoryCount()
-{
-    s_count++;
-}
-
-void DecrementMemoryCount()
-{
-    s_count--;
-}
 
 unsigned int GetMemoryCount()
 {

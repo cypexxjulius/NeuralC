@@ -8,5 +8,8 @@ program.exe
 
 **/*.obj
 **/*.lib
+**/*.ilk
+**/*.pdb
+
 
 *.4coder

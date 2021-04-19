@@ -1,10 +1,7 @@
 #ifndef __MEMORY_H_
 #define __MEMORY_H_
 
-void IncrementMemoryCount();
-
-void DecrementMemoryCount();
-
+#include <stdlib.h>
 unsigned int GetMemoryCount();
 
 
@@ -19,7 +16,7 @@ struct memoryPointers
     void*(*Set)(void*Buffer, int Value, size_t BufferSize);
 };
 
-struct memoryPointers Memory;
+extern struct memoryPointers Memory;
 
 /*
 Creating New Object

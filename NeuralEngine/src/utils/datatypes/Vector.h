@@ -56,9 +56,7 @@ Returns the length of the Vector.
 */
 
 
-static inline unsigned int VectorLength(Vector *this)
-{
-    return this->used;
-}
+extern inline unsigned int VectorLength(Vector *this);
+
 
 #endif // __VECTOR_H_

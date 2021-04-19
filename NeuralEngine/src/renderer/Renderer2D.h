@@ -7,11 +7,11 @@
 
 typedef struct Renderer2DQuadInitializer
 {
-    v3 position;
+    v2 position;
     v2 scale;
     v4 color;
-    float tilling;
-    float rotation;
+    float zIndex;
+    float tiling;
     Texture2D* texture;
 
 } Quad2D;

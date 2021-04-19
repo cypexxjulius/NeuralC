@@ -2,15 +2,15 @@
 #define __BUFFER_H_
 
 #include "src/utils/types.h"
-#include <glad/glad.h>
 
 enum NEURAL_TYPES
 {
     NEURAL_NO_TYPE,
-    NEURAL_FLOAT = GL_FLOAT,
-    NEURAL_INT = GL_INT,
-    NEURAL_CHAR = GL_BYTE,
-    NEURAL_BOOL = GL_BOOL,
+    NEURAL_FLOAT = 0x1406, // GL_FLOAT
+    NEURAL_INT = 0x1404,   // GL_INT
+    NEURAL_BYTE = 0x1400,  // GL_BYTE
+    NEURAL_CHAR = NEURAL_BYTE,  
+    NEURAL_BOOL = 0x8b56,  // GL_BOOL
 };
 
 typedef struct VertexBufferElement
@@ -18,7 +18,7 @@ typedef struct VertexBufferElement
     unsigned int count, offset, normalized, type;
 } VertexBufferElement;
 
-#define BufferElement(itype, icount) (VertexBufferElement) { .count=icount, .offset=0, .normalized=(itype == GL_BYTE) ? 1 : 0, .type=itype}
+#define BufferElement(name, itype, icount) (VertexBufferElement) { .count=icount, .offset=0, .normalized=(itype == NEURAL_BYTE) ? 1 : 0, .type=itype}
 
 extern int GetGLTypeSize(unsigned int type);
 
@@ -32,18 +32,15 @@ typedef struct VertexBuffer {
 
 extern VertexBuffer* NewVertexBuffer(void *data, unsigned int size); 
 
+extern VertexBuffer* NewVertexBufferEmpty(unsigned int size);
 
-static inline void VertexBufferBind(VertexBuffer* this)
-{
-    glBindBuffer(GL_ARRAY_BUFFER, this->id);
-}
+extern inline void VertexBufferBind(VertexBuffer* this);
 
-static inline void VertexBufferUnbind()
-{
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
+extern inline void VertexBufferUnbind();
 
-extern void DeleteVertexBuffer(VertexBuffer* this);
+extern inline void VertexBufferSetData(VertexBuffer* this, const void* data, u32 size);
+
+extern inline void DeleteVertexBuffer(VertexBuffer* this);
 
 
 extern void VertexBufferPushLayout
@@ -65,17 +62,11 @@ typedef struct
 
 extern IndexBuffer* NewIndexBuffer(unsigned int *data, unsigned int count); 
 
-static inline void IndexBufferBind(IndexBuffer* this)
-{
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
-}
+extern inline void IndexBufferBind(IndexBuffer* this);
 
-static inline void IndexBufferUnbind()
-{
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
+extern inline void IndexBufferUnbind();
 
-extern void DeleteIndexBuffer(IndexBuffer* this);
+extern inline void DeleteIndexBuffer(IndexBuffer* this);
 
 
 #endif // __BUFFER_H_
