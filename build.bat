@@ -6,28 +6,7 @@ set OperatingDirectory=%~dp0
 
 :: Sets settings Variables
 
-
-call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64 >nul 2> nul
-echo --- Environment Configured
-
-IF NOT EXIST "NeuralEngine/lib/glfw/build/src/Debug/glfw3.lib" (
-    cd NeuralEngine/lib/glfw && cmake .  -B build && cd build && msbuild ALL_BUILD.vcxproj -property:Platform=x64
-    echo --- glfw3.lib build
-)
-
-IF NOT EXIST "NeuralEngine/lib/cglm/build/Debug/cglm.lib" (
-    cd NeuralEngine/lib/cglm && cmake . -DCGLM_STATIC=ON -B build && cd build && msbuild ALL_BUILD.vcxproj -property:Platform=x64
-    echo --- cglm.lib build
-)
-
-IF NOT EXIST "NeuralEngine/lib/glad/glad.obj" (
-    cd NeuralEngine/lib/glad && call %CC% -Iinclude -c src/glad.c
-    echo --- glad.obj build
-)
-
-echo --- Building NeuralEngine.lib
-
-set CompilerFlags=/W3 /wd4201 /wd5045 /D "_CRT_SECURE_NO_WARNINGS" /c /TC
+set CompilerFlags=/W3 /Ox /wd4201 /wd5045 /D "_CRT_SECURE_NO_WARNINGS" /c /TC
 
 set NeuralOutputDir=!%~d0%cd%\NeuralEngine\bin\!
 
@@ -35,6 +14,26 @@ set NeuralLibPath=%OperatingDirectory%/NeuralEngine/lib
 
 set NeuralIncludePath=-I%NeuralLibPath%/stb/ -I%NeuralLibPath%/cglm/include/ -I%NeuralLibPath%/glad/include/  -I%NeuralLibPath%/glfw/include/ -I%OperatingDirectory%/NeuralEngine/
 
+
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64 >nul 2> nul
+echo --- Environment Configured
+
+IF NOT EXIST "NeuralEngine\lib\glfw\build\src\Release" (
+    cd NeuralEngine/lib/glfw && cmake .  -B build && cd build && msbuild ALL_BUILD.vcxproj -property:Platform=x64 -property:Configuration=Release
+    echo --- glfw3.lib build
+)
+
+IF NOT EXIST "NeuralEngine/lib/cglm/build/Release/cglm.lib" (
+    cd NeuralEngine/lib/cglm && cmake . -DCGLM_STATIC=ON -B build && cd build && msbuild ALL_BUILD.vcxproj -property:Platform=x64 -property:Configuration=Release
+    echo --- cglm.lib build
+)
+
+IF NOT EXIST "NeuralEngine/lib/glad/glad.obj" (
+    cd NeuralEngine/lib/glad && call cl /Zi -I%NeuralLibPath%/glad/include/ -Ox -c src/glad.c
+    echo --- glad.obj build
+)
+
+echo --- Building NeuralEngine.lib
 
 :: If bin folder does not exist create it
 if not EXIST "%NeuralOutputDir%" (
@@ -64,7 +63,7 @@ for /R %%f IN ("*.c") DO (
 )
 popd
 
-set VendorLibs=NeuralEngine/lib/glfw/build/src/Debug/glfw3.lib NeuralEngine/lib/cglm/build/Debug/cglm.lib NeuralEngine/lib/glad/glad.obj
+set VendorLibs=NeuralEngine/lib/glfw/build/src/Release/glfw3.lib NeuralEngine/lib/cglm/build/Release/cglm.lib NeuralEngine/lib/glad/glad.obj
 
 call lib /nologo /out:NeuralEngine/bin/NeuralEngine.lib %VendorLibs% %NeuralCompiledFiles% 2> nul
 
@@ -72,7 +71,7 @@ set PlatformLibs=kernel32.lib user32.lib gdi32.lib shell32.lib
 
 echo -- Linking
 
-call cl /Zi /FeSandbox/program.exe /Zi /MDd -I NeuralEngine/src/ %NeuralIncludePath% Sandbox/main.c /link /DEBUG:FASTLINK /nologo /NODEFAULTLIB:LIBCMT NeuralEngine/bin/NeuralEngine.lib %PlatformLibs% 2> nul && (
+call cl /Zi /FeSandbox/program.exe /Ox /Zi /MDd -I NeuralEngine/src/ %NeuralIncludePath% Sandbox/main.c /link /DEBUG:FASTLINK /nologo /NODEFAULTLIB:LIBCMT NeuralEngine/bin/NeuralEngine.lib %PlatformLibs% 2> nul && (
 
     echo --- Compiled Succesfully
     move *.pdb Sanbox\

@@ -22,7 +22,7 @@ struct QuadVertex
     float Tiling;
 };
 
-static u32 QuadIndexCount = 0;
+static u64 QuadIndexCount = 0;
 
 static struct QuadVertex* QuadVertexBufferBase = NULL;
 static struct QuadVertex* QuadVertexBufferPtr = NULL;
@@ -32,6 +32,7 @@ static struct QuadVertex* QuadVertexBufferPtr = NULL;
 #define MaxTextureSlots 32
 static Texture2D* TextureSlots[MaxTextureSlots];
 u32 TextureSlotIndex = 1;
+u16 zIndexStackedLayer = 0;
 
 
 
@@ -116,6 +117,7 @@ void Renderer2DBeginScene(Camera* camera)
     QuadVertexBufferPtr = QuadVertexBufferBase;
 
     TextureSlotIndex = 1;
+    zIndexStackedLayer = 0;
 }
 
 static inline void Renderer2DUploadBatch()
@@ -130,7 +132,7 @@ static inline void Renderer2DUploadBatch()
         (u32)((u8 *)QuadVertexBufferPtr - (u8 *)QuadVertexBufferBase) // Length of the buffer
     );
 
-    RendererDrawIndexed(QuadVertexArray, QuadIndexCount);
+    RendererDrawIndexed(QuadVertexArray, (u32)QuadIndexCount);
 
 }
 
@@ -185,12 +187,61 @@ extern void Renderer2DDrawQuad(Quad2D initializer)
     };
 
     float tiling = initializer.tiling ? initializer.tiling : 1.0f;
-    float zIndex = -initializer.zIndex / 100;
+    float zIndex = -(initializer.zIndex + zIndexStackedLayer) * 0.01f;
+
+    if(initializer.rotation == 0)
+        {
+        // Dont put this in a for loop it will slow down the rendering process
+
+        // Bottom left
+        QuadVertexBufferPtr->Position = v3(position.x, position.y, zIndex);
+        QuadVertexBufferPtr->Color = color;
+        QuadVertexBufferPtr->TexCoord = v2(0.0f, 0.0f);
+        QuadVertexBufferPtr->TextureSlot = TextureID;
+        QuadVertexBufferPtr->Tiling = tiling;
+        QuadVertexBufferPtr++;
+
+        // Bottom Right
+        QuadVertexBufferPtr->Position = v3(position.x + scale.x, position.y, zIndex);
+        QuadVertexBufferPtr->Color = color;
+        QuadVertexBufferPtr->TexCoord = v2(1.0f, 0.0f);
+        QuadVertexBufferPtr->TextureSlot = TextureID;
+        QuadVertexBufferPtr->Tiling = tiling;
+        QuadVertexBufferPtr++;
+        
+        // Top Left
+        QuadVertexBufferPtr->Position = v3(position.x + scale.x, position.y + scale.y, zIndex);
+        QuadVertexBufferPtr->Color = color;
+        QuadVertexBufferPtr->TexCoord = v2(1.0f, 1.0f);
+        QuadVertexBufferPtr->TextureSlot = TextureID;
+        QuadVertexBufferPtr->Tiling = tiling;
+        QuadVertexBufferPtr++;
+        
+        // Top Right
+        QuadVertexBufferPtr->Position = v3(position.x, position.y + scale.y, zIndex);
+        QuadVertexBufferPtr->Color = color;
+        QuadVertexBufferPtr->TexCoord = v2(0.0f, 1.0f);
+        QuadVertexBufferPtr->TextureSlot = TextureID;
+        QuadVertexBufferPtr->Tiling = tiling;
+        QuadVertexBufferPtr++;
+
+
+        QuadIndexCount += 6;
+        return;
+    }
+    /*
+    mat4s transform =   glms_mat4_mul(
+                            glms_translate_make(vec3s(position.x, position.y, zIndex)), // Position transform
+                            glms_mat4_mul(  
+                                glms_scale_make(vec3s(scale.x, scale.y, 1.0f)), // Scale Transform
+                                glms_rotate_make(initializer.rotation, vec3s(0.0f, 0.0f, 1.0f)) // Rotation Transform
+                            )
+                        );
 
     // Dont put this in a for loop it will slow down the rendering process
 
     // Bottom left
-    QuadVertexBufferPtr->Position = v3(position.x, position.y, zIndex);
+    QuadVertexBufferPtr->Position = glms_vec4_ transform;
     QuadVertexBufferPtr->Color = color;
     QuadVertexBufferPtr->TexCoord = v2(0.0f, 0.0f);
     QuadVertexBufferPtr->TextureSlot = TextureID;
@@ -198,7 +249,7 @@ extern void Renderer2DDrawQuad(Quad2D initializer)
     QuadVertexBufferPtr++;
 
     // Bottom Right
-    QuadVertexBufferPtr->Position = v3(position.x + scale.x, position.y, zIndex);
+    QuadVertexBufferPtr->Position = transform;
     QuadVertexBufferPtr->Color = color;
     QuadVertexBufferPtr->TexCoord = v2(1.0f, 0.0f);
     QuadVertexBufferPtr->TextureSlot = TextureID;
@@ -206,7 +257,7 @@ extern void Renderer2DDrawQuad(Quad2D initializer)
     QuadVertexBufferPtr++;
     
     // Top Left
-    QuadVertexBufferPtr->Position = v3(position.x + scale.x, position.y + scale.y, zIndex);
+    QuadVertexBufferPtr->Position = transform;
     QuadVertexBufferPtr->Color = color;
     QuadVertexBufferPtr->TexCoord = v2(1.0f, 1.0f);
     QuadVertexBufferPtr->TextureSlot = TextureID;
@@ -214,7 +265,7 @@ extern void Renderer2DDrawQuad(Quad2D initializer)
     QuadVertexBufferPtr++;
     
     // Top Right
-    QuadVertexBufferPtr->Position = v3(position.x, position.y + scale.y, zIndex);
+    QuadVertexBufferPtr->Position = transform;
     QuadVertexBufferPtr->Color = color;
     QuadVertexBufferPtr->TexCoord = v2(0.0f, 1.0f);
     QuadVertexBufferPtr->TextureSlot = TextureID;
@@ -223,6 +274,8 @@ extern void Renderer2DDrawQuad(Quad2D initializer)
 
 
     QuadIndexCount += 6;
+    */
+
 } 
 
 

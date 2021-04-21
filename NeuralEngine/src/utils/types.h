@@ -28,9 +28,31 @@ typedef float_t f32;
 
 #define StringLiteralLength(string) (sizeof(string) - 1)
 
-typedef struct v2 { float x,y; }    v2; 
-typedef struct v3 { float x,y,z; }  v3; 
-typedef struct v4 { float x,y,z,w; }v4; 
+typedef struct v2 { 
+    union {
+        struct { float x,y; };
+        struct { float width, height; };
+        float raw[2];
+    };
+} v2; 
+
+
+typedef struct v3 { 
+    union{
+        struct { float x,y,z; };
+        float raw[3];
+    };
+}  v3; 
+
+
+typedef struct v4 { 
+    union
+    {
+        struct { float x,y,z, w; };
+        float raw[4];
+    };
+}v4; 
+
 
 #define v2(x, y)       (v2){x, y}
 #define v3(x, y, z)    (v3){x, y, z}

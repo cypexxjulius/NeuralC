@@ -51,14 +51,14 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
 
             }); 
             
-            for(u32 i = 0; i < 100; i++)
+            for(float i = -5; i < 500; i += 0.5)
             {
-                for(u32 k = 0; k < 100; k++)
+                for(float k = -5; k < 50; k += 0.5)
                 {
                     Renderer2DDrawQuad((Quad2D){ 
-                        .position = v2(1.5f * i + 0.5f, 1.5f * k + 0.5f), 
-                        .scale = v2(0.95f, 0.95f), 
-                        .color = v4((float)i / 10.0f, 0.3f, (float)k / 10.0f, 1.0f)
+                        .position = v2(i, k), 
+                        .scale = v2(0.45f, 0.45f), 
+                        .color = v4((i + 5) / 10.0f, 0.4f, (k + 5) / 10.0f, 0.5f)
                     });
                 }
             }
