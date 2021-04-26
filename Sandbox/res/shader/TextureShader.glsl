@@ -20,7 +20,7 @@ void main()
     v_texCoord = a_TexCoord;
     v_TextureID = a_TextureID;
     v_TilingFactor = a_Tiling;
-    gl_Position = u_ViewProj * vec4(a_Position, 1.0f);
+    gl_Position = u_ViewProj * vec4(a_Position, 1.0);
 }
 
 #type fragment

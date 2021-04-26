@@ -16,7 +16,7 @@ ShaderLibrary* NewShaderLibrary(unsigned int startCapacity)
 
 Shader* ShaderLibraryLoadShader(ShaderLibrary* this, char* ShaderName,  char* ShaderPath)
 {
-    Shader* shader = NewShader(ShaderName, ShaderPath);
+    Shader* shader = NewShaderFromFile(ShaderName, ShaderPath);
     
     
     

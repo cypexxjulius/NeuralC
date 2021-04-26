@@ -71,10 +71,9 @@ set PlatformLibs=kernel32.lib user32.lib gdi32.lib shell32.lib
 
 echo -- Linking
 
-call cl /Zi /FeSandbox/program.exe /Ox /Zi /MDd -I NeuralEngine/src/ %NeuralIncludePath% Sandbox/main.c /link /DEBUG:FASTLINK /nologo /NODEFAULTLIB:LIBCMT NeuralEngine/bin/NeuralEngine.lib %PlatformLibs% 2> nul && (
+call cl /Zi /FeSandbox/program.exe /Ox /Zi /MD -I NeuralEngine/src/ %NeuralIncludePath% Sandbox/main.c /link /DEBUG:FASTLINK /nologo /NODEFAULTLIB:LIBCMT NeuralEngine/bin/NeuralEngine.lib %PlatformLibs% 2> nul && (
 
     echo --- Compiled Succesfully
-    move *.pdb Sanbox\
     pushd "Sandbox/"
         call program.exe
     popd 

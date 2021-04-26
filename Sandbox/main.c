@@ -10,6 +10,7 @@ static CameraController* camera = NULL;
 static Texture2D* texture = NULL;
 static Texture2D* texture2 = NULL;
 
+static float Rotation = 0.0f;
 
 
 void NeuralInit()
@@ -51,7 +52,7 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
 
             }); 
             
-            for(float i = -5; i < 500; i += 0.5)
+            for(float i = -5; i < 50; i += 0.5)
             {
                 for(float k = -5; k < 50; k += 0.5)
                 {
@@ -74,20 +75,21 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
             });
             
             
-            Renderer2DDrawQuad((Quad2D){ 
+            Renderer2DDrawQuad((Quad2D) { 
                 .position = v2(-50.0f, -50.0f), 
                 .scale = v2(100.0f, 100.0f), 
                 .color = v4(1.0f, 1.0f, 0.0f, 0.2f),
                 .texture= texture,
-                .tiling = 10.0f
+                .tiling = 10.0f,
+                .rotation = Rotation
             });
-            
+
+            Rotation += deltaTime;
 
             Renderer2DEndScene();
 
             Renderer2DBeginScene(NULL);
             {
-                
                 Renderer2DDrawQuad((Quad2D){
                     .position = v2(-0.95f, 0.0f),
                     .scale = v2(0.1f, 0.1f),

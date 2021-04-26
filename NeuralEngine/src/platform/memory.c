@@ -1,5 +1,5 @@
 #include "memory.h"
-
+#include "src/platform/platform.h"
 
 #include <stdlib.h>
 #include <string.h>

@@ -130,7 +130,7 @@ static int ShaderPreProcessAssetFile(char *File, char *outFiles[2])
     return -1;
 }
 
-static int CompileShader(char *shaderSrc, ShaderType type)
+static int CompileShader(const char *shaderSrc, ShaderType type)
 {
     GLenum glType = (type == VertexShaderType) ? GL_VERTEX_SHADER : (type == FragmentShaderType) ? GL_FRAGMENT_SHADER : GL_FALSE;
 
@@ -153,8 +153,6 @@ static int CompileShader(char *shaderSrc, ShaderType type)
         glGetShaderInfoLog(id, length, &length, message);
         fprintf(stderr, "[SHADER COMPILATION ERROR] %s\n%s\n",(type == VertexShaderType) ? "Vertex" : "Fragment", message);
 
-
-
         Memory.Free(message);
         return -1 ;
     }   
@@ -163,36 +161,16 @@ static int CompileShader(char *shaderSrc, ShaderType type)
     return id;
 }
 
-extern Shader* NewShader(char *ShaderName, char* ShaderPath)
+
+
+
+static Shader* NewShader(const char *ShaderName, const char* fragmentShader, const char* vertexShader)
 {
     Shader* this = CreateObject(Shader);
 
-    char *ShaderSrc = ReadStringFromFile(ShaderPath);
-
-    char *ShaderSources[2];
-
-    int status = ShaderPreProcessAssetFile(ShaderSrc, ShaderSources);
-
-    Memory.Free(ShaderSrc);
-    
-    if(status == -1)
-    {
-        return NULL;
-    }
-
-
     Assert(strlen(ShaderName) > 49, "Shadername to long");  // Checking for the shader name to be under 50 
-    Memory.Copy(this->name, ShaderName, strlen(ShaderName) + 1);     // Copying the shader Name
+    Memory.Copy(this->name, (char *)ShaderName, strlen(ShaderName) + 1);     // Copying the shader Name
     
-    char *vertexShader    = ShaderSources[VertexShaderType - 1];
-    char *fragmentShader  = ShaderSources[FragmentShaderType - 1];    
-
-    // For Debug Purposes
-    // printf("VertexShader\n---\n%s\n---\n", vertexShader);
-    // printf("FragmentShader\n---\n%s\n---\n", fragmentShader);
-
-    this->ShaderID = glCreateProgram();
-
     int vertexShaderID     = CompileShader(vertexShader, VertexShaderType);
     int fragmentShaderID   = CompileShader(fragmentShader, FragmentShaderType);
 
@@ -200,9 +178,9 @@ extern Shader* NewShader(char *ShaderName, char* ShaderPath)
     {
         return NULL;
     }
+    
 
-    Memory.Free(vertexShader);
-    Memory.Free(fragmentShader);
+    this->ShaderID = glCreateProgram();
 
     glAttachShader(this->ShaderID, vertexShaderID);
     glAttachShader(this->ShaderID, fragmentShaderID);
@@ -238,10 +216,35 @@ extern Shader* NewShader(char *ShaderName, char* ShaderPath)
     glValidateProgram(this->ShaderID);
 
     return this;
+};
+
+
+Shader *NewShaderFromString(const char* ShaderName, const char* fragmentShader, const char* vertexShader)
+{
+    return NewShader(ShaderName, fragmentShader, vertexShader);
+};
+
+Shader* NewShaderFromFile(const char* ShaderName, char* ShaderPath)
+{
+    char *ShaderSrc = ReadStringFromFile(ShaderPath);
+
+    char *ShaderSources[2];
+
+    int status = ShaderPreProcessAssetFile(ShaderSrc, ShaderSources);
+
+    Memory.Free(ShaderSrc);
+    
+    if(status == -1)
+        return NULL;
+
+    char *vertexShader    = ShaderSources[VertexShaderType - 1];
+    char *fragmentShader  = ShaderSources[FragmentShaderType - 1];    
+
+    return NewShader(ShaderName, fragmentShader, vertexShader);
 }
 
 
-inline void DeleteShader(Shader* this)
+void DeleteShader(Shader* this)
 {
     glDeleteProgram(this->ShaderID);
 }
@@ -267,28 +270,28 @@ static inline int ShaderGetUniform(Shader* this, char *name)
 }
 
 
-inline void ShaderSetFloat4(Shader* this, char* name, v4 vec4)
+void ShaderSetFloat4(Shader* this, char* name, v4 vec4)
 {
     glUniform4f(ShaderGetUniform(this, name), vec4.x, vec4.y, vec4.z, vec4.w);
 }
 
-inline void ShaderSetIntArray(Shader* this, char* name, int* values, u32 count)
+void ShaderSetIntArray(Shader* this, char* name, int* values, u32 count)
 {
     glUniform1iv(ShaderGetUniform(this, name), count, values);
 
 }
 
-inline void ShaderSetMat4(Shader* this, char* name, mat4 matrix)
+void ShaderSetMat4(Shader* this, char* name, mat4 matrix)
 {
     glUniformMatrix4fv(ShaderGetUniform(this, name), 1, GL_FALSE, (const GLfloat *)matrix);
 }
 
-inline void ShaderSetFloat(Shader* this, char* name, float float0)
+void ShaderSetFloat(Shader* this, char* name, float float0)
 {
     glUniform1f(ShaderGetUniform(this, name), float0);
 }
 
-inline void ShaderSetInt(Shader* this, char* name, int number)
+void ShaderSetInt(Shader* this, char* name, int number)
 {
     glUniform1i(ShaderGetUniform(this, name), number);
 }

@@ -9,7 +9,7 @@ static Shader* TextureShader = NULL;
 static VertexArray* QuadVertexArray = NULL; 
 static Texture2D* IdentityTexture = NULL;
 
-#define MaxQuads 10000
+#define MaxQuads 20000
 #define MaxVertices MaxQuads * 4
 #define MaxIndices MaxQuads * 6
 
@@ -26,6 +26,13 @@ static u64 QuadIndexCount = 0;
 
 static struct QuadVertex* QuadVertexBufferBase = NULL;
 static struct QuadVertex* QuadVertexBufferPtr = NULL;
+
+static const vec4s QuadVertexPositions[4] = {
+    { -0.5f, -0.5f, 0.0f, 1.0f },
+	{  0.5f, -0.5f, 0.0f, 1.0f },
+	{  0.5f,  0.5f, 0.0f, 1.0f },
+	{ -0.5f,  0.5f, 0.0f, 1.0f },
+};
 
 // TextureSlot Array
 
@@ -92,7 +99,7 @@ void Renderer2DInit()
         samplers[i] = i;
 
 
-    TextureShader = NewShader("TextureShader", "res/shader/TextureShader.glsl");
+    TextureShader = NewShaderFromFile("TextureShader", "res/shader/TextureShader.glsl");
     Assert(TextureShader == NULL, "Failed to create Shader");
     
     ShaderBind(TextureShader);
@@ -134,6 +141,12 @@ static inline void Renderer2DUploadBatch()
 
     RendererDrawIndexed(QuadVertexArray, (u32)QuadIndexCount);
 
+    // Resetting Buffer Indexes
+    QuadIndexCount = 0;
+    QuadVertexBufferPtr = QuadVertexBufferBase;
+
+    TextureSlotIndex = 1;
+
 }
 
 void Renderer2DEndScene()
@@ -142,20 +155,19 @@ void Renderer2DEndScene()
         Renderer2DUploadBatch();
 }
 
-extern void Renderer2DDrawQuad(Quad2D initializer)
+static inline v3 Mat4MulVec4(mat4s matrix, vec4s vec)
+{
+    vec3s temp = glms_mat4_mulv3(matrix, vec3s(vec.x, vec.y, vec.z), vec.w);
+    return v3(temp.x, temp.y, temp.z);
+};
+
+
+void Renderer2DDrawQuad(Quad2D initializer)
 {
 
     if(QuadIndexCount + 6 >= MaxIndices || initializer.texture != NULL && TextureSlotIndex == 31)
-    {
         Renderer2DUploadBatch();
 
-        // Resetting Buffer Indexes
-        QuadIndexCount = 0;
-        QuadVertexBufferPtr = QuadVertexBufferBase;
-
-        TextureSlotIndex = 1;
-    }
-    
     // Set position
     v2 position = initializer.position;
 
@@ -190,7 +202,7 @@ extern void Renderer2DDrawQuad(Quad2D initializer)
     float zIndex = -(initializer.zIndex + zIndexStackedLayer) * 0.01f;
 
     if(initializer.rotation == 0)
-        {
+    {
         // Dont put this in a for loop it will slow down the rendering process
 
         // Bottom left
@@ -229,7 +241,8 @@ extern void Renderer2DDrawQuad(Quad2D initializer)
         QuadIndexCount += 6;
         return;
     }
-    /*
+
+    
     mat4s transform =   glms_mat4_mul(
                             glms_translate_make(vec3s(position.x, position.y, zIndex)), // Position transform
                             glms_mat4_mul(  
@@ -241,7 +254,7 @@ extern void Renderer2DDrawQuad(Quad2D initializer)
     // Dont put this in a for loop it will slow down the rendering process
 
     // Bottom left
-    QuadVertexBufferPtr->Position = glms_vec4_ transform;
+    QuadVertexBufferPtr->Position = Mat4MulVec4(transform, QuadVertexPositions[0]);
     QuadVertexBufferPtr->Color = color;
     QuadVertexBufferPtr->TexCoord = v2(0.0f, 0.0f);
     QuadVertexBufferPtr->TextureSlot = TextureID;
@@ -249,7 +262,7 @@ extern void Renderer2DDrawQuad(Quad2D initializer)
     QuadVertexBufferPtr++;
 
     // Bottom Right
-    QuadVertexBufferPtr->Position = transform;
+    QuadVertexBufferPtr->Position = Mat4MulVec4(transform, QuadVertexPositions[1]);
     QuadVertexBufferPtr->Color = color;
     QuadVertexBufferPtr->TexCoord = v2(1.0f, 0.0f);
     QuadVertexBufferPtr->TextureSlot = TextureID;
@@ -257,7 +270,7 @@ extern void Renderer2DDrawQuad(Quad2D initializer)
     QuadVertexBufferPtr++;
     
     // Top Left
-    QuadVertexBufferPtr->Position = transform;
+    QuadVertexBufferPtr->Position = Mat4MulVec4(transform, QuadVertexPositions[2]);
     QuadVertexBufferPtr->Color = color;
     QuadVertexBufferPtr->TexCoord = v2(1.0f, 1.0f);
     QuadVertexBufferPtr->TextureSlot = TextureID;
@@ -265,7 +278,7 @@ extern void Renderer2DDrawQuad(Quad2D initializer)
     QuadVertexBufferPtr++;
     
     // Top Right
-    QuadVertexBufferPtr->Position = transform;
+    QuadVertexBufferPtr->Position = Mat4MulVec4(transform, QuadVertexPositions[3]);
     QuadVertexBufferPtr->Color = color;
     QuadVertexBufferPtr->TexCoord = v2(0.0f, 1.0f);
     QuadVertexBufferPtr->TextureSlot = TextureID;
@@ -274,8 +287,8 @@ extern void Renderer2DDrawQuad(Quad2D initializer)
 
 
     QuadIndexCount += 6;
-    */
-
+    
+    
 } 
 
 
