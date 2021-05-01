@@ -10,7 +10,7 @@ void InitError();
 void ASSERTImpl(char *message, char *file, unsigned int line);
 
 
-#define Assert(boolean, message) if((boolean)) ASSERTImpl(message, __FILE__, __LINE__)
+#define Assert(boolean, string) assert(!(boolean))
 
 
 #define CoreWarn(...) fprintf(stderr, __VA_ARGS__)

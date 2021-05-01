@@ -20,18 +20,28 @@ Texture2D* NewTexture2D(char * filepath)
     }
 
     GLenum internalFormat = 0, dataFormat = 0;
-    if(this->channels == 4)
-    {
-        internalFormat = GL_RGBA8;
-        dataFormat = GL_RGBA;
-    } 
-    else if(this->channels == 3)
-    {
-        internalFormat = GL_RGB8;
-        dataFormat = GL_RGB;
-    }
 
-    Assert(!(internalFormat & dataFormat), "Image Format not supported");
+    switch (this->channels)
+    {
+    case 4:
+        {
+            internalFormat = GL_RGBA8;
+            dataFormat = GL_RGBA;
+        }break;
+    case 3:
+        {
+            internalFormat = GL_RGB8;
+            dataFormat = GL_RGB;
+        }break;
+    default:
+        {
+            char message[400];
+
+            snprintf(message, 400, "Image format %d not supported, Image %s", this->channels, filepath);
+            
+            Assert(1, message);
+        }
+    }
 
     this->format = (unsigned int)dataFormat;
     this->internalFormat = (unsigned int)internalFormat;

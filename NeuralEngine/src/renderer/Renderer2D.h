@@ -14,10 +14,7 @@ typedef struct Renderer2DQuadInitializer
     float tiling;
     float rotation;
     Texture2D* texture;
-
 } Quad2D;
-
-
 
 void Renderer2DInit();
 

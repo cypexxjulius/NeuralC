@@ -41,12 +41,8 @@ VertexBuffer* NewVertexBufferEmpty(unsigned int size)
     return this;
 }
 
-void VertexBufferSetLayout(VertexBuffer* this, unsigned int count, ...)
-{
-
-    va_list args;
-    va_start(args, count);
-    
+void VertexBufferSetLayout(VertexBuffer* this, unsigned int count, VertexBufferElement *array)
+{ 
     this->elements = NewVector(2 + count, sizeof(VertexBufferElement*), VECTOR_POINTER | VECTOR_FREE);
     this->stride = 0;
     this->offset = 0;
@@ -55,7 +51,7 @@ void VertexBufferSetLayout(VertexBuffer* this, unsigned int count, ...)
     {
         
         VertexBufferElement *StoredElement = CreateObject(VertexBufferElement);
-        *StoredElement = va_arg(args, VertexBufferElement);
+        *StoredElement = array[i];
         
 
         int size = GetGLTypeSize(StoredElement->type) * StoredElement->count; // Size of the Layout
@@ -67,8 +63,6 @@ void VertexBufferSetLayout(VertexBuffer* this, unsigned int count, ...)
         
         VectorAdd(this->elements, StoredElement);
     }
-
-    va_end(args);
 }
 
 

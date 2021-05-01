@@ -2,6 +2,10 @@
 #define __MEMORY_H_
 
 #include <stdlib.h>
+#include <stdint.h>
+#include "src/utils/types.h"
+
+
 unsigned int GetMemoryCount();
 
 
@@ -11,7 +15,7 @@ struct memoryPointers
     void*(*Calloc)(size_t count, size_t typesize);
     void (*Free)(void* pointer);
     void*(*Realloc)(void* pointer, size_t size);
-    void*(*Copy)(void* Dest, void* Src, size_t count);
+    void*(*Copy)(void* Dest, const void* Src, size_t count);
     int(*Compare)(const void* Buffer0, const void* Buffer1, size_t Count);
     void*(*Set)(void*Buffer, int Value, size_t BufferSize);
 };

@@ -20,5 +20,4 @@ int _TimerStart(TimeProfilerStruct *timer);
 #else
     #define Profile(string)
 #endif 
-
 #endif // __TIMER_H_

@@ -6,7 +6,7 @@ set OperatingDirectory=%~dp0
 
 :: Sets settings Variables
 
-set CompilerFlags=/W3 /Ox /wd4201 /wd5045 /D "_CRT_SECURE_NO_WARNINGS" /c /TC
+set CompilerFlags=/W3 /Z7 /wd4201 /wd5045 /D "_CRT_SECURE_NO_WARNINGS" /c /TC
 
 set NeuralOutputDir=!%~d0%cd%\NeuralEngine\bin\!
 
@@ -59,7 +59,7 @@ for /R %%f IN ("*.c") DO (
 
     set NeuralCompiledFiles=!!NeuralCompiledFiles! !outfile!!
 
-    call cl /Zi /Debug /Fo!outfile! !CompilerFlags! !file! !NeuralIncludePath! 2> nul
+    call cl /Fo!outfile! !CompilerFlags! !file! !NeuralIncludePath! 2> nul
 )
 popd
 
@@ -71,12 +71,8 @@ set PlatformLibs=kernel32.lib user32.lib gdi32.lib shell32.lib
 
 echo -- Linking
 
-call cl /Zi /FeSandbox/program.exe /Ox /Zi /MD -I NeuralEngine/src/ %NeuralIncludePath% Sandbox/main.c /link /DEBUG:FASTLINK /nologo /NODEFAULTLIB:LIBCMT NeuralEngine/bin/NeuralEngine.lib %PlatformLibs% 2> nul && (
-
+call cl /Z7 /FeSandbox/program.exe /MD -I NeuralEngine/src/ %NeuralIncludePath% Sandbox/main.c /link /DEBUG:FASTLINK /nologo /NODEFAULTLIB:LIBCMT NeuralEngine/bin/NeuralEngine.lib %PlatformLibs% 2> nul && (
     echo --- Compiled Succesfully
-    pushd "Sandbox/"
-        call program.exe
-    popd 
     goto end
 ) || (
     echo --- Compilation failed

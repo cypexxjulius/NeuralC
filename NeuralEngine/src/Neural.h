@@ -13,6 +13,8 @@
 #include "src/renderer/camera/Camera.h"
 #include "src/renderer/camera/OrthographicCameraController.h"
 
+// Memory Allocation
+#include "src/platform/memory.h"
 
 // Entry Point
 #include "src/core/EntryPoint.h"

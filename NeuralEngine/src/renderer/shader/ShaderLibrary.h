@@ -14,11 +14,11 @@ typedef struct ShaderLibrary
 
 ShaderLibrary* NewShaderLibrary(unsigned int startCapacity);
 
-Shader* ShaderLibraryLoadShader(ShaderLibrary* this, char* ShaderName,char* ShaderPath);
+Shader* ShaderLibraryLoadShader(ShaderLibrary* this, String ShaderName,char* ShaderPath);
 
 void ShaderLibraryAddShader(ShaderLibrary* this, Shader* shader);
 
-Shader* ShaderLibraryGetShader(ShaderLibrary* this, char* ShaderName);
+Shader* ShaderLibraryGetShader(ShaderLibrary* this, String ShaderName);
 
 void DeleteShaderLibrary(ShaderLibrary* this);
 

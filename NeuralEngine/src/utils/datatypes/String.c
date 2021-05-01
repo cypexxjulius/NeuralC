@@ -1,54 +1,51 @@
 #include "String.h"
 #include "src/core/error.h"
 #include <string.h>
+#include <stdint.h>
+#include <stdio.h>
 
-void StringAppend(char **dest, char *src)
+
+String StringResize(String string, int count)
 {
-    unsigned int destLen = (unsigned int)strlen(*dest);
-    unsigned int srcLen = (unsigned int)strlen(src);
-
-    *dest = Memory.Realloc(*dest, destLen + srcLen + 1);
-
-    Memory.Copy(*dest + destLen, src, srcLen + 1);
+    return String(string.string + count);
 }
 
-char *NewString(char* string)
+String StringAppend(String dest, const String src)
 {
-    unsigned int strLength = (unsigned int)strlen(string);
-    char *NewString = Memory.Alloc(strLength + 1);
+    char* tempString = Memory.Realloc(dest.string, dest.length + src.length + 1);
 
-    Memory.Copy(NewString, string, strLength + 1);
 
-    return NewString;   
-}
-
-unsigned int StringCountChar(char *string, char searchChar)
-{
-    unsigned int strLength = (unsigned int)strlen(string);
-    unsigned int charCount = 0;
-    for(unsigned int i = 0; i < strLength; i++)
+    for(uint16_t i = 0; i < src.length + 1; i++)
     {
-        if(string[i] == searchChar)
+        tempString[i + dest.length] = src.string[i];
+    }
+
+    return String(tempString);
+}
+
+
+unsigned int StringCountChar(const String string, char searchChar)
+{
+    unsigned int charCount = 0;
+    for(unsigned int i = 0; i < string.length; i++)
+    {
+        if(string.string[i] == searchChar)
             charCount++;
     }
     return charCount;
 }
 
-int StringContainsString(char* string, char* searchString)
+int StringContainsString(String string, const String searchString)
 {
-    unsigned int strLength = (unsigned int)strlen(string);
-    unsigned int searchStringLength = (unsigned int)strlen(searchString);
-
-    if(searchStringLength > strLength)
+    if(string.length < searchString.length)
         return -1;
 
-    unsigned int i;
-    for(i = 0; i < strLength && (strLength - i) >= searchStringLength; i++)
+    for(unsigned int i = 0; i < string.length && (string.length - i) >= searchString.length; i++)
     {
-        if(string[i] != searchString[0])
+        if(string.string [i] != searchString.string[0])
             continue;
         
-        if(Memory.Compare(string+i+1, searchString + 1, searchStringLength - 1) == 0)
+        if(Memory.Compare(string.string + i + 1, searchString.string + 1, searchString.length - 1) == 0)
         {
             return i;  
         }
@@ -57,24 +54,24 @@ int StringContainsString(char* string, char* searchString)
     return -1;
 }
 
-int StringContainsChar(char *string, char searchChar)
-{
-    unsigned int strLen = (unsigned int)strlen(string);
 
-    for(unsigned int i = 0; i < strLen; i++)
-        if(string[i] == searchChar) 
+int StringContainsChar(const String string, char searchChar)
+{
+
+    for(unsigned int i = 0; i < string.length; i++)
+        if(string.string[i] == searchChar) 
             return i;
 
     return -1;
 }
 
-void StringReplace(char *string, char searchchar, char replaceChar)
+void StringReplaceChar(const String string, char searchchar, char replaceChar)
 {
-    unsigned int strLen = (unsigned int)strlen(string);
-    for(unsigned int i = 0; i < strLen; i++)
+    for(unsigned int i = 0; i < string.length; i++)
     {
-        if(string[i] == searchchar)
-            string[i] = replaceChar;
+        if(string.string[i] == searchchar)
+            string.string[i] = replaceChar;
     }
 }
+
 

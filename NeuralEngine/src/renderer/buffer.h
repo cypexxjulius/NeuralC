@@ -47,7 +47,7 @@ extern void VertexBufferPushLayout
 (VertexBuffer* this, VertexBufferElement layout);
 
 
-extern void VertexBufferSetLayout(VertexBuffer* this, unsigned int count, ...);
+extern void VertexBufferSetLayout(VertexBuffer* this, unsigned int count, VertexBufferElement *array);
 
 /*
 IndexBuffer

@@ -2,8 +2,9 @@
 #define __FILEIO_H_
 
 
+#include "src/utils/types.h"
 
-extern char* ReadStringFromFile(char *filepath);
+extern String ReadStringFromFile(char *filepath);
 
 
 

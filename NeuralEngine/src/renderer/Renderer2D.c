@@ -13,19 +13,19 @@ static Texture2D* IdentityTexture = NULL;
 #define MaxVertices MaxQuads * 4
 #define MaxIndices MaxQuads * 6
 
-struct QuadVertex
+typedef struct QuadVertex
 {
     v3 Position;
     v4 Color;
     v2 TexCoord;
     float TextureSlot;
     float Tiling;
-};
+} QuadVertex;
 
 static u64 QuadIndexCount = 0;
 
-static struct QuadVertex* QuadVertexBufferBase = NULL;
-static struct QuadVertex* QuadVertexBufferPtr = NULL;
+static QuadVertex QuadVertexBufferBase[MaxVertices * sizeof(QuadVertex)] = { 0 };
+static QuadVertex* QuadVertexBufferPtr = NULL;
 
 static const vec4s QuadVertexPositions[4] = {
     { -0.5f, -0.5f, 0.0f, 1.0f },
@@ -38,8 +38,8 @@ static const vec4s QuadVertexPositions[4] = {
 
 #define MaxTextureSlots 32
 static Texture2D* TextureSlots[MaxTextureSlots];
-u32 TextureSlotIndex = 1;
-u16 zIndexStackedLayer = 0;
+static u32 TextureSlotIndex = 1;
+static u16 zIndexStackedLayer = 0;
 
 
 
@@ -49,22 +49,21 @@ void Renderer2DInit()
 
     // Quad Vertex Buffer 
     
-    VertexBuffer* vertexBuffer = NewVertexBufferEmpty(MaxVertices * sizeof(struct QuadVertex));
+    VertexBuffer* vertexBuffer = NewVertexBufferEmpty(MaxVertices * sizeof(QuadVertex));
 
-    VertexBufferSetLayout(vertexBuffer, 5,
+    VertexBufferSetLayout(vertexBuffer, 5, (VertexBufferElement []){
         BufferElement("a_Position", NEURAL_FLOAT, 3),
         BufferElement("a_Color", NEURAL_FLOAT, 4),
         BufferElement("a_TexCoord", NEURAL_FLOAT, 2),
         BufferElement("a_TextureSlot", NEURAL_FLOAT, 1),
         BufferElement("a_TilingFactor", NEURAL_FLOAT, 1)
-    );
+    });
         
         
     VertexArrayAddVertexBuffer(QuadVertexArray, vertexBuffer);
 
 
     // Index Buffer
-    QuadVertexBufferBase = Memory.Calloc(MaxVertices, sizeof(struct QuadVertex));
 
     u32 QuadIndices[MaxIndices];
 
@@ -99,7 +98,7 @@ void Renderer2DInit()
         samplers[i] = i;
 
 
-    TextureShader = NewShaderFromFile("TextureShader", "res/shader/TextureShader.glsl");
+    TextureShader = NewShaderFromFile(String("TextureShader"), "res/shader/TextureShader.glsl");
     Assert(TextureShader == NULL, "Failed to create Shader");
     
     ShaderBind(TextureShader);
@@ -200,6 +199,7 @@ void Renderer2DDrawQuad(Quad2D initializer)
 
     float tiling = initializer.tiling ? initializer.tiling : 1.0f;
     float zIndex = -(initializer.zIndex + zIndexStackedLayer) * 0.01f;
+
 
     if(initializer.rotation == 0)
     {

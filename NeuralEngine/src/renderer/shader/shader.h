@@ -15,11 +15,11 @@ typedef struct Shader
 } Shader;
 
 
-Shader *NewShaderFromString(const char* ShaderName, const char* fragmentShader, const char* vertexShader);
-Shader* NewShaderFromFile(const char* ShaderName, char* ShaderPath);
+Shader *NewShaderFromString(const String ShaderName, const char* fragmentShader, const char* vertexShader);
+
+Shader* NewShaderFromFile(const String ShaderName, char* ShaderPath);
 
 void ShaderBind(Shader* this);
-
 
 void DeleteShader(Shader* this);
 

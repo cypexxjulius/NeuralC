@@ -3,7 +3,7 @@
 
 #include <glad/glad.h>
 
-
+#include "src/core/debug.h"
 #include "src/core/window.h"
 #include "src/core/error.h"
 #include "src/core/Application.h"
@@ -18,14 +18,15 @@ static const Window* window = NULL;
 
 static void APIENTRY OpenGLErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
-    if(severity <= 0x826b)
+    if(severity <= GL_DEBUG_SEVERITY_MEDIUM)
         return;
 
 
-    source = source;
-    length = length;
-    userParam = userParam;
-    id = id;
+    (void)source;
+    (void)length;
+    (void)userParam;
+    (void)id;
+    
     CoreWarn("[OPENGL ERROR]:\n" 
             "Source     : 0x%x\n"
             "Type       : 0x%x\n"
@@ -37,12 +38,13 @@ static void APIENTRY OpenGLErrorCallback(GLenum source, GLenum type, GLuint id, 
 extern void RendererInit()
 {
 
+#ifdef NEURAL_DEBUG
     glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(OpenGLErrorCallback, NULL);
 		
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
-
+#endif
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -59,7 +61,7 @@ extern void RendererShutdown()
 extern void RendererClearScreen()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(0.1f,0.1f, 0.1f,1.0f);
+    glClearColor(0.1f,0.8f, 0.1f,1.0f);
 }
 
 

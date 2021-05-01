@@ -14,11 +14,9 @@ ShaderLibrary* NewShaderLibrary(unsigned int startCapacity)
 }
 
 
-Shader* ShaderLibraryLoadShader(ShaderLibrary* this, char* ShaderName,  char* ShaderPath)
+Shader* ShaderLibraryLoadShader(ShaderLibrary* this, String ShaderName,  char* ShaderPath)
 {
     Shader* shader = NewShaderFromFile(ShaderName, ShaderPath);
-    
-    
     
     Assert(shader == 0, "Shader Creation Failed");
         
@@ -30,17 +28,20 @@ Shader* ShaderLibraryLoadShader(ShaderLibrary* this, char* ShaderName,  char* Sh
 
 void ShaderLibraryAddShader(ShaderLibrary* this, Shader* shader)
 {
-    Assert(ShaderLibraryGetShader(this, shader->name), "Shader already exists in ShaderLibrary");
-    VectorAdd(this->ShaderCollection, shader);
+    if(ShaderLibraryGetShader(this, String(shader->name)) == NULL)
+        VectorAdd(this->ShaderCollection, shader);
 }
 
-Shader* ShaderLibraryGetShader(ShaderLibrary* this, char* ShaderName)
+Shader* ShaderLibraryGetShader(ShaderLibrary* this, String ShaderName)
 { 
     Shader* temp;
     for(u32 i = 0; i < this->ShaderCollection->used; i++)
     {
         temp = VectorGet(this->ShaderCollection, i);
-        if(strcmp(ShaderName, temp->name) == 0)
+        if(strlen(temp->name) != ShaderName.length)
+            continue;
+
+        if(Memory.Compare(ShaderName.string, temp->name, ShaderName.length) == 0)
             return temp;
     }
     return NULL;

@@ -6,13 +6,13 @@
 #include "src/platform/memory.h"
 #include "src/core/error.h"
 
-extern char* ReadStringFromFile(char *filepath)
+extern String ReadStringFromFile(char *filepath)
 {
     FILE* fp = fopen(filepath, "rb");           // Opens the File
 
     if(!fp)
     {   
-        // Displaing errormessage
+        // Display error message
         char errorMessage[300];
         snprintf(errorMessage, 300, "Could not open file : %s", filepath); 
         Assert(1, errorMessage);                        
@@ -29,5 +29,9 @@ extern char* ReadStringFromFile(char *filepath)
 
 
     fclose(fp);                                 // Closing the file
-    return file;                                // Return the Buffer (Heap Allocated)
+    return (String)
+    {
+        .length = fileLength,
+        .string = file
+    }; // Return the Buffer
 }

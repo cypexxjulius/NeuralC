@@ -72,4 +72,9 @@ inline static float C_Max(float x , float y)
     return (x < y) ? y : x;
 }
 
+
+#define IsBitSet(variable, bit) (variable & (1 << bit))
+#define ToggleBit(variable, bit) variable ^= (1 << bit)
+#define SetBit(variable, bit) variable |= (1 << bit)
+#define ClrBit(variable, bit) variable &= ~(1 << bit)
 #endif // __TYPES_H_
