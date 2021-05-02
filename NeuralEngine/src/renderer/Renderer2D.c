@@ -4,10 +4,12 @@
 #include "vertexArray.h"
 #include "renderer.h"
 #include "src/utils/types.h"
+#include "src/utils/Logger.h"
 
 static Shader* TextureShader = NULL;
 static VertexArray* QuadVertexArray = NULL; 
 static Texture2D* IdentityTexture = NULL;
+static Texture2D* TextTextureAtlas = NULL;
 
 #define MaxQuads 20000
 #define MaxVertices MaxQuads * 4
@@ -39,7 +41,6 @@ static const vec4s QuadVertexPositions[4] = {
 #define MaxTextureSlots 32
 static Texture2D* TextureSlots[MaxTextureSlots];
 static u32 TextureSlotIndex = 1;
-static u16 zIndexStackedLayer = 0;
 
 
 
@@ -84,14 +85,17 @@ void Renderer2DInit()
     IndexBuffer* quadIndexBuffer = NewIndexBuffer(QuadIndices, MaxIndices);
     VertexArraySetIndexBuffer(QuadVertexArray, quadIndexBuffer);
 
-    IdentityTexture = NewTexture2DEmpty(1, 1);
     
+    IdentityTexture = NewTexture2DEmpty(1, 1);
 
     // Set Identity (white) Image for pure Color Quads
     uint32_t WhiteTextureData = 0xffffffff;
     Texture2DSetData(IdentityTexture, &WhiteTextureData, sizeof(uint32_t));
     TextureSlots[0] = IdentityTexture;
-    Texture2DBind(TextureSlots[0], 0);
+
+    // Setup text texture atlas
+    TextTextureAtlas = NewTexture2D("res/textures/CharSet2.png");
+    TextureSlots[1] = TextTextureAtlas;
 
     u32 samplers[MaxTextureSlots];
     for(u32 i = 0; i < MaxTextureSlots; i++)
@@ -122,8 +126,7 @@ void Renderer2DBeginScene(Camera* camera)
     QuadIndexCount = 0;
     QuadVertexBufferPtr = QuadVertexBufferBase;
 
-    TextureSlotIndex = 1;
-    zIndexStackedLayer = 0;
+    TextureSlotIndex = 2;
 }
 
 static inline void Renderer2DUploadBatch()
@@ -144,7 +147,7 @@ static inline void Renderer2DUploadBatch()
     QuadIndexCount = 0;
     QuadVertexBufferPtr = QuadVertexBufferBase;
 
-    TextureSlotIndex = 1;
+    TextureSlotIndex = 2;
 
 }
 
@@ -160,6 +163,46 @@ static inline v3 Mat4MulVec4(mat4s matrix, vec4s vec)
     return v3(temp.x, temp.y, temp.z);
 };
 
+static inline void PushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4], float iTextureID, float itiling);
+
+void Renderer2DRenderTest(char* string)
+{
+    u16 Strlen = (u16)strlen(string);
+    for(u16 i = 0; i < Strlen; i++)
+    {
+        static const float scale = 0.1f;
+
+        v4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+        v2 position = { i * scale,  0.0 };
+        static const float zIndex = 0;
+        static const float tiling = 1;
+
+        static const float characterWidth = 16;
+
+        float TextureID = 1;
+        static const float charSetWidth = 256;
+
+        static const float unit = 16.0f / 256.0f;
+
+        float column =  (string[i] % 16);
+        float row =  ((string[i] - column) / 16.0f) - 1.0f; 
+        column--;
+
+        v2 textureCoords[4] = {
+            v2(unit * (column - 0.0f),   1.0f - unit * (row + 1.0f)),
+            v2(unit * (column + 1.0f),   1.0f - unit * (row + 1.0f)),
+            v2(unit * (column + 1.0f),   1.0f - unit * (row - 0.0f)),
+            v2(unit * (column - 0.0f),   1.0f - unit * (row - 0.0f)),
+        };
+
+        PushVertices((v3 [4]){
+            v3(position.x, position.y, zIndex),
+            v3(position.x + scale, position.y, zIndex),
+            v3(position.x + scale, position.y + scale, zIndex),
+            v3(position.x, position.y + scale, zIndex),
+        }, color, textureCoords, TextureID, tiling);
+    }
+}
 
 void Renderer2DDrawQuad(Quad2D initializer)
 {
@@ -198,47 +241,22 @@ void Renderer2DDrawQuad(Quad2D initializer)
     };
 
     float tiling = initializer.tiling ? initializer.tiling : 1.0f;
-    float zIndex = -(initializer.zIndex + zIndexStackedLayer) * 0.01f;
+    float zIndex = -(initializer.zIndex) * 0.01f;
 
 
     if(initializer.rotation == 0)
     {
-        // Dont put this in a for loop it will slow down the rendering process
-
-        // Bottom left
-        QuadVertexBufferPtr->Position = v3(position.x, position.y, zIndex);
-        QuadVertexBufferPtr->Color = color;
-        QuadVertexBufferPtr->TexCoord = v2(0.0f, 0.0f);
-        QuadVertexBufferPtr->TextureSlot = TextureID;
-        QuadVertexBufferPtr->Tiling = tiling;
-        QuadVertexBufferPtr++;
-
-        // Bottom Right
-        QuadVertexBufferPtr->Position = v3(position.x + scale.x, position.y, zIndex);
-        QuadVertexBufferPtr->Color = color;
-        QuadVertexBufferPtr->TexCoord = v2(1.0f, 0.0f);
-        QuadVertexBufferPtr->TextureSlot = TextureID;
-        QuadVertexBufferPtr->Tiling = tiling;
-        QuadVertexBufferPtr++;
-        
-        // Top Left
-        QuadVertexBufferPtr->Position = v3(position.x + scale.x, position.y + scale.y, zIndex);
-        QuadVertexBufferPtr->Color = color;
-        QuadVertexBufferPtr->TexCoord = v2(1.0f, 1.0f);
-        QuadVertexBufferPtr->TextureSlot = TextureID;
-        QuadVertexBufferPtr->Tiling = tiling;
-        QuadVertexBufferPtr++;
-        
-        // Top Right
-        QuadVertexBufferPtr->Position = v3(position.x, position.y + scale.y, zIndex);
-        QuadVertexBufferPtr->Color = color;
-        QuadVertexBufferPtr->TexCoord = v2(0.0f, 1.0f);
-        QuadVertexBufferPtr->TextureSlot = TextureID;
-        QuadVertexBufferPtr->Tiling = tiling;
-        QuadVertexBufferPtr++;
-
-
-        QuadIndexCount += 6;
+        PushVertices( (v3 [4]) {
+            v3(position.x, position.y, zIndex),
+            v3(position.x + scale.x, position.y, zIndex),
+            v3(position.x + scale.x, position.y + scale.y, zIndex),
+            v3(position.x, position.y + scale.y, zIndex)
+        }, color, (v2 [4]) {
+            v2(0, 0),
+            v2(1, 0),
+            v2(1, 1),
+            v2(0, 1)
+        }, TextureID, tiling);
         return;
     }
 
@@ -251,44 +269,56 @@ void Renderer2DDrawQuad(Quad2D initializer)
                             )
                         );
 
-    // Dont put this in a for loop it will slow down the rendering process
+    PushVertices( (v3 []) {
+        Mat4MulVec4(transform, QuadVertexPositions[0]),
+        Mat4MulVec4(transform, QuadVertexPositions[1]),
+        Mat4MulVec4(transform, QuadVertexPositions[2]),
+        Mat4MulVec4(transform, QuadVertexPositions[3])
+    }, color, (v2 []) {
+        v2(0, 0),
+        v2(1, 0),
+        v2(1, 1),
+        v2(0, 1)
+    }, TextureID, tiling);    
 
-    // Bottom left
-    QuadVertexBufferPtr->Position = Mat4MulVec4(transform, QuadVertexPositions[0]);
-    QuadVertexBufferPtr->Color = color;
-    QuadVertexBufferPtr->TexCoord = v2(0.0f, 0.0f);
-    QuadVertexBufferPtr->TextureSlot = TextureID;
-    QuadVertexBufferPtr->Tiling = tiling;
-    QuadVertexBufferPtr++;
-
-    // Bottom Right
-    QuadVertexBufferPtr->Position = Mat4MulVec4(transform, QuadVertexPositions[1]);
-    QuadVertexBufferPtr->Color = color;
-    QuadVertexBufferPtr->TexCoord = v2(1.0f, 0.0f);
-    QuadVertexBufferPtr->TextureSlot = TextureID;
-    QuadVertexBufferPtr->Tiling = tiling;
-    QuadVertexBufferPtr++;
-    
-    // Top Left
-    QuadVertexBufferPtr->Position = Mat4MulVec4(transform, QuadVertexPositions[2]);
-    QuadVertexBufferPtr->Color = color;
-    QuadVertexBufferPtr->TexCoord = v2(1.0f, 1.0f);
-    QuadVertexBufferPtr->TextureSlot = TextureID;
-    QuadVertexBufferPtr->Tiling = tiling;
-    QuadVertexBufferPtr++;
-    
-    // Top Right
-    QuadVertexBufferPtr->Position = Mat4MulVec4(transform, QuadVertexPositions[3]);
-    QuadVertexBufferPtr->Color = color;
-    QuadVertexBufferPtr->TexCoord = v2(0.0f, 1.0f);
-    QuadVertexBufferPtr->TextureSlot = TextureID;
-    QuadVertexBufferPtr->Tiling = tiling;
-    QuadVertexBufferPtr++;
-
-
-    QuadIndexCount += 6;
-    
-    
+    return;    
 } 
 
+void PushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4], float iTextureID, float itiling) {                                                                         
+    
+    // Dont put this in a for loop it will slow down the rendering process
+    // Bottom left 
+    QuadVertexBufferPtr->Position = ipositions[0];                               
+    QuadVertexBufferPtr->Color = icolor;                                         
+    QuadVertexBufferPtr->TexCoord = itextureCoords[0];                           
+    QuadVertexBufferPtr->TextureSlot = iTextureID;        
+    QuadVertexBufferPtr->Tiling = itiling;                         
+    QuadVertexBufferPtr++;                                                     
 
+    // Bottom right                                                              
+    QuadVertexBufferPtr->Tiling = itiling;                                       
+    QuadVertexBufferPtr->Position = ipositions[1];                               
+    QuadVertexBufferPtr->Color = icolor;                                         
+    QuadVertexBufferPtr->TexCoord = itextureCoords[1];                           
+    QuadVertexBufferPtr->TextureSlot = iTextureID;                               
+    QuadVertexBufferPtr->Tiling = itiling;                                       
+    QuadVertexBufferPtr++;                                                       
+
+    // Top left                                                                                 
+    QuadVertexBufferPtr->Position = ipositions[2];                               
+    QuadVertexBufferPtr->Color = icolor;                                         
+    QuadVertexBufferPtr->TexCoord = itextureCoords[2];                           
+    QuadVertexBufferPtr->TextureSlot = iTextureID;                               
+    QuadVertexBufferPtr->Tiling = itiling;                                       
+    QuadVertexBufferPtr++;                                                       
+
+    // Top right                                                                  
+    QuadVertexBufferPtr->Position = ipositions[3];                               
+    QuadVertexBufferPtr->Color = icolor;                                         
+    QuadVertexBufferPtr->TexCoord = itextureCoords[3];                           
+    QuadVertexBufferPtr->TextureSlot = iTextureID;                               
+    QuadVertexBufferPtr->Tiling = itiling;                                       
+    QuadVertexBufferPtr++;                                                         
+                                                                                 
+    QuadIndexCount += 6;                                                                                                                
+}

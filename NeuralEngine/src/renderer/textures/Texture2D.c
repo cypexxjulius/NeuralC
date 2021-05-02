@@ -3,6 +3,8 @@
 #include "src/core/error.h"
 #include <stb_image.h>
 #include <glad/glad.h>
+#include "src/utils/Logger.h"
+
 
 Texture2D* NewTexture2D(char * filepath)
 {
@@ -10,37 +12,30 @@ Texture2D* NewTexture2D(char * filepath)
     stbi_set_flip_vertically_on_load(1);
     stbi_uc* data = stbi_load(filepath, &this->width, &this->height, &this->channels, 0);
 
-    if(!data)
-    {
-        char message[300];
-
-        snprintf(message, 300, "Failed to read image : %s", filepath);
-        Assert(0, message);
-        return NULL;
-    }
+    Assert(!data, "Failed to read Image");
 
     GLenum internalFormat = 0, dataFormat = 0;
+
+    DebugPrint("File %s with channels %d", filepath, this->channels);
+
 
     switch (this->channels)
     {
     case 4:
-        {
-            internalFormat = GL_RGBA8;
-            dataFormat = GL_RGBA;
-        }break;
+        internalFormat = GL_RGBA8;
+        dataFormat = GL_RGBA;
+        break;
+    
     case 3:
-        {
-            internalFormat = GL_RGB8;
-            dataFormat = GL_RGB;
-        }break;
+        internalFormat = GL_RGB8;
+        dataFormat = GL_RGB;
+        break;
+    case 2:
+        internalFormat = GL_RGBA32UI;
+        dataFormat = GL_RGBA;
+        break;
     default:
-        {
-            char message[400];
-
-            snprintf(message, 400, "Image format %d not supported, Image %s", this->channels, filepath);
-            
-            Assert(1, message);
-        }
+        Assert(1, "Image Format not supported");
     }
 
     this->format = (unsigned int)dataFormat;

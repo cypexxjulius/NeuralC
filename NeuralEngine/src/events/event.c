@@ -26,6 +26,16 @@ static void _WindowCloseCallback(GLFWwindow* glWindow)
         window->EventCallback(&event);
 }
 
+static void _CharCallback(GLFWwindow* glWindow, unsigned int chara)
+{
+    Window* window = glfwGetWindowUserPointer(glWindow);
+
+    Event event = Event(CharEventType, .KeyPressedEvent = KeyPressedEvent(chara, 0, 0));
+    
+    if(window->EventCallback)
+        window->EventCallback(&event);
+}
+
 static void _KeyCallback(GLFWwindow* glWindow, int key, int scancode, int action, int mods)
 {
     Window* window = glfwGetWindowUserPointer(glWindow);
@@ -92,5 +102,6 @@ void InitEventSystem(Window* this)
     glfwSetMouseButtonCallback(this->windowHandle, _MouseButtonCallback);
     glfwSetCursorPosCallback(this->windowHandle, _MouseMoveCallback);
     glfwSetScrollCallback(this->windowHandle, _ScrollCallback); 
+    glfwSetCharCallback(this->windowHandle, _CharCallback);
 }
 

@@ -43,7 +43,8 @@ enum EventTypes
     KeyPressedEventType,
     MouseButtonPressedEventType,
     ScrolledEventType,
-    MouseMovedEventType
+    MouseMovedEventType,
+    CharEventType,
 };
 
 #define Event( _type, _event) (Event){ .type=_type, _event}

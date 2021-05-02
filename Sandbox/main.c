@@ -15,6 +15,9 @@ static float Rotation = 0.0f;
 
 #define maxSize 100
 
+static char string[4096] = { 0 };
+static unsigned int stringCursor = 0;
+
 void NeuralInit()
 {
     unsigned int width = 1280, height = 720;
@@ -24,7 +27,7 @@ void NeuralInit()
 
     texture = NewTexture2D("res/textures/Checkerboard.png");
     texture2 = NewTexture2D("res/textures/firstImage.jpg");
-    CharSet = NewTexture2D("res/textures/CharSet.jpg");
+    CharSet = NewTexture2D("res/textures/CharSet2.png");
 }
 
 void NeuralOnUpdate(float deltaTime, const Window* window)
@@ -42,26 +45,11 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
         {
             RendererClearScreen();
         }
-        
+         
 
         Profile(RendererDraw)
         {
             Renderer2DBeginScene(camera->camera);
-
-            Renderer2DDrawQuad( (Quad2D) {
-                .position = v2(1.0f, 2.0f), 
-                .color = v4(1.0f, 1.0f, 1.0f, 1.0f)
-            }); 
-
-
-            
-            
-            Renderer2DDrawQuad( (Quad2D) {     
-                .color = v4(1.0, 1.0, 1.0, 1.0),
-                .texture = CharSet,
-                .scale = v2(100, 100)
-            });
-            
             
             // Checkerboard Background 
             Renderer2DDrawQuad( (Quad2D) {
@@ -69,21 +57,25 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
                 .scale = v2(200.0f, 200.0f), 
                 .texture = texture,
                 .tiling = 10.0f,
-                .rotation = Rotation,
+                // .rotation = Rotation,
             });
 
             Rotation += deltaTime;
 
+            
             Renderer2DEndScene();
 
             Renderer2DBeginScene(NULL);
             {
+
                 Renderer2DDrawQuad((Quad2D) {
-                    .position = v2(-0.95f, 0.0f),
-                    .scale = v2(0.1f, 0.1f),
+                    .position = v2(-0.95, 0.0),
+                    .scale = v2(0.2, 0.2),
                     .zIndex = 0.5,
                     .texture = texture
                 });
+
+                Renderer2DRenderTest(string);
                 
                 Renderer2DDrawQuad( (Quad2D) {
                     .position = v2(-1.0f, 0.0f),
@@ -91,6 +83,7 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
                     .scale = v2(0.1f, 0.5f),
                     .color = v4(0.0f, 1.0f, 1.0f, 1.0f),
                 });
+
             }
             Renderer2DEndScene();
         }
@@ -111,11 +104,29 @@ bool NeuralOnEvent(const Event* event)
             switch (event->KeyPressedEvent.keyCode)
             {
                 case NL_KEY_ESCAPE :
-                {
                     ApplicationTerminate();
-                }break;
-            }
+                    break;
+                case NL_KEY_BACKSPACE:
+                    if(stringCursor > 0)
+                        string[--stringCursor] = 0;
+                    break;       
+            }   
+
         }break;
+
+        case(CharEventType) :
+        {
+            
+            char keycode = (char)event->KeyPressedEvent.keyCode;
+
+            if(keycode >= 'a' && keycode <= 'z')
+                keycode = keycode - 'a' + 'A';
+            
+            if(keycode >= ' ' && keycode <= 'Q')
+                string[stringCursor++] = keycode;
+
+
+        }
     }
     return 0;
 }

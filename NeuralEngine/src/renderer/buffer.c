@@ -1,7 +1,6 @@
 #include "Buffer.h"
 
 #include <stdlib.h>
-#include <stdarg.h>
 #include <glad/glad.h>
 #include "src/core/error.h"
 #include "src/platform/memory.h"

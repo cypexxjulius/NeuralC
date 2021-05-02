@@ -16,16 +16,18 @@ typedef struct Renderer2DQuadInitializer
     Texture2D* texture;
 } Quad2D;
 
-void Renderer2DInit();
+extern void Renderer2DInit();
 
-void Renderer2DShutdown();
+extern void Renderer2DShutdown();
 
+extern void Renderer2DRenderTest(char* character);
 
-void Renderer2DBeginScene(Camera* camera);
+extern void Renderer2DBeginScene(Camera* camera);
 
-void Renderer2DDrawQuad(Quad2D initializer);
+extern void Renderer2DDrawQuad(Quad2D initializer);
 
-void Renderer2DEndScene();
+extern void Renderer2DEndScene();
+
 
 
 #endif // __RENDERER2D_H_

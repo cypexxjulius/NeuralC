@@ -1,43 +1,31 @@
 #include "Logger.h"
-#include <stdarg.h>
-#include <string.h>
+#include "src/core/error.h"
 
-struct LogFormatParse 
-{
-    char *format;
-    char *printfFormat;
+#define MAX_DEBUG_MESSAGE_LENGTH 4096
 
-    unsigned int lengthFormat, lengthPrintfFormat;
-};
-
-#define LogFormatParse(iformat, iprintfFormat) { .format=iformat, .printfFormat=iprintfFormat, .lengthFormat=sizeof(iformat) - 1, .lengthPrintfFormat=sizeof(iprintfFormat) - 1 }
-const struct LogFormatParse stdParseArray[] = 
-{
-    LogFormatParse( "{int}", "%i"),
-    LogFormatParse( "{float}", "%f"),
-    LogFormatParse( "{char *}", "%s"),
-    LogFormatParse( "{char}", "%c"),
-    LogFormatParse( "{unsigned int}", "%u"),
-    LogFormatParse( "{hex}", "%x")
-};
-
-const unsigned int stdParseArrayLength = sizeof(stdParseArray) / sizeof(struct LogFormatParse); 
-
-
-void Log(char *logMessage, ...)
+void nl_printdb(const char * string, ...)
 {
     va_list args;
+    va_start(args, string);
 
-    va_start(args, logMessage);
+    unsigned int Strlen = (unsigned int)strlen(string);
 
-    unsigned int strLen = (unsigned int)strlen(logMessage);
+    // Checking for the stringlen to be within a certain range(MAX_DEBUG_MESSAGE_LENGTH)
+    Assert(Strlen > MAX_DEBUG_MESSAGE_LENGTH, "Debug message to long");
 
-    for(unsigned int i = 0; i < strLen; i++)
-    {
-        if(logMessage[i] == '{')
-        {
-            //fstringCompare();
-        }
+    // Creating the buffer
+    static  char buffer[MAX_DEBUG_MESSAGE_LENGTH + sizeof("[DEBUG] ") + sizeof('\n')] = "[DEBUG] ";
+    
+    // Inserting the string into the buffer
+    memcpy(buffer + sizeof("[DEBUG] ") - 1, string, Strlen);
+    
+    // Appending the endline char
+    static const char endl[] = "\n";
+    memcpy(buffer + sizeof("[DEBUG] ") - 1+ Strlen, endl, 1);
+    
 
-    }
+    // Printing the message to the screen
+    vfprintf(stdout, buffer, args);
+
+    va_end(args);
 }
