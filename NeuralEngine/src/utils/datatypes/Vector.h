@@ -5,12 +5,14 @@
 
 typedef enum VECTOR_FLAGS
 {
-    VECTOR_POINTER = 4, VECTOR_FREE = 8
+    VECTOR_POINTER = 4, 
+    VECTOR_FREE = 8,
+    VECTOR_NOREFILL = 16
 } VECTOR_FLAGS;
 
 typedef struct Vector
 {  
-    unsigned int capacity, type_size, used;
+    unsigned int capacity, type_size, used, isContiguesFilled;
     char flags;
     void *data;
 } Vector;
@@ -50,13 +52,14 @@ Free's the Vector, if the VECTOR_FREE flag is set the pointer stored will be fre
 */
 void DeleteVector(Vector *this);
 
+/*
+Replaces the element at the index with the new one
+*/
+void VectorReplace(Vector* this, unsigned int index, void* element);
+
 
 /*
 Returns the length of the Vector.
 */
-
-
-extern inline unsigned int VectorLength(Vector *this);
-
 
 #endif // __VECTOR_H_

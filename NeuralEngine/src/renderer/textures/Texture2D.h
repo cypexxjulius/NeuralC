@@ -9,7 +9,7 @@ typedef struct Texture2D
 } Texture2D;
 
 
-Texture2D* NewTexture2D(char *filepath);
+Texture2D* NewTexture2D(const char *filepath);
 
 Texture2D* NewTexture2DEmpty(unsigned int width, unsigned int height);
 

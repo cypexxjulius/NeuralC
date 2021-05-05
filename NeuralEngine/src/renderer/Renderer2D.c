@@ -5,11 +5,15 @@
 #include "renderer.h"
 #include "src/utils/types.h"
 #include "src/utils/Logger.h"
+#include "src/renderer/textures/TextureAtlas.h"
+#include "src/renderer/camera/OrthographicCameraController.h"
+#include "src/core/Application.h"
 
 static Shader* TextureShader = NULL;
 static VertexArray* QuadVertexArray = NULL; 
 static Texture2D* IdentityTexture = NULL;
-static Texture2D* TextTextureAtlas = NULL;
+static TextureAtlas* TextTextureAtlas = NULL;
+static CameraController* ViewPortCamera = NULL;
 
 #define MaxQuads 20000
 #define MaxVertices MaxQuads * 4
@@ -94,12 +98,19 @@ void Renderer2DInit()
     TextureSlots[0] = IdentityTexture;
 
     // Setup text texture atlas
-    TextTextureAtlas = NewTexture2D("res/textures/CharSet2.png");
-    TextureSlots[1] = TextTextureAtlas;
+    TextTextureAtlas = NewTextureAtlas("res/textures/CharSet2.png", 16, 16);
+    TextureSlots[1] = TextTextureAtlas->texture;
 
+
+    // Setup sampler array
     u32 samplers[MaxTextureSlots];
     for(u32 i = 0; i < MaxTextureSlots; i++)
         samplers[i] = i;
+
+
+    // Setup ViewPortCamera
+    
+    ViewPortCamera = NewOrthographicCameraController(CameraNoControls);
 
 
     TextureShader = NewShaderFromFile(String("TextureShader"), "res/shader/TextureShader.glsl");
@@ -115,13 +126,15 @@ void Renderer2DShutdown()
     DeleteVertexArray(QuadVertexArray);
     DeleteShader(TextureShader);
     DeleteTexture2D(IdentityTexture);
+    DeleteTextureAtlas(TextTextureAtlas);
 }
 
 
 void Renderer2DBeginScene(Camera* camera)
 {
     
-    ShaderSetMat4(TextureShader, "u_ViewProj", camera ? orthographicCameraGetViewProjMat(camera).raw : GLMS_MAT4_IDENTITY.raw );
+    ShaderSetMat4(TextureShader, "u_ViewProj", camera ? OrthographicCameraGetViewProjMat(camera).raw : OrthographicCameraGetViewProjMat(ViewPortCamera->camera).raw );
+
 
     QuadIndexCount = 0;
     QuadVertexBufferPtr = QuadVertexBufferBase;
@@ -157,50 +170,49 @@ void Renderer2DEndScene()
         Renderer2DUploadBatch();
 }
 
-static inline v3 Mat4MulVec4(mat4s matrix, vec4s vec)
-{
-    vec3s temp = glms_mat4_mulv3(matrix, vec3s(vec.x, vec.y, vec.z), vec.w);
-    return v3(temp.x, temp.y, temp.z);
-};
+static inline v3 Mat4MulVec4(mat4s matrix, vec4s vec);
 
 static inline void PushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4], float iTextureID, float itiling);
 
-void Renderer2DRenderTest(char* string)
+static void Renderer2DRenderText(char* string, float scale, v3 color, v2 position, float zIndex)
 {
+    static const float unit = 16.0f / 256.0f;
+    static const float TextureID = 1;
+    static const float tiling = 1.0f;
+    
     u16 Strlen = (u16)strlen(string);
+    u16 lineLength = 0;
+
     for(u16 i = 0; i < Strlen; i++)
     {
-        static const float scale = 0.1f;
+        if(string[i] == '\n')
+        {
+            position.y -= 0.5f * scale;
+            lineLength = 0;
+            continue;
+        }
 
-        v4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
-        v2 position = { i * scale,  0.0 };
-        static const float zIndex = 0;
-        static const float tiling = 1;
+        float column =  (float)(string[i] % 16);
 
-        static const float characterWidth = 16;
-
-        float TextureID = 1;
-        static const float charSetWidth = 256;
-
-        static const float unit = 16.0f / 256.0f;
-
-        float column =  (string[i] % 16);
         float row =  ((string[i] - column) / 16.0f) - 1.0f; 
         column--;
 
-        v2 textureCoords[4] = {
-            v2(unit * (column - 0.0f),   1.0f - unit * (row + 1.0f)),
-            v2(unit * (column + 1.0f),   1.0f - unit * (row + 1.0f)),
-            v2(unit * (column + 1.0f),   1.0f - unit * (row - 0.0f)),
-            v2(unit * (column - 0.0f),   1.0f - unit * (row - 0.0f)),
-        };
+        float posx = lineLength * scale + position.x;
+        float posy = position.y - scale;
+
+        v2 textureCoords[4];
+        TextureAtlasGetTextCoords(TextTextureAtlas, row, column, 1, 1, textureCoords);
+
 
         PushVertices((v3 [4]){
-            v3(position.x, position.y, zIndex),
-            v3(position.x + scale, position.y, zIndex),
-            v3(position.x + scale, position.y + scale, zIndex),
-            v3(position.x, position.y + scale, zIndex),
-        }, color, textureCoords, TextureID, tiling);
+            v3(posx,            posy, zIndex),
+            v3(posx + scale,    posy, zIndex),
+            v3(posx + scale,    posy + scale, zIndex),
+            v3(posx,            posy + scale, zIndex),
+        }, v4(color.x, color.y, color.z, 1.0f), textureCoords, TextureID, tiling);
+
+        lineLength++;
+
     }
 }
 
@@ -216,7 +228,7 @@ void Renderer2DDrawQuad(Quad2D initializer)
     // Check color
     v4 color = (initializer.color.x != 0 || initializer.color.y != 0 || initializer.color.z != 0 || initializer.color.w != 0) // Check for a non defined Color
          ? color = initializer.color :  v4(1.0f, 1.0f, 1.0f, 1.0f);
-    
+
     // Set Image if defined
     float TextureID = 0;
     if(initializer.texture != NULL)
@@ -241,7 +253,7 @@ void Renderer2DDrawQuad(Quad2D initializer)
     };
 
     float tiling = initializer.tiling ? initializer.tiling : 1.0f;
-    float zIndex = -(initializer.zIndex) * 0.01f;
+    float zIndex = initializer.zIndex;
 
 
     if(initializer.rotation == 0)
@@ -257,31 +269,52 @@ void Renderer2DDrawQuad(Quad2D initializer)
             v2(1, 1),
             v2(0, 1)
         }, TextureID, tiling);
-        return;
-    }
+    } else {
 
     
-    mat4s transform =   glms_mat4_mul(
-                            glms_translate_make(vec3s(position.x, position.y, zIndex)), // Position transform
-                            glms_mat4_mul(  
-                                glms_scale_make(vec3s(scale.x, scale.y, 1.0f)), // Scale Transform
-                                glms_rotate_make(initializer.rotation, vec3s(0.0f, 0.0f, 1.0f)) // Rotation Transform
-                            )
-                        );
+        mat4s transform =   glms_mat4_mul(
+                                glms_translate_make(vec3s(position.x, position.y, zIndex)), // Position transform
+                                glms_mat4_mul(  
+                                    glms_scale_make(vec3s(scale.x, scale.y, 1.0f)), // Scale Transform
+                                    glms_rotate_make(initializer.rotation, vec3s(0.0f, 0.0f, 1.0f)) // Rotation Transform
+                                )
+                            );
 
-    PushVertices( (v3 []) {
-        Mat4MulVec4(transform, QuadVertexPositions[0]),
-        Mat4MulVec4(transform, QuadVertexPositions[1]),
-        Mat4MulVec4(transform, QuadVertexPositions[2]),
-        Mat4MulVec4(transform, QuadVertexPositions[3])
-    }, color, (v2 []) {
-        v2(0, 0),
-        v2(1, 0),
-        v2(1, 1),
-        v2(0, 1)
-    }, TextureID, tiling);    
+        PushVertices( (v3 []) {
+            Mat4MulVec4(transform, QuadVertexPositions[0]),
+            Mat4MulVec4(transform, QuadVertexPositions[1]),
+            Mat4MulVec4(transform, QuadVertexPositions[2]),
+            Mat4MulVec4(transform, QuadVertexPositions[3])
+        }, color, (v2 []) {
+            v2(0, 0),
+            v2(1, 0),
+            v2(1, 1),
+            v2(0, 1)
+        }, TextureID, tiling);    
+        
+    }
 
-    return;    
+
+    if(initializer.text != NULL && initializer.text->string != NULL)
+    {
+        v3 textcolor = v3(0.0f, 0.0f, 0.0f);
+
+        if( initializer.text->color.x != 0 ||
+            initializer.text->color.y != 0 ||
+            initializer.text->color.z != 0)
+        {
+            textcolor = initializer.text->color;
+        }
+        
+        Renderer2DRenderText(
+            initializer.text->string,
+            scale.x * initializer.text->fontSize ? initializer.text->fontSize : 1.0f,
+            textcolor,
+            v2(position.x, position.y + scale.y),
+            zIndex - 0.01f
+        );
+    }
+
 } 
 
 void PushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4], float iTextureID, float itiling) {                                                                         
@@ -322,3 +355,9 @@ void PushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4], float iText
                                                                                  
     QuadIndexCount += 6;                                                                                                                
 }
+
+v3 Mat4MulVec4(mat4s matrix, vec4s vec)
+{
+    vec3s temp = glms_mat4_mulv3(matrix, vec3s(vec.x, vec.y, vec.z), vec.w);
+    return v3(temp.x, temp.y, temp.z);
+};

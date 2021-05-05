@@ -22,7 +22,7 @@ void VertexArrayAddVertexBuffer
     VertexBufferBind(vertexBuffer);
 
     this->index = 0;
-    for(unsigned int i = 0; i < VectorLength(vertexBuffer->elements); i++)
+    for(unsigned int i = 0; i < vertexBuffer->elements->used; i++)
     {
         VertexBufferElement* element = VectorGet(vertexBuffer->elements, i);
 
@@ -45,7 +45,7 @@ void DeleteVertexArray(VertexArray* this)
     glDeleteVertexArrays(1, &this->rendererID);
 
     VertexBuffer* vb;
-    for(unsigned int i = 0; i < VectorLength(this->vertexBuffer); i++)
+    for(unsigned int i = 0; i < this->vertexBuffer->used; i++)
     {
         vb = VectorGet(this->vertexBuffer, i);
         DeleteVertexBuffer(vb);

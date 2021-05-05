@@ -33,4 +33,6 @@ extern v2 InputGetMousePosition();
 extern int InputIsButtonPressed(int key);
 extern void SetMouseGrabbed(unsigned int grabbed);
 extern int InputIsMouseButtonPressed(int key);
+extern v2 GetWindowSize();
+
 #endif // __APPLICATION_H_

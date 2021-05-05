@@ -28,20 +28,33 @@ void VectorAdd(Vector* this, void *element)
         this->capacity = newAllocSize;
     }
 
+    VectorReplace(this, this->used, element);
+    this->used++;
+}
+
+void VectorReplace(Vector* this, unsigned int index, void* element)
+{
+    Assert(index >= this->capacity, "Index out of vector range");
+
     if(this->flags & VECTOR_POINTER)
     {
         void **temp = this->data;
-        temp[this->used] = element;
-        this->used++;
+        temp[index] = element;
         return;
     }
 
-    Memory.Copy((byte*)this->data + this->type_size * this->used, element, this->type_size);
-    this->used++;
+    Memory.Copy(
+        (byte*)this->data + this->type_size * index, 
+        element, 
+        this->type_size
+    );
 }
+
 void VectorRemove(Vector* this, unsigned int index)
 {
     Assert(this->used <= index, "Vector index does not exist");
+
+    this->used--;
 
     if(this->flags & VECTOR_POINTER)
     {
@@ -50,22 +63,23 @@ void VectorRemove(Vector* this, unsigned int index)
         if(this->flags & VECTOR_FREE)
             Memory.Free(temp[index]);
 
-        for(unsigned int i = index; i < VectorLength(this) - 1; i++)
-        {
-            temp[i] = temp[i+1];
-        }
+        if(this->flags & VECTOR_NOREFILL)
+            return; 
 
-        this->used--;
+        for(unsigned int i = index; i < (unsigned int)this->used; i++)
+            temp[i] = temp[i+1];
+        
         return;
     }
+    if(this->flags & VECTOR_NOREFILL)
+        return; 
+
     Memory.Copy( 
-            (byte*)this->data + index * this->type_size,  
-            (byte*)this->data + (index +1) * this->type_size, 
-            this->type_size * (this->used - index - 1)
+        (byte*)this->data + index * this->type_size,  
+        (byte*)this->data + (index +1) * this->type_size, 
+        this->type_size * (this->used - index)
     );
-
-
-    this->used--;
+    
 }
 
 void* VectorGet(Vector* this, unsigned int index)
@@ -94,9 +108,4 @@ void DeleteVector(Vector *this)
     }
     Memory.Free(this->data);
     Memory.Free(this);
-}
-
-inline unsigned int VectorLength(Vector *this)
-{
-    return this->used;
 }

@@ -5,7 +5,7 @@
 #include "src/events/event.h"
 
 
-CameraController* NewOrthographicCameraController(float aspectRatio, CameraControllerType controlltype);
+CameraController* NewOrthographicCameraController(CameraControllerType controlltype);
 
 void CameraControllerOnUpdate(CameraController* this, float deltaTime);
 

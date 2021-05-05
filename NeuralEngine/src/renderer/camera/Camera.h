@@ -36,8 +36,12 @@ typedef struct Camera
 
 typedef enum CameraControllerType
 {
-    KeyboardController = 1,
-    MouseDragController = 2
+    CameraNoControls = 0,
+    CameraKeyboardController = 0b01,
+    CameraMouseDragController = 0b10,
+    CameraMouseScrollSensitive = 0b100,
+    CameraAllControls = 0b1111111
+
 } CameraControllerType;
 
 struct OrthographicCameraControllerAssets

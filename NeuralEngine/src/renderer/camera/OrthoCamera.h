@@ -11,18 +11,13 @@ extern Camera* NewOrthographicCamera(float left, float right, float top, float b
 
 extern void DeleteOrthographicCamera(Camera* this);
 
-extern mat4s orthographicCameraGetViewProjMat(Camera *this);
+extern mat4s OrthographicCameraGetViewProjMat(Camera *this);
 
-extern void orthographicCameraSetProjection(Camera* this, float left, float right, float top, float bottom);
+extern void OrthographicCameraSetProjection(Camera* this, float left, float right, float top, float bottom);
 
-extern void orthographicCameraSetPosition(Camera* this, v2 newPos);
+extern void OrthographicCameraSetPosition(Camera* this, v2 newPos);
 
-static inline v2 orthographicCameraGetPosition(Camera* this)
-{
-    return this->orthoCam.position;
-};
-
-extern void orthgraphicCameraAddVector(Camera* this, v2 vector);
+extern void OrthgraphicCameraAddVector(Camera* this, v2 vector);
 
 
 #endif // __ORTHO_CAMERA_H_

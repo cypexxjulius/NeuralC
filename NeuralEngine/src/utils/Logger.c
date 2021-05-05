@@ -14,7 +14,7 @@ void nl_printdb(const char * string, ...)
     Assert(Strlen > MAX_DEBUG_MESSAGE_LENGTH, "Debug message to long");
 
     // Creating the buffer
-    static  char buffer[MAX_DEBUG_MESSAGE_LENGTH + sizeof("[DEBUG] ") + sizeof('\n')] = "[DEBUG] ";
+    char buffer[MAX_DEBUG_MESSAGE_LENGTH + sizeof("[DEBUG] ") + sizeof('\n')] = "[DEBUG] ";
     
     // Inserting the string into the buffer
     memcpy(buffer + sizeof("[DEBUG] ") - 1, string, Strlen);

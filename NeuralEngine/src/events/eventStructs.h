@@ -26,6 +26,7 @@ typedef struct KeyPressedEvent
 typedef struct Event
 {
     byte type;
+    u32 id;
     union
     { 
         KeyPressedEvent KeyPressedEvent;
@@ -45,6 +46,12 @@ enum EventTypes
     ScrolledEventType,
     MouseMovedEventType,
     CharEventType,
+};
+
+
+enum KeyMods
+{
+    NL_SHIFT_MOD = 2
 };
 
 #define Event( _type, _event) (Event){ .type=_type, _event}

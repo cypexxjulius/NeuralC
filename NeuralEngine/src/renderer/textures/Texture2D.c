@@ -6,7 +6,7 @@
 #include "src/utils/Logger.h"
 
 
-Texture2D* NewTexture2D(char * filepath)
+Texture2D* NewTexture2D(const char * filepath)
 {
     Texture2D* this = CreateObject(Texture2D);
     stbi_set_flip_vertically_on_load(1);

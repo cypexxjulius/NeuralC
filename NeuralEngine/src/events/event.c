@@ -2,6 +2,9 @@
 
 #include <stdio.h>
 #include "src/core/window.h"
+#include "src/utils/types.h"
+
+static u32 id = 0;
 
 static void _WindowSizeCallback(GLFWwindow* glWindow, int width, int height)
 {
@@ -10,6 +13,7 @@ static void _WindowSizeCallback(GLFWwindow* glWindow, int width, int height)
     window->state.width = width;
 
     Event event = Event(WindowResizeEventType, .WindowResizeEvent = WindowResizeEvent(width, height));
+    event.id = id++;
 
     if(window->EventCallback)
         window->EventCallback(&event);
@@ -21,6 +25,7 @@ static void _WindowCloseCallback(GLFWwindow* glWindow)
     Window* window = glfwGetWindowUserPointer(glWindow);
 
     Event event = Event(WindowCloseEventType, .close = 0);
+    event.id = id++;
 
     if(window->EventCallback)
         window->EventCallback(&event);
@@ -31,7 +36,9 @@ static void _CharCallback(GLFWwindow* glWindow, unsigned int chara)
     Window* window = glfwGetWindowUserPointer(glWindow);
 
     Event event = Event(CharEventType, .KeyPressedEvent = KeyPressedEvent(chara, 0, 0));
-    
+    event.id = id++;
+
+
     if(window->EventCallback)
         window->EventCallback(&event);
 }
@@ -42,6 +49,7 @@ static void _KeyCallback(GLFWwindow* glWindow, int key, int scancode, int action
     window->state.keyboard.keys[key].down = (action == GLFW_PRESS) ? 1 : (action == GLFW_REPEAT) ? 2 : 0;
 
     Event event = Event(KeyPressedEventType, .KeyPressedEvent = KeyPressedEvent(key, action, mods));
+    event.id = id++;
 
     if(window->EventCallback)
         window->EventCallback(&event);
@@ -54,6 +62,7 @@ static void _MouseButtonCallback(GLFWwindow* glWindow, int button, int action, i
     window->state.mouse.buttons[button].down = (action == GLFW_PRESS) ? 1 : (action == GLFW_REPEAT) ? 2 : 0;
 
     Event event = Event(MouseButtonPressedEventType, .KeyPressedEvent = KeyPressedEvent(button, action, mods));
+    event.id = id++;
 
     if(window->EventCallback)
         window->EventCallback(&event);
@@ -65,6 +74,7 @@ static void _ScrollCallback(GLFWwindow* glWindow, double _xOffset, double _yOffs
 
 
     Event event = Event(ScrolledEventType, .PosEvent = PosEvent(v2((float)_xOffset, (float)_yOffset), v2( 0,0 )));
+    event.id = id++;
 
     if(window->EventCallback)
         window->EventCallback(&event);
@@ -80,7 +90,8 @@ static void _MouseMoveCallback(GLFWwindow* glWindow, double _x, double _y)
     Window* window = glfwGetWindowUserPointer(glWindow);
 
     Event event = Event(MouseMovedEventType, .PosEvent = PosEvent( v2((float) _x, (float) _y), v2( (float)_x - xOldPos, (float)_y - yOldPos)));
-
+    event.id = id++;
+    
     window->state.mouse.position = v2((float)_x,(float) _y);
 
     xOldPos = (float)_x;

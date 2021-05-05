@@ -42,9 +42,7 @@ static void ApplicationOnEvent(Event* event)
     }
 
     if(event->type == WindowResizeEventType)
-    {
         ApplicationOnWindowResizedEvent(event);
-    }
 
     Layer* layer;
     for(unsigned int i = 0; i < App.layerStack->used; i++)
@@ -73,7 +71,7 @@ extern void ApplicationLoop()
     {
         if(App.minimized == false)
         {
-            for(unsigned int i = 0; i < VectorLength(App.layerStack); i++)
+            for(unsigned int i = 0; i < App.layerStack->used; i++)
             {
                 activeLayer = VectorGet(App.layerStack, i);
                 activeLayer->OnUpdate(GetDeltaTime(), App.window);
@@ -83,7 +81,7 @@ extern void ApplicationLoop()
     }
 
     // Cleanup
-    for(unsigned int i = 0; i < VectorLength(App.layerStack); i++)
+    for(unsigned int i = 0; i < App.layerStack->used; i++)
     {
         activeLayer = VectorGet(App.layerStack, i);
         activeLayer->Delete();
@@ -116,29 +114,34 @@ void ApplicationTerminate()
     App.shouldClose = 1;
 }
 
-extern v2  InputGetMousePosition()
+v2  InputGetMousePosition()
 {
     
     Assert(!App.window, "Window object does not exist");
     return App.window->state.mouse.position;
 }
 
-extern int  InputIsButtonPressed(int key)
+int  InputIsButtonPressed(int key)
 {
     
     Assert(!App.window, "Window object does not exist");
     return App.window->state.keyboard.keys[key].down;
 }
 
-extern int InputIsMouseButtonPressed(int key)
+int InputIsMouseButtonPressed(int key)
 {
     Assert(!App.window, "Window object does not exist");
     return App.window->state.mouse.buttons[key].down;
 }
 
-extern void SetMouseGrabbed(unsigned int grabbed) 
+void SetMouseGrabbed(unsigned int grabbed) 
 {
     
     Assert(!App.window, "Window object does not exist");
     glfwSetInputMode(App.window->windowHandle, GLFW_CURSOR, grabbed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+}
+
+v2 GetWindowSize()
+{
+    return v2((float)App.window->state.width, (float)App.window->state.height);
 }

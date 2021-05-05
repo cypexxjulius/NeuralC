@@ -23,7 +23,7 @@ void NeuralInit()
     unsigned int width = 1280, height = 720;
     ApplicationCreateWindow(width, height, "Test Window"); 
 
-    camera = NewOrthographicCameraController((float)width / (float)height, KeyboardController | MouseDragController);
+    camera = NewOrthographicCameraController(CameraAllControls);
 
     texture = NewTexture2D("res/textures/Checkerboard.png");
     texture2 = NewTexture2D("res/textures/firstImage.jpg");
@@ -32,8 +32,6 @@ void NeuralInit()
 
 void NeuralOnUpdate(float deltaTime, const Window* window)
 {
-    
-
     Profile(NeuralOnUpdate)
     {
         Profile(CameraControllerOnUpdate)
@@ -53,8 +51,8 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
             
             // Checkerboard Background 
             Renderer2DDrawQuad( (Quad2D) {
-                .position = v2(-500.0f, -50.0f), 
-                .scale = v2(200.0f, 200.0f), 
+                .position = v2(0.0f, 0.0f), 
+                .scale = v2(20.0f, 20.0f), 
                 .texture = texture,
                 .tiling = 10.0f,
                 // .rotation = Rotation,
@@ -69,19 +67,21 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
             {
 
                 Renderer2DDrawQuad((Quad2D) {
-                    .position = v2(-0.95, 0.0),
-                    .scale = v2(0.2, 0.2),
-                    .zIndex = 0.5,
+                    .position = v2(0.0, 0.0),
+                    .scale = v2(0.1, 0.1),
                     .texture = texture
                 });
 
-                Renderer2DRenderTest(string);
-                
-                Renderer2DDrawQuad( (Quad2D) {
-                    .position = v2(-1.0f, 0.0f),
-                    .zIndex = 1,
-                    .scale = v2(0.1f, 0.5f),
+                Renderer2DDrawQuad((Quad2D) {
+                    .position = v2(-1.0f, -0.5f),
                     .color = v4(0.0f, 1.0f, 1.0f, 1.0f),
+                    .text = (TextElement []) {
+                        (TextElement) {
+                            .string = string,
+                            .color = v3(1.0, 0.3, 0.2),
+                            .fontSize = 0.05f
+                        }
+                    }
                 });
 
             }
@@ -93,7 +93,6 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
 
 bool NeuralOnEvent(const Event* event)
 {
-
     CameraControllerOnEvent(camera, event);
     
     switch(event->type)
@@ -107,9 +106,21 @@ bool NeuralOnEvent(const Event* event)
                     ApplicationTerminate();
                     break;
                 case NL_KEY_BACKSPACE:
-                    if(stringCursor > 0)
-                        string[--stringCursor] = 0;
-                    break;       
+
+                    if(stringCursor == 0 || event->KeyPressedEvent.action == 0)
+                        return true;
+
+                    if(event->KeyPressedEvent.mod == NL_SHIFT_MOD)
+                    {
+                        string[0] = 0;
+                        stringCursor = 0;
+                        return true;
+                    }
+
+                    string[--stringCursor] = 0;
+                    break;    
+                case NL_KEY_ENTER:
+                    string[stringCursor++] = '\n';   
             }   
 
         }break;
@@ -120,12 +131,14 @@ bool NeuralOnEvent(const Event* event)
             char keycode = (char)event->KeyPressedEvent.keyCode;
 
             if(keycode >= 'a' && keycode <= 'z')
-                keycode = keycode - 'a' + 'A';
+                keycode -= 'a' - 'A';
             
             if(keycode >= ' ' && keycode <= 'Q')
+            {
                 string[stringCursor++] = keycode;
-
-
+                string[stringCursor] = 0;
+            }
+            puts(string);
         }
     }
     return 0;

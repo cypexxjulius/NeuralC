@@ -71,7 +71,7 @@ set PlatformLibs=kernel32.lib user32.lib gdi32.lib shell32.lib
 
 echo -- Linking
 
-call cl /Z7 /FeSandbox/program.exe /MD -I NeuralEngine/src/ %NeuralIncludePath% Sandbox/main.c /link /DEBUG:FASTLINK /nologo /NODEFAULTLIB:LIBCMT NeuralEngine/bin/NeuralEngine.lib %PlatformLibs% 2> nul && (
+call cl /Z7 /FeSandbox/program.exe /MD -I NeuralEngine/src/ %NeuralIncludePath% Sandbox/main.c /link /debug:fastlink /nologo /NODEFAULTLIB:LIBCMT NeuralEngine/bin/NeuralEngine.lib %PlatformLibs% 2> nul && (
     echo --- Compiled Succesfully
     goto end
 ) || (

@@ -5,6 +5,14 @@
 #include "textures/Texture2D.h"
 #include "src/utils/types.h"
 
+typedef struct TextQuadElement 
+{   
+    char *string; 
+    u16 maxLength;
+    float fontSize;
+    v3 color;
+} TextElement;
+
 typedef struct Renderer2DQuadInitializer
 {
     v2 position;
@@ -13,14 +21,13 @@ typedef struct Renderer2DQuadInitializer
     float zIndex;
     float tiling;
     float rotation;
+    TextElement* text;
     Texture2D* texture;
 } Quad2D;
 
 extern void Renderer2DInit();
 
 extern void Renderer2DShutdown();
-
-extern void Renderer2DRenderTest(char* character);
 
 extern void Renderer2DBeginScene(Camera* camera);
 

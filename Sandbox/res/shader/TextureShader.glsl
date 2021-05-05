@@ -73,6 +73,6 @@ void main()
         case 30: color *= texture(u_Textures[30], v_texCoord * v_TilingFactor); break;
         case 31: color *= texture(u_Textures[31], v_texCoord * v_TilingFactor); break;
     }
-    
+
     GLcolor = color;
 }
