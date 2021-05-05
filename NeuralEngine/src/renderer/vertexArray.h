@@ -18,14 +18,14 @@ extern void VertexArrayAddVertexBuffer
 
 
 
-extern inline void DeleteVertexArray(VertexArray* this);
+void DeleteVertexArray(VertexArray* this);
 
-extern inline void VertexArrayBind(VertexArray* this);
+void VertexArrayBind(VertexArray* this);
 
-extern inline void VertexArraySetIndexBuffer(VertexArray* this, IndexBuffer* indexBuffer);
+void VertexArraySetIndexBuffer(VertexArray* this, IndexBuffer* indexBuffer);
 
-extern inline VertexBuffer* VertexArrayGetVertexBuffer(VertexArray* this, u32 index);
+VertexBuffer* VertexArrayGetVertexBuffer(VertexArray* this, u32 index);
 
-extern inline void VertexArrayUnbind();
+void VertexArrayUnbind();
 
 #endif // __VERTEX_ARRAY_H_

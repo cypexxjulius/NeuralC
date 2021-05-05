@@ -4,7 +4,7 @@
 
 static float last_time;
 
-inline float GetDeltaTime()
+float GetDeltaTime()
 {
     float time = (float)glfwGetTime(); 
     float deltaTime = time - last_time;

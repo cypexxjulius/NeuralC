@@ -34,13 +34,13 @@ extern VertexBuffer* NewVertexBuffer(void *data, unsigned int size);
 
 extern VertexBuffer* NewVertexBufferEmpty(unsigned int size);
 
-extern inline void VertexBufferBind(VertexBuffer* this);
+void VertexBufferBind(VertexBuffer* this);
 
-extern inline void VertexBufferUnbind();
+void VertexBufferUnbind();
 
-extern inline void VertexBufferSetData(VertexBuffer* this, const void* data, u32 size);
+void VertexBufferSetData(VertexBuffer* this, const void* data, u32 size);
 
-extern inline void DeleteVertexBuffer(VertexBuffer* this);
+void DeleteVertexBuffer(VertexBuffer* this);
 
 
 extern void VertexBufferPushLayout
@@ -62,11 +62,11 @@ typedef struct
 
 extern IndexBuffer* NewIndexBuffer(unsigned int *data, unsigned int count); 
 
-extern inline void IndexBufferBind(IndexBuffer* this);
+void IndexBufferBind(IndexBuffer* this);
 
-extern inline void IndexBufferUnbind();
+void IndexBufferUnbind();
 
-extern inline void DeleteIndexBuffer(IndexBuffer* this);
+void DeleteIndexBuffer(IndexBuffer* this);
 
 
 #endif // __BUFFER_H_

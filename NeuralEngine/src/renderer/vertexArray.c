@@ -56,7 +56,7 @@ void DeleteVertexArray(VertexArray* this)
     Memory.Free(this);
 }
 
-inline void VertexArraySetIndexBuffer(VertexArray* this, IndexBuffer* indexBuffer)
+void VertexArraySetIndexBuffer(VertexArray* this, IndexBuffer* indexBuffer)
 {
     VertexArrayBind(this);
     IndexBufferBind(indexBuffer);
@@ -64,17 +64,17 @@ inline void VertexArraySetIndexBuffer(VertexArray* this, IndexBuffer* indexBuffe
     this->indexBuffer = indexBuffer;
 }
 
-inline void VertexArrayBind(VertexArray* this)
+void VertexArrayBind(VertexArray* this)
 {
     glBindVertexArray(this->rendererID);
 }
 
-inline VertexBuffer* VertexArrayGetVertexBuffer(VertexArray* this, u32 index)
+VertexBuffer* VertexArrayGetVertexBuffer(VertexArray* this, u32 index)
 {
     return VectorGet(this->vertexBuffer, index);
 }
 
-inline void VertexArrayUnbind()
+void VertexArrayUnbind()
 {
     glBindVertexArray(0);
 }

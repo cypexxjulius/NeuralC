@@ -81,7 +81,7 @@ void VertexBufferPushLayout
     
 }
 
-inline void DeleteVertexBuffer(VertexBuffer* this)
+void DeleteVertexBuffer(VertexBuffer* this)
 {
     glDeleteBuffers(1, &this->id);
 
@@ -90,17 +90,17 @@ inline void DeleteVertexBuffer(VertexBuffer* this)
 }
 
 
-inline void VertexBufferBind(VertexBuffer* this)
+void VertexBufferBind(VertexBuffer* this)
 {
     glBindBuffer(GL_ARRAY_BUFFER, this->id);
 }
 
-inline void VertexBufferUnbind()
+void VertexBufferUnbind()
 {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-inline void VertexBufferSetData(VertexBuffer* this, const void* data, u32 size)
+void VertexBufferSetData(VertexBuffer* this, const void* data, u32 size)
 {
     glBindBuffer(GL_ARRAY_BUFFER, this->id);
     glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
@@ -122,17 +122,17 @@ IndexBuffer* NewIndexBuffer(unsigned int *data, unsigned int count)
 }
 
 
-extern inline void IndexBufferBind(IndexBuffer* this)
+void IndexBufferBind(IndexBuffer* this)
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
 }
 
-void inline IndexBufferUnbind()
+void IndexBufferUnbind()
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void inline DeleteIndexBuffer(IndexBuffer* this)
+void DeleteIndexBuffer(IndexBuffer* this)
 {
     glDeleteBuffers(1, &this->id);
     Memory.Free(this);
