@@ -49,7 +49,8 @@ void WidgetsRender()
                 {
                     .position = this->BoxWidget.position,
                     .color = this->BoxWidget.color,
-                    .scale = this->BoxWidget.scale
+                    .height = this->BoxWidget.height,
+                    .width = this->BoxWidget.width
                 });
                 break;
 

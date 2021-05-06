@@ -17,7 +17,7 @@ Camera* NewOrthographicCamera(float left, float right, float bottom, float top)
 
     this->camType = OrthographicCameraType;
 
-    this->orthoCam.view_proj.proj = glms_ortho(left, right, bottom, top, 100.0f, -100.0f);
+    this->orthoCam.view_proj.proj = glms_ortho(left, right, bottom, top, -100.0f, 100.0f);
     orthographicCameraRecalculate(this);
 
     this->orthoCam.height = GetUnsignedFloat(top) + GetUnsignedFloat(bottom);

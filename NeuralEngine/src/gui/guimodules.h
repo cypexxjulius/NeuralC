@@ -13,7 +13,7 @@ typedef struct BoxWidget
 {
     v4 color;
     v2 position;
-    v2 scale;
+    float width, height;
     float zIndex;
 
 } BoxWidget;

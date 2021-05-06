@@ -19,4 +19,9 @@ extern void RendererDrawIndexed(VertexArray* va, u32 indexCount);
 
 extern void RendererSetViewPort(unsigned int width, unsigned int height);
 
+extern void RendererStartCallback();
+
+extern void RendererEndCallback();
+
+
 #endif // __RENDERER_H_

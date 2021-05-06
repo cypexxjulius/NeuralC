@@ -15,8 +15,7 @@ CameraController* NewOrthographicCameraController(CameraControllerType controlle
     float aspectRatio = WindowSize.width / WindowSize.height;
     
 
-    this->OrthoCamAssets.zoomLevel = 1;
-    
+    this->OrthoCamAssets.zoomLevel = 1.0f;
     this->camera = NewOrthographicCamera(   
         -aspectRatio * this->OrthoCamAssets.zoomLevel, 
         aspectRatio * this->OrthoCamAssets.zoomLevel, 
@@ -43,7 +42,7 @@ void CameraControllerOnUpdate(CameraController* this, float deltaTime)
             float speed = this->OrthoCamAssets.cameraTranslationSpeed * this->OrthoCamAssets.zoomLevel;
             v2 pos = {0};
 
-            unsigned int isPressed = InputIsMouseButtonPressed(NL_MOUSE_BUTTON_LEFT);
+            u8 isPressed = InputIsMouseButtonPressed(NL_MOUSE_BUTTON_LEFT);
             
             if(InputIsButtonPressed(NL_KEY_W))
                 pos.y -= speed * deltaTime * !isPressed;
@@ -86,18 +85,19 @@ void CameraControllerOnEvent(CameraController* this, const Event* event)
     {
         case ScrolledEventType :
         {
+            float scrollDistance = event->PosEvent.pos.y;
             if((this->OrthoCamAssets.controllerType & CameraMouseScrollSensitive) == 0)
                 return;
 
-            if(event->PosEvent.pos.y == 0)
+            if(scrollDistance == 0)
                 return;
 
             static const float zoomIntensity = 2.0f;
 
-            if(event->PosEvent.pos.y < 0)
-                this->OrthoCamAssets.zoomLevel *=  GetUnsignedFloat(event->PosEvent.pos.y) * zoomIntensity;
+            if(scrollDistance < 0)
+                this->OrthoCamAssets.zoomLevel *=  GetUnsignedFloat(scrollDistance) * zoomIntensity;
             else 
-                this->OrthoCamAssets.zoomLevel /= event->PosEvent.pos.y * zoomIntensity; 
+                this->OrthoCamAssets.zoomLevel /= scrollDistance * zoomIntensity; 
 
 
             this->OrthoCamAssets.zoomLevel = C_Max(this->OrthoCamAssets.zoomLevel, 0.01f);

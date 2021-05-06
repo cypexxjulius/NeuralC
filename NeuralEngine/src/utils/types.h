@@ -59,6 +59,9 @@ typedef struct v4 {
 #define v4(x, y, z, w) (v4){x, y, z, w}
 
 
+#define nu
+
+
 void mat4print(mat4s mat);
 
 float GetUnsignedFloat(float x);

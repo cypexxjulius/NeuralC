@@ -53,12 +53,12 @@ extern void RendererInit()
     Renderer2DInit();
 }
 
-extern void RendererShutdown()
+void RendererShutdown()
 {
     Renderer2DShutdown();
 }
 
-extern void RendererClearScreen()
+void RendererClearScreen()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.1f,0.8f, 0.1f,1.0f);
@@ -68,12 +68,21 @@ extern void RendererClearScreen()
 void RendererDrawIndexed(VertexArray* va, u32 indexCount)
 {
     u32 count = indexCount ? indexCount : va->indexBuffer->count;
-
     // Draw Elements
     glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, NULL);
 }
 
-extern void RendererSetViewPort(unsigned int width, unsigned int height)
+void RendererSetViewPort(unsigned int width, unsigned int height)
 {
     glViewport(0, 0, width, height);
+}
+
+void RendererEndCallback()
+{
+    Renderer2DEndSceneCallback();
+}
+
+void RendererStartCallback()
+{
+    Renderer2DStartSceneCallback();
 }

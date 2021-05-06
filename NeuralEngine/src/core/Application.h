@@ -14,20 +14,20 @@ typedef struct Application
     char *name;
 
     unsigned int shouldClose;
-    unsigned int minimized;
+    volatile u8 minimized;
 } Application;
 
 extern void NewApplication(char *ApplicationName);
 
-void ApplicationCreateWindow(int width, int height, char* title);
+extern void ApplicationCreateWindow(int width, int height, char* title);
 
-void ApplicationTerminate();
+extern void ApplicationTerminate();
 
 extern void ApplicationPushLayer(Layer* layer);
 
-const Window* ApplicationGetWindow();
+extern const Window* ApplicationGetWindow();
 
-void ApplicationLoop();
+extern void ApplicationLoop();
 
 extern v2 InputGetMousePosition();
 extern int InputIsButtonPressed(int key);

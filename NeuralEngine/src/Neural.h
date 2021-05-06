@@ -3,7 +3,7 @@
 
 #include "src/renderer/renderer.h"
 #include "src/events/keycode.h"
-#include "src/core/Application.h"
+   #include "src/core/Application.h"
 #include "src/renderer/Renderer2D.h"
 
 // Textures
@@ -13,8 +13,6 @@
 #include "src/renderer/camera/Camera.h"
 #include "src/renderer/camera/OrthographicCameraController.h"
 
-// Memory Allocation
-#include "src/platform/memory.h"
 
 // Entry Point
 #include "src/core/EntryPoint.h"

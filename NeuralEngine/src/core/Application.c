@@ -48,13 +48,13 @@ static void ApplicationOnEvent(Event* event)
     for(unsigned int i = 0; i < App.layerStack->used; i++)
     {       
         layer = VectorGet(App.layerStack, i);
-        if(layer->OnEvent(event))
+        if(layer->OnEvent(event) && event->Cancable)
             break;
     }
 }
 
 
-extern void ApplicationCreateWindow(int width, int height, char* title)
+void ApplicationCreateWindow(int width, int height, char* title)
 {
     App.window = NewWindow(width, height, title);
     App.window->EventCallback = ApplicationOnEvent;
@@ -63,21 +63,27 @@ extern void ApplicationCreateWindow(int width, int height, char* title)
     RendererInit();
 }
 
-extern void ApplicationLoop()
+void ApplicationLoop()
 {
     Assert(!App.window, "Window does not exist");
+
+
     Layer* activeLayer = NULL;
     while(!App.shouldClose)
     {
-        if(App.minimized == false)
+        if(App.minimized == true)
+            continue;
+        
+        RendererStartCallback();
+
+        for(unsigned int i = 0; i < App.layerStack->used; i++)
         {
-            for(unsigned int i = 0; i < App.layerStack->used; i++)
-            {
-                activeLayer = VectorGet(App.layerStack, i);
-                activeLayer->OnUpdate(GetDeltaTime(), App.window);
-            }
-            WindowUpdate(App.window, !App.minimized);
+            activeLayer = VectorGet(App.layerStack, i);
+            activeLayer->OnUpdate(GetDeltaTime(), App.window);
         }
+        RendererEndCallback();
+
+        WindowUpdate(App.window, !App.minimized);
     }
 
     // Cleanup
@@ -97,7 +103,7 @@ extern void ApplicationLoop()
     DeleteWindow(App.window);
 }
 
-extern void ApplicationPushLayer(Layer* layer)
+void ApplicationPushLayer(Layer* layer)
 {
     VectorAdd(App.layerStack, layer);
     layer->Init();

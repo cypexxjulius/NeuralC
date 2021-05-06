@@ -16,6 +16,7 @@ static float Rotation = 0.0f;
 #define maxSize 100
 
 static char string[4096] = { 0 };
+static char FPSCountBuffer[10] = { 0 };
 static unsigned int stringCursor = 0;
 
 void NeuralInit()
@@ -52,13 +53,22 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
             // Checkerboard Background 
             Renderer2DDrawQuad( (Quad2D) {
                 .position = v2(0.0f, 0.0f), 
-                .scale = v2(20.0f, 20.0f), 
+                .width = 50.0f,
+                .height = 50.0f,
                 .texture = texture,
-                .tiling = 10.0f,
-                // .rotation = Rotation,
+                .rotation = Rotation,
             });
 
             Rotation += deltaTime;
+            
+            
+            Renderer2DDrawQuad( (Quad2D) {
+                .position = v2(0.0f, 10.0f), 
+                .tiling = 10.0f,
+                .width = 50.0f,
+                .height = 50.0f,
+                .color = v4(1.0, 0.3, 0.1, 1.0),
+            });
 
             
             Renderer2DEndScene();
@@ -68,13 +78,16 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
 
                 Renderer2DDrawQuad((Quad2D) {
                     .position = v2(0.0, 0.0),
-                    .scale = v2(0.1, 0.1),
-                    .texture = texture
+                    .texture = texture,
+                    .width = 50 nu,
+                    .height = 50 nu,
                 });
 
                 Renderer2DDrawQuad((Quad2D) {
                     .position = v2(-1.0f, -0.5f),
                     .color = v4(0.0f, 1.0f, 1.0f, 1.0f),
+                    .width = 300 nu,
+                    .height = 50 nu,
                     .text = (TextElement []) {
                         (TextElement) {
                             .string = string,
@@ -83,6 +96,23 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
                         }
                     }
                 });
+
+                // FPS Count
+
+                itoa((int)(1.0f / deltaTime), FPSCountBuffer, 10);
+
+                Renderer2DDrawQuad((Quad2D) {
+                    .position = v2(-1.0f, -1.0f),
+                    .color = v4(0.0f, 0.0f, 0.0f, 0.0f),
+                    .width = 300 nu,
+                    .height = 50 nu,
+                    .text = (TextElement []) {
+                        (TextElement) {
+                            .string = FPSCountBuffer,
+                        }
+                    }
+                });
+
 
             }
             Renderer2DEndScene();

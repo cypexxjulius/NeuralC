@@ -16,7 +16,8 @@ typedef struct TextQuadElement
 typedef struct Renderer2DQuadInitializer
 {
     v2 position;
-    v2 scale;
+    float width;
+    float height;
     v4 color;
     float zIndex;
     float tiling;
@@ -34,6 +35,10 @@ extern void Renderer2DBeginScene(Camera* camera);
 extern void Renderer2DDrawQuad(Quad2D initializer);
 
 extern void Renderer2DEndScene();
+
+extern void Renderer2DEndSceneCallback();
+
+extern void Renderer2DStartSceneCallback();
 
 
 

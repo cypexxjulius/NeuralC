@@ -15,7 +15,7 @@ static Texture2D* IdentityTexture = NULL;
 static TextureAtlas* TextTextureAtlas = NULL;
 static CameraController* ViewPortCamera = NULL;
 
-#define MaxQuads 20000
+#define MaxQuads 30000
 #define MaxVertices MaxQuads * 4
 #define MaxIndices MaxQuads * 6
 
@@ -30,7 +30,7 @@ typedef struct QuadVertex
 
 static u64 QuadIndexCount = 0;
 
-static QuadVertex QuadVertexBufferBase[MaxVertices * sizeof(QuadVertex)] = { 0 };
+static QuadVertex QuadVertexBufferBase[MaxVertices] = { 0 };
 static QuadVertex* QuadVertexBufferPtr = NULL;
 
 static const vec4s QuadVertexPositions[4] = {
@@ -46,14 +46,14 @@ static const vec4s QuadVertexPositions[4] = {
 static Texture2D* TextureSlots[MaxTextureSlots];
 static u32 TextureSlotIndex = 1;
 
-
+static double ZINDEX_STEPS = 1.0f / (float)MaxQuads;
+static float RendererScenezIndex = 0; 
 
 void Renderer2DInit()
 {
     QuadVertexArray = NewVertexArray();
 
     // Quad Vertex Buffer 
-    
     VertexBuffer* vertexBuffer = NewVertexBufferEmpty(MaxVertices * sizeof(QuadVertex));
 
     VertexBufferSetLayout(vertexBuffer, 5, (VertexBufferElement []){
@@ -109,7 +109,6 @@ void Renderer2DInit()
 
 
     // Setup ViewPortCamera
-    
     ViewPortCamera = NewOrthographicCameraController(CameraNoControls);
 
 
@@ -134,7 +133,6 @@ void Renderer2DBeginScene(Camera* camera)
 {
     
     ShaderSetMat4(TextureShader, "u_ViewProj", camera ? OrthographicCameraGetViewProjMat(camera).raw : OrthographicCameraGetViewProjMat(ViewPortCamera->camera).raw );
-
 
     QuadIndexCount = 0;
     QuadVertexBufferPtr = QuadVertexBufferBase;
@@ -174,7 +172,7 @@ static inline v3 Mat4MulVec4(mat4s matrix, vec4s vec);
 
 static inline void PushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4], float iTextureID, float itiling);
 
-static void Renderer2DRenderText(char* string, float scale, v3 color, v2 position, float zIndex)
+static void Renderer2DRenderText(char* string, float scale, v3 color, v2 position, float zIndex, float maxWidth)
 {
     static const float unit = 16.0f / 256.0f;
     static const float TextureID = 1;
@@ -191,6 +189,9 @@ static void Renderer2DRenderText(char* string, float scale, v3 color, v2 positio
             lineLength = 0;
             continue;
         }
+
+        if((i + 1) * scale > maxWidth)
+            return;
 
         float column =  (float)(string[i] % 16);
 
@@ -247,22 +248,22 @@ void Renderer2DDrawQuad(Quad2D initializer)
     }
     out:
 
-    v2 scale = {
-        .x = initializer.scale.x ? initializer.scale.x : 1.0f,
-        .y = initializer.scale.y ? initializer.scale.y : 1.0f
-    };
+
+    float width = (initializer.width ? initializer.width : 1.0f)   / 1000.0f;
+    float height = (initializer.height ? initializer.height : 1.0f) / 1000.0f;
+
 
     float tiling = initializer.tiling ? initializer.tiling : 1.0f;
-    float zIndex = initializer.zIndex;
-
+    float zIndex = RendererScenezIndex + initializer.zIndex;
+    RendererScenezIndex += (float)ZINDEX_STEPS;
 
     if(initializer.rotation == 0)
     {
         PushVertices( (v3 [4]) {
-            v3(position.x, position.y, zIndex),
-            v3(position.x + scale.x, position.y, zIndex),
-            v3(position.x + scale.x, position.y + scale.y, zIndex),
-            v3(position.x, position.y + scale.y, zIndex)
+            v3(position.x,          position.y, zIndex),
+            v3(position.x + width,  position.y, zIndex),
+            v3(position.x + width,  position.y + height, zIndex),
+            v3(position.x,          position.y + height, zIndex)
         }, color, (v2 [4]) {
             v2(0, 0),
             v2(1, 0),
@@ -275,7 +276,7 @@ void Renderer2DDrawQuad(Quad2D initializer)
         mat4s transform =   glms_mat4_mul(
                                 glms_translate_make(vec3s(position.x, position.y, zIndex)), // Position transform
                                 glms_mat4_mul(  
-                                    glms_scale_make(vec3s(scale.x, scale.y, 1.0f)), // Scale Transform
+                                    glms_scale_make(vec3s(width, height, 1.0f)), // Scale Transform
                                     glms_rotate_make(initializer.rotation, vec3s(0.0f, 0.0f, 1.0f)) // Rotation Transform
                                 )
                             );
@@ -308,10 +309,11 @@ void Renderer2DDrawQuad(Quad2D initializer)
         
         Renderer2DRenderText(
             initializer.text->string,
-            scale.x * initializer.text->fontSize ? initializer.text->fontSize : 1.0f,
+            height * (initializer.text->fontSize ? initializer.text->fontSize : 1.0f),
             textcolor,
-            v2(position.x, position.y + scale.y),
-            zIndex - 0.01f
+            v2(position.x, position.y + height),
+            zIndex + 0.01f,
+            width
         );
     }
 
@@ -361,3 +363,13 @@ v3 Mat4MulVec4(mat4s matrix, vec4s vec)
     vec3s temp = glms_mat4_mulv3(matrix, vec3s(vec.x, vec.y, vec.z), vec.w);
     return v3(temp.x, temp.y, temp.z);
 };
+
+void Renderer2DEndSceneCallback()
+{
+}
+
+void Renderer2DStartSceneCallback()
+{
+    RendererScenezIndex = 0;
+}
+
