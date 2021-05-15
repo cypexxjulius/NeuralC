@@ -72,8 +72,11 @@ void ApplicationLoop()
     while(!App.shouldClose)
     {
         if(App.minimized == true)
+        {
+            WindowUpdate(App.window, !App.minimized);
             continue;
-        
+        }
+
         RendererStartCallback();
 
         for(unsigned int i = 0; i < App.layerStack->used; i++)
@@ -149,5 +152,6 @@ void SetMouseGrabbed(unsigned int grabbed)
 
 v2 GetWindowSize()
 {
-    return v2((float)App.window->state.width, (float)App.window->state.height);
+    Assert(!App.window, "Window object does not exist");
+    return V2((float)App.window->state.width, (float)App.window->state.height);
 }

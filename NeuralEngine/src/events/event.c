@@ -73,7 +73,7 @@ static void _ScrollCallback(GLFWwindow* glWindow, double _xOffset, double _yOffs
     Window* window = glfwGetWindowUserPointer(glWindow);
 
 
-    Event event = Event(ScrolledEventType, .PosEvent = PosEvent(v2((float)_xOffset, (float)_yOffset), v2( 0,0 )), true);
+    Event event = Event(ScrolledEventType, .PosEvent = PosEvent(V2((float)_xOffset, (float)_yOffset), V2( 0,0 )), true);
     event.id = id++;
 
     if(window->EventCallback)
@@ -89,10 +89,10 @@ static void _MouseMoveCallback(GLFWwindow* glWindow, double _x, double _y)
 
     Window* window = glfwGetWindowUserPointer(glWindow);
 
-    Event event = Event(MouseMovedEventType, .PosEvent = PosEvent( v2((float) _x, (float) _y), v2( (float)_x - xOldPos, (float)_y - yOldPos)), true);
+    Event event = Event(MouseMovedEventType, .PosEvent = PosEvent( V2((float) _x, (float) _y), V2( (float)_x - xOldPos, (float)_y - yOldPos)), true);
     event.id = id++;
     
-    window->state.mouse.position = v2((float)_x,(float) _y);
+    window->state.mouse.position = V2((float)_x,(float) _y);
 
     xOldPos = (float)_x;
     yOldPos = (float)_y;

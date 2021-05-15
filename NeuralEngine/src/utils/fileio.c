@@ -6,7 +6,7 @@
 #include "src/platform/memory.h"
 #include "src/core/error.h"
 
-extern String ReadStringFromFile(char *filepath)
+String ReadStringFromFile(const char *filepath)
 {
     FILE* fp = fopen(filepath, "rb");           // Opens the File
 
@@ -22,9 +22,9 @@ extern String ReadStringFromFile(char *filepath)
     unsigned int fileLength = ftell(fp);        // Reading the position of the Cursor (last position in File = Length of File)
     rewind(fp);                                 // Resetting the Cursor to the Beginning
 
-    char *file = Memory.Alloc(fileLength + 1); // Reserving space for the filecontent in a buffer
+    unsigned char *file = Memory.Alloc(fileLength + 1); // Reserving space for the filecontent in a buffer
 
-    fread(file, fileLength, sizeof(char), fp);  // Reading the filecontent into the Buffer
+    fread(file, sizeof(char), fileLength, fp);  // Reading the filecontent into the Buffer
     file[fileLength] = 0;                       // Appending End of File
 
 
@@ -32,6 +32,6 @@ extern String ReadStringFromFile(char *filepath)
     return (String)
     {
         .length = fileLength,
-        .string = file
+        .string = (char *)file
     }; // Return the Buffer
 }

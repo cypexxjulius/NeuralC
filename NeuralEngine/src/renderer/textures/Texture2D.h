@@ -9,9 +9,15 @@ typedef struct Texture2D
 } Texture2D;
 
 
+typedef enum ImageType
+{
+    Image_TypeRGBA,
+    Image_TypeALPHA
+} ImageType;
+
 Texture2D* NewTexture2D(const char *filepath);
 
-Texture2D* NewTexture2DEmpty(unsigned int width, unsigned int height);
+Texture2D* NewTexture2DEmpty(unsigned int width, unsigned int height, ImageType type);
 
 void Texture2DBind(Texture2D* this, unsigned int slot);
 

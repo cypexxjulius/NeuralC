@@ -34,6 +34,11 @@ Texture2D* NewTexture2D(const char * filepath)
         internalFormat = GL_RGBA32UI;
         dataFormat = GL_RGBA;
         break;
+    case 1:
+        internalFormat = GL_ALPHA8_SNORM;
+        dataFormat = GL_ALPHA;
+        break;
+    
     default:
         Assert(1, "Image Format not supported");
     }
@@ -58,16 +63,15 @@ Texture2D* NewTexture2D(const char * filepath)
     return this;
 }
 
-Texture2D* NewTexture2DEmpty(unsigned int width, unsigned int height)
+static Texture2D* NewTexture2DEmptyImpl(unsigned int width, unsigned int height, unsigned int internalFormat, unsigned int dataFormat)
 {
     Texture2D* this = CreateObject(Texture2D);
+    
     this->width = width;
     this->height = height;
-    
-    GLenum internalFormat = GL_RGBA8, dataFormat = GL_RGBA;
 
-    this->format = (unsigned int)dataFormat;
-    this->internalFormat = (unsigned int)internalFormat;
+    this->format = dataFormat;
+    this->internalFormat = internalFormat;
 
     glCreateTextures(GL_TEXTURE_2D, 1, &this->id);
 	glTextureStorage2D(this->id, 1, internalFormat, this->width, this->height);
@@ -82,10 +86,32 @@ Texture2D* NewTexture2DEmpty(unsigned int width, unsigned int height)
     return this;
 }
 
+Texture2D* NewTexture2DEmpty(unsigned int width, unsigned int height, ImageType type)
+{
+    Texture2D* this = NULL;
+
+    if(type == Image_TypeRGBA)
+    {   
+        this = NewTexture2DEmptyImpl(width, height, GL_RGBA8, GL_RGBA);
+        this->channels = 4;
+    }
+    if(type == Image_TypeALPHA)
+    {
+        this = NewTexture2DEmptyImpl(width, height, GL_R8, GL_RED);
+        this->channels = 1;
+    }
+
+
+    Assert(this == NULL, "Image Type not supported");
+
+    return this;
+}
+
 void Texture2DSetData(Texture2D *this, void *data, unsigned int size)
 {
-    unsigned int bpp = GL_RGBA ? 4 : 3;
+    unsigned int bpp = this->channels;
     Assert(!(size == this->width * this->height * bpp), "Size must be the entire Texture");
+
 	glTextureSubImage2D(this->id, 0, 0, 0, this->width, this->height, this->format, GL_UNSIGNED_BYTE, data);
 }
 

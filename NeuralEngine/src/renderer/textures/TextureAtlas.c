@@ -19,10 +19,10 @@ TextureAtlas* NewTextureAtlas(const char * string, float rows, float columns)
 
 void TextureAtlasGetTextCoords(TextureAtlas* this, float row, float column, float width, float height, v2 outVertices[4])
 {
-    outVertices[0] = v2(this->unitx * (column - 0.0f),  1.0f - this->unity * (row + height));
-    outVertices[1] = v2(this->unitx * (column + width), 1.0f - this->unity * (row + height));
-    outVertices[2] = v2(this->unitx * (column + width), 1.0f - this->unity * (row - 0.0f));
-    outVertices[3] = v2(this->unitx * (column - 0.0f),  1.0f - this->unity * (row - 0.0f));
+    outVertices[0] = V2(this->unitx * (column - 0.0f),  1.0f - this->unity * (row + height));
+    outVertices[1] = V2(this->unitx * (column + width), 1.0f - this->unity * (row + height));
+    outVertices[2] = V2(this->unitx * (column + width), 1.0f - this->unity * (row - 0.0f));
+    outVertices[3] = V2(this->unitx * (column - 0.0f),  1.0f - this->unity * (row - 0.0f));
 }
 
 

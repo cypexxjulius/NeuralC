@@ -8,12 +8,16 @@
 #include "src/renderer/textures/TextureAtlas.h"
 #include "src/renderer/camera/OrthographicCameraController.h"
 #include "src/core/Application.h"
+#include "src/renderer/font/font.h"
+
 
 static Shader* TextureShader = NULL;
+
 static VertexArray* QuadVertexArray = NULL; 
 static Texture2D* IdentityTexture = NULL;
-static TextureAtlas* TextTextureAtlas = NULL;
 static CameraController* ViewPortCamera = NULL;
+static Font* FontTexture;
+
 
 #define MaxQuads 30000
 #define MaxVertices MaxQuads * 4
@@ -42,9 +46,9 @@ static const vec4s QuadVertexPositions[4] = {
 
 // TextureSlot Array
 
-#define MaxTextureSlots 32
+#define MaxTextureSlots 30
 static Texture2D* TextureSlots[MaxTextureSlots];
-static u32 TextureSlotIndex = 1;
+static u32 TextureSlotIndex = 0;
 
 static double ZINDEX_STEPS = 1.0f / (float)MaxQuads;
 static float RendererScenezIndex = 0; 
@@ -90,16 +94,14 @@ void Renderer2DInit()
     VertexArraySetIndexBuffer(QuadVertexArray, quadIndexBuffer);
 
     
-    IdentityTexture = NewTexture2DEmpty(1, 1);
+    IdentityTexture = NewTexture2DEmpty(1, 1, Image_TypeRGBA);
 
     // Set Identity (white) Image for pure Color Quads
     uint32_t WhiteTextureData = 0xffffffff;
     Texture2DSetData(IdentityTexture, &WhiteTextureData, sizeof(uint32_t));
-    TextureSlots[0] = IdentityTexture;
 
     // Setup text texture atlas
-    TextTextureAtlas = NewTextureAtlas("res/textures/CharSet2.png", 16, 16);
-    TextureSlots[1] = TextTextureAtlas->texture;
+    FontTexture = NewFontTexture("res/fonts/Roboto-Regular.ttf");
 
 
     // Setup sampler array
@@ -111,9 +113,7 @@ void Renderer2DInit()
     // Setup ViewPortCamera
     ViewPortCamera = NewOrthographicCameraController(CameraNoControls);
 
-
-    TextureShader = NewShaderFromFile(String("TextureShader"), "res/shader/TextureShader.glsl");
-    Assert(TextureShader == NULL, "Failed to create Shader");
+    TextureShader   = NewShaderFromFile(String("TextureShader"), "res/shader/TextureShader.glsl");
     
     ShaderBind(TextureShader);
     ShaderSetIntArray(TextureShader, "u_Textures", samplers, MaxTextureSlots);
@@ -125,26 +125,29 @@ void Renderer2DShutdown()
     DeleteVertexArray(QuadVertexArray);
     DeleteShader(TextureShader);
     DeleteTexture2D(IdentityTexture);
-    DeleteTextureAtlas(TextTextureAtlas);
+    DeleteFont(FontTexture);
 }
 
 
 void Renderer2DBeginScene(Camera* camera)
 {
     
-    ShaderSetMat4(TextureShader, "u_ViewProj", camera ? OrthographicCameraGetViewProjMat(camera).raw : OrthographicCameraGetViewProjMat(ViewPortCamera->camera).raw );
+    ShaderSetMat4(TextureShader, "u_ViewProj", ((camera != NULL) ? OrthographicCameraGetViewProjMat(camera).raw : OrthographicCameraGetViewProjMat(ViewPortCamera->camera).raw));
 
     QuadIndexCount = 0;
     QuadVertexBufferPtr = QuadVertexBufferBase;
 
-    TextureSlotIndex = 2;
+    TextureSlotIndex = 0;
 }
 
 static inline void Renderer2DUploadBatch()
 {
     // Bindung all Textures
+    Texture2DBind(IdentityTexture, 0);
+    FontBind(FontTexture, 1);
+
     for(u32 i = 0; i < TextureSlotIndex; i++)
-        Texture2DBind(TextureSlots[i], i);
+        Texture2DBind(TextureSlots[i], i + 2);
 
     VertexBufferSetData(
         VertexArrayGetVertexBuffer(QuadVertexArray, 0), // VertexBuffer 
@@ -158,7 +161,7 @@ static inline void Renderer2DUploadBatch()
     QuadIndexCount = 0;
     QuadVertexBufferPtr = QuadVertexBufferBase;
 
-    TextureSlotIndex = 2;
+    TextureSlotIndex = 0;
 
 }
 
@@ -174,12 +177,8 @@ static inline void PushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4
 
 static void Renderer2DRenderText(char* string, float scale, v3 color, v2 position, float zIndex, float maxWidth)
 {
-    static const float unit = 16.0f / 256.0f;
-    static const float TextureID = 1;
-    static const float tiling = 1.0f;
-    
     u16 Strlen = (u16)strlen(string);
-    u16 lineLength = 0;
+    float lineLength = 0;
 
     for(u16 i = 0; i < Strlen; i++)
     {
@@ -190,29 +189,31 @@ static void Renderer2DRenderText(char* string, float scale, v3 color, v2 positio
             continue;
         }
 
-        if((i + 1) * scale > maxWidth)
+
+        v2 textureCoords[4];
+        v2 Size;
+        FontGetCharVertices(FontTexture, string[i], textureCoords, &Size);
+
+        if(Size.width * scale > maxWidth)
             return;
-
-        float column =  (float)(string[i] % 16);
-
-        float row =  ((string[i] - column) / 16.0f) - 1.0f; 
-        column--;
 
         float posx = lineLength * scale + position.x;
         float posy = position.y - scale;
 
-        v2 textureCoords[4];
-        TextureAtlasGetTextCoords(TextTextureAtlas, row, column, 1, 1, textureCoords);
-
 
         PushVertices((v3 [4]){
-            v3(posx,            posy, zIndex),
-            v3(posx + scale,    posy, zIndex),
-            v3(posx + scale,    posy + scale, zIndex),
-            v3(posx,            posy + scale, zIndex),
-        }, v4(color.x, color.y, color.z, 1.0f), textureCoords, TextureID, tiling);
+            v3(posx,                            posy, zIndex),
+            v3(posx + Size.width * scale    , posy, zIndex),
+            v3(posx + Size.width * scale    , posy + Size.height * scale, zIndex),
+            v3(posx,                          posy + Size.height * scale, zIndex),
+            }, 
+            v4(color.x, color.y, color.z, 1.0f), 
+            textureCoords, 
+            1, 
+            1.0f
+        );
 
-        lineLength++;
+        lineLength += Size.width;
 
     }
 }
@@ -238,16 +239,17 @@ void Renderer2DDrawQuad(Quad2D initializer)
         {
             if(TextureSlots[i]->id == initializer.texture->id)
             {
-                TextureID = (float)i;
-                goto out;
+                TextureID = (float)i + 2;
+        
+                goto out;TextureID += 2;
             }
         }
 
         TextureID = (float)TextureSlotIndex;
         TextureSlots[TextureSlotIndex++] = initializer.texture;
+        TextureID += 2;
     }
     out:
-
 
     float width = (initializer.width ? initializer.width : 1.0f)   / 1000.0f;
     float height = (initializer.height ? initializer.height : 1.0f) / 1000.0f;
@@ -265,10 +267,10 @@ void Renderer2DDrawQuad(Quad2D initializer)
             v3(position.x + width,  position.y + height, zIndex),
             v3(position.x,          position.y + height, zIndex)
         }, color, (v2 [4]) {
-            v2(0, 0),
-            v2(1, 0),
-            v2(1, 1),
-            v2(0, 1)
+            V2(0, 0),
+            V2(1, 0),
+            V2(1, 1),
+            V2(0, 1)
         }, TextureID, tiling);
     } else {
 
@@ -287,10 +289,10 @@ void Renderer2DDrawQuad(Quad2D initializer)
             Mat4MulVec4(transform, QuadVertexPositions[2]),
             Mat4MulVec4(transform, QuadVertexPositions[3])
         }, color, (v2 []) {
-            v2(0, 0),
-            v2(1, 0),
-            v2(1, 1),
-            v2(0, 1)
+            V2(0, 0),
+            V2(1, 0),
+            V2(1, 1),
+            V2(0, 1)
         }, TextureID, tiling);    
         
     }
@@ -309,9 +311,9 @@ void Renderer2DDrawQuad(Quad2D initializer)
         
         Renderer2DRenderText(
             initializer.text->string,
-            height * (initializer.text->fontSize ? initializer.text->fontSize : 1.0f),
+            (initializer.text->fontSize ? initializer.text->fontSize : 1.0f),
             textcolor,
-            v2(position.x, position.y + height),
+            V2(position.x, position.y + height),
             zIndex + 0.01f,
             width
         );

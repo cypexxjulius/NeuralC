@@ -29,7 +29,7 @@ CameraController* NewOrthographicCameraController(CameraControllerType controlle
     this->OrthoCamAssets.controllerType = controllertype;
     this->OrthoCamAssets.aspectRatio = aspectRatio;
 
-    OrthographicCameraSetPosition(this->camera,  v2(0.0f, 0.0f));
+    OrthographicCameraSetPosition(this->camera,  V2(0.0f, 0.0f));
     return this;
 }
 
@@ -71,10 +71,10 @@ void CameraControllerOnUpdate(CameraController* this, float deltaTime)
             
             OrthgraphicCameraAddVector(
                 this->camera, 
-                v2(this->OrthoCamAssets.mouseMovedDelta.x * xRatio, this->OrthoCamAssets.mouseMovedDelta.y * yRatio)
+                V2(this->OrthoCamAssets.mouseMovedDelta.x * xRatio, this->OrthoCamAssets.mouseMovedDelta.y * yRatio)
             );
             
-            this->OrthoCamAssets.mouseMovedDelta = v2(0.0f, 0.0f);
+            this->OrthoCamAssets.mouseMovedDelta = V2(0.0f, 0.0f);
         }
     }
 }

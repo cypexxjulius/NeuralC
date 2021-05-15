@@ -221,13 +221,14 @@ Shader *NewShaderFromFile(const String ShaderName, char *ShaderPath)
 
     Memory.Free(ShaderSrc.string);
 
-    if (status == -1)
-        return NULL;
-
+    Assert(status == -1, "Failed to parse Shader");
+    
     char *vertexShader = ShaderSources[VertexShaderType - 1].string;
     char *fragmentShader = ShaderSources[FragmentShaderType - 1].string;
 
     Shader *shader = NewShader(ShaderName, fragmentShader, vertexShader);
+    Assert(shader == NULL, "Failed to create Shader");
+
 
     Memory.Free(vertexShader);
     Memory.Free(fragmentShader);

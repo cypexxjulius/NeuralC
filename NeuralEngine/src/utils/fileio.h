@@ -4,7 +4,7 @@
 
 #include "src/utils/types.h"
 
-extern String ReadStringFromFile(char *filepath);
+extern String ReadStringFromFile(const char *filepath);
 
 
 

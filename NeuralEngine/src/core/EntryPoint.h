@@ -4,11 +4,11 @@
 #include "Application.h"
 #include "src/platform/memory.h"
 
-void CreateApplication();
+void Start();
 
 int main()
 {   
-    CreateApplication();    
+    Start();    
 
     ApplicationLoop();
     return 0;

@@ -54,7 +54,7 @@ typedef struct v4 {
 }v4; 
 
 
-#define v2(x, y)       (v2){x, y}
+#define V2(x, y)       (v2){x, y}
 #define v3(x, y, z)    (v3){x, y, z}
 #define v4(x, y, z, w) (v4){x, y, z, w}
 
