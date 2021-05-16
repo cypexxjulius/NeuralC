@@ -1,15 +1,16 @@
 #ifndef __FONT_H_
 #define __FONT_H_
 
-#include "src/utils/types.h"git 
+#include "src/utils/types.h" 
 #include "src/renderer/textures/Texture2D.h"
 
-#define CHAR_COUNT 96
+#define CHAR_COUNT 120
 
 typedef struct FontCharData
 {
     float x0, x1, y0, y1;
     float width, height;
+    float baseline;
 } FontCharData;
 
 typedef struct font_struct
@@ -25,7 +26,7 @@ typedef struct font_struct Font;
 
 extern Font* NewFontTexture(const char *filepath);
 
-extern void FontGetCharVertices(Font* this, char character, v2 outVertices[4], v2 *outSize);
+void FontGetCharInfo(Font* this, char character, v2 outVertices[4], v2 *outSize, float *outbaseline);
 
 extern void DeleteFont(Font *this);
 

@@ -175,35 +175,42 @@ static inline v3 Mat4MulVec4(mat4s matrix, vec4s vec);
 
 static inline void PushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4], float iTextureID, float itiling);
 
-static void Renderer2DRenderText(char* string, float scale, v3 color, v2 position, float zIndex, float maxWidth)
+static void Renderer2DRenderText(char* string, float scale, v3 color, v2 position, float zIndex, float maxWidth, float height)
 {
     u16 Strlen = (u16)strlen(string);
     float lineLength = 0;
 
     for(u16 i = 0; i < Strlen; i++)
     {
+
+        float baseline;
+        v2 textureCoords[4];
+        v2 Size;
+
         if(string[i] == '\n')
+            return;
+
+        if(string[i] == ' ')
         {
-            position.y -= 0.5f * scale;
-            lineLength = 0;
-            continue;
+            
+            FontGetCharInfo(FontTexture, 'a', NULL, &Size, &baseline);
+            lineLength += Size.width;
         }
 
 
-        v2 textureCoords[4];
-        v2 Size;
-        FontGetCharVertices(FontTexture, string[i], textureCoords, &Size);
+        FontGetCharInfo(FontTexture, string[i], textureCoords, &Size, &baseline);
 
-        if(Size.width * scale > maxWidth)
+        if(Size.width * scale + lineLength > maxWidth)
             return;
 
-        float posx = lineLength * scale + position.x;
-        float posy = position.y - scale;
+        float posx = lineLength + position.x;
+
+        float posy = position.y - baseline;
 
 
         PushVertices((v3 [4]){
-            v3(posx,                            posy, zIndex),
-            v3(posx + Size.width * scale    , posy, zIndex),
+            v3(posx,                          posy, zIndex),
+            v3(posx + Size.width  * scale    , posy, zIndex),
             v3(posx + Size.width * scale    , posy + Size.height * scale, zIndex),
             v3(posx,                          posy + Size.height * scale, zIndex),
             }, 
@@ -213,7 +220,7 @@ static void Renderer2DRenderText(char* string, float scale, v3 color, v2 positio
             1.0f
         );
 
-        lineLength += Size.width;
+        lineLength += Size.width * scale + 0.01f; // 0.01 = padding
 
     }
 }
@@ -313,9 +320,10 @@ void Renderer2DDrawQuad(Quad2D initializer)
             initializer.text->string,
             (initializer.text->fontSize ? initializer.text->fontSize : 1.0f),
             textcolor,
-            V2(position.x, position.y + height),
+            V2(position.x, position.y),
             zIndex + 0.01f,
-            width
+            width,
+            height
         );
     }
 

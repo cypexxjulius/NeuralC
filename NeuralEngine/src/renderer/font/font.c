@@ -25,10 +25,10 @@ Font* NewFontTexture(const char *filepath)
 
    Assert(!errorCode, "Failed to load font");   
 
-   this->width = 512;
-   this->height = 512;
+   this->width = 1024;
+   this->height = 1024;
 
-   float fontHeight = 32;
+   float fontHeight = 64;
 
 
 
@@ -58,9 +58,10 @@ Font* NewFontTexture(const char *filepath)
       this->charData[i].y0 = quad.t0;
       this->charData[i].y1 = quad.t1;
 
-      this->charData[i].width  = (quad.x1 - quad.x0) / (float)this->width;
+      this->charData[i].width  = (quad.x1 - quad.x0) / (float)this->height;
       this->charData[i].height = (quad.y1 - quad.y0) / (float)this->height;
       
+      this->charData[i].baseline = (quad.y1 - fontHeight) / this->height;
    }
 
    this->FontTexture = NewTexture2DEmpty(this->width, this->height, Image_TypeALPHA);
@@ -71,17 +72,29 @@ Font* NewFontTexture(const char *filepath)
 
 
 
-void FontGetCharVertices(Font* this, char character, v2 outVertices[4], v2 *outSize)
+void FontGetCharInfo(Font* this, char character, v2 outVertices[4], v2 *outSize, float *outbaseline)
 {
    
    character -= ' ';
-   outVertices[0] = V2(this->charData[character].x0, this->charData[character].y1);
-   outVertices[1] = V2(this->charData[character].x1, this->charData[character].y1);
-   outVertices[2] = V2(this->charData[character].x1, this->charData[character].y0);
-   outVertices[3] = V2(this->charData[character].x0, this->charData[character].y0);   
 
-   outSize->width = this->charData[character].width;
-   outSize->height = this->charData[character].height;
+   if(outVertices != NULL)
+   {
+      outVertices[0] = V2(this->charData[character].x0, this->charData[character].y1);
+      outVertices[1] = V2(this->charData[character].x1, this->charData[character].y1);
+      outVertices[2] = V2(this->charData[character].x1, this->charData[character].y0);
+      outVertices[3] = V2(this->charData[character].x0, this->charData[character].y0);   
+   }
+
+   if(outSize != NULL)
+   {
+      outSize->width = this->charData[character].width;
+      outSize->height = this->charData[character].height;
+   }
+
+   if(outbaseline != NULL)
+   {
+      outbaseline[0] = this->charData[character].baseline + this->charData['a'].height;
+   }
 }
 
 void DeleteFont(Font *this)

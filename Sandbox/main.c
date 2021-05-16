@@ -25,7 +25,7 @@ void NeuralInit()
     unsigned int width = 1280, height = 720;
     ApplicationCreateWindow(width, height, "Test Window"); 
 
-    camera = NewOrthographicCameraController(CameraAllControls);
+    camera = NewOrthographicCameraController(CameraMouseDragController | CameraMouseScrollSensitive);
 
     texture = NewTexture2D("res/textures/Checkerboard.png");
     texture2 = NewTexture2D("res/textures/firstImage.jpg");
@@ -74,16 +74,27 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
                 .position = V2(-1.0f, -0.5f),
                 .color = v4(0.0f, 1.0f, 1.0f, 1.0f),
                 .width = 1000 nu,
-                .height = 100 nu,
+                .height = 200 nu,
                 .text = (TextElement []) {
                     (TextElement) {
                         .string = string,
-                        .fontSize = 3.0
+                        .color = v3(1.0, 1.0, 1.0)
                     }
                 }
             });
             
             Renderer2DEndScene();
+
+
+            static char buffer[100];
+            static float TimeBuffer = 0;
+            if(TimeBuffer > 0.05){
+                snprintf(buffer, 100, "FrameTime : %fms", deltaTime * 1000,3);
+                TimeBuffer = 0;
+            }else {
+                TimeBuffer += deltaTime;
+            }
+
 
             Renderer2DBeginScene(NULL);
             {
@@ -93,6 +104,19 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
                     .texture = texture,
                     .width = 50 nu,
                     .height = 50 nu,
+                });
+
+                Renderer2DDrawQuad((Quad2D) {
+                    .position = V2(-1.75f, 0.0f),
+                    .color = v4(1.0, 1.0, 1.0, 0.1),
+                    .width = 1000 nu,
+                    .height = 200 nu,
+                    .text = (TextElement []) {
+                        (TextElement) {
+                            .string = buffer,
+                            .color = v3(1.0, 1.0, 1.0)
+                        }
+                    }
                 });
             }
             Renderer2DEndScene();

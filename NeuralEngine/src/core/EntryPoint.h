@@ -11,6 +11,7 @@ int main()
     Start();    
 
     ApplicationLoop();
+    
     return 0;
 }
 
