@@ -27,7 +27,7 @@ VertexBuffer
 */
 typedef struct VertexBuffer {
     unsigned int id, stride, offset;
-    Vector* elements;
+    Vector elements;
 } VertexBuffer;
 
 extern VertexBuffer* NewVertexBuffer(void *data, unsigned int size); 

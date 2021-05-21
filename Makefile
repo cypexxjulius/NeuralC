@@ -1,30 +1,21 @@
 VPATH = src/
-CC=gcc
-FLAGS = -Wall -O3 -std=c99
+CC=clang
+FLAGS = -Wall -O3 -std=c11 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 mkfile_dir := $(dir $(mkfile_path))
 FLAGS += $(INCLUDE)
 
-#--- Platform detection ---
 
-ifeq ($(OS),)
-OS = $(shell uname -s)
-endif 
-
-
-ifeq ($(OS), Linux)
 
 LIBS = -lpthread -ldl -lm
-FLAGS += -Wextra -Wno-unused-parameter -Wno-int-to-pointer-cast -g
+FLAGS += -Wextra -g
 VENDOR_LIBS = NeuralEngine/lib/glfw/src/libglfw3.a NeuralEngine/lib/glad/src/glad.o NeuralEngine/lib/cglm/libcglm.a
 NAMEPROGRAM = -o program
 INCLUDE = -isystem NeuralEngine/lib/cglm/include -isystem NeuralEngine/lib/glad/include -isystem NeuralEngine/lib/glfw/include -isystem NeuralEngine/lib/stb -I  NeuralEngine/
 
 
-endif 
 
-
-NEURAL_SRC  = $(wildcard NeuralEngine/*.c NeuralEngine/src/*c NeuralEngine/src/**/*.c NeuralEngine/src/**/**/*.c NeuralEngine/src/**/**/**/*.c)
+NEURAL_SRC  = $(wildcard NeuralEngine/src/*c NeuralEngine/src/**/*.c NeuralEngine/src/**/**/*.c NeuralEngine/src/**/**/**/*.c)
 
 OBJ  = $(NEURAL_SRC:.c=.o)
 
@@ -33,7 +24,6 @@ OBJ  = $(NEURAL_SRC:.c=.o)
 default: Sandbox/program run
 
 NeuralEngine/bin/NeuralEngine.a: $(OBJ) $(VENDOR_LIBS)
-	rm NeuralEngine/bin/NeuralEngineCore.a NeuralEngine/bin/NeuralEngine.a
 	@ar -rs NeuralEngine/bin/NeuralEngineCore.a $(OBJ) NeuralEngine/lib/glad/src/glad.o 
 	@ar -rcT NeuralEngine/bin/NeuralEngine.a NeuralEngine/bin/NeuralEngineCore.a NeuralEngine/lib/glfw/src/libglfw3.a NeuralEngine/lib/cglm/libcglm.a
 

@@ -17,4 +17,7 @@
 // Entry Point
 #include "src/core/EntryPoint.h"
 
+// GUI
+#include "src/gui/GUI.h"
+
 #endif // __NEURAL_H_

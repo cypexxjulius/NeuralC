@@ -42,7 +42,7 @@ VertexBuffer* NewVertexBufferEmpty(unsigned int size)
 
 void VertexBufferSetLayout(VertexBuffer* this, unsigned int count, VertexBufferElement *array)
 { 
-    this->elements = NewVector(2 + count, sizeof(VertexBufferElement*), VECTOR_POINTER | VECTOR_FREE);
+    NewVector(&this->elements, 2 + count, sizeof(VertexBufferElement*), VECTOR_POINTER | VECTOR_FREE);
     this->stride = 0;
     this->offset = 0;
 
@@ -60,7 +60,7 @@ void VertexBufferSetLayout(VertexBuffer* this, unsigned int count, VertexBufferE
         StoredElement->offset = this->offset;
         this->offset += size;
         
-        VectorAdd(this->elements, StoredElement);
+        VectorAdd(&this->elements, StoredElement);
     }
 }
 
@@ -77,7 +77,7 @@ void VertexBufferPushLayout
 
     this->offset += size;
     this->stride += size;
-    VectorAdd(this->elements, StoredElement);
+    VectorAdd(&this->elements, StoredElement);
     
 }
 
@@ -85,7 +85,7 @@ void DeleteVertexBuffer(VertexBuffer* this)
 {
     glDeleteBuffers(1, &this->id);
 
-    DeleteVector(this->elements);
+    DeleteVector(&this->elements);
     Memory.Free(this);
 }
 

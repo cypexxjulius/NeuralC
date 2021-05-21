@@ -6,7 +6,7 @@ set OperatingDirectory=%~dp0
 
 :: Sets settings Variables
 
-set CompilerFlags=/W3 /Z7 /wd4201 /wd5045 /D "_CRT_SECURE_NO_WARNINGS" /c /TC
+set CompilerFlags=/W3 /Z7 /wd4201 /wd5045 /D "_CRT_SECURE_NO_WARNINGS" /c /TC /MP
 
 set NeuralOutputDir=!%~d0%cd%\NeuralEngine\bin\!
 
@@ -54,12 +54,15 @@ for /R %%f IN ("*.c") DO (
     set outfile=%%~fsnxf
     set outfile=!outfile:.c=.obj!
     set outfile=!outfile:%cd%=!
-    set outfile=!outfile:\=!
+    set outfile=!outfile:\=-!
     set outfile=!!NeuralOutputDir!!outfile!!
 
     set NeuralCompiledFiles=!!NeuralCompiledFiles! !outfile!!
 
-    call cl /Fo!outfile! !CompilerFlags! !file! !NeuralIncludePath! 2> nul
+    call cl /Fo!outfile! !CompilerFlags! !file! !NeuralIncludePath! 2> nul || (
+        echo --- Failed to compile %%~fsnxf aborting..
+        goto end
+    )
 )
 popd
 

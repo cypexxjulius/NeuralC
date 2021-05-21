@@ -7,7 +7,7 @@ typedef struct VertexArray
 {
     unsigned int rendererID, index;
     IndexBuffer* indexBuffer;
-    Vector* vertexBuffer;
+    Vector vertexBuffer;
 } VertexArray;
 
 

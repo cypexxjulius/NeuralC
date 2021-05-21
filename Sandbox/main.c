@@ -14,16 +14,12 @@ static Texture2D* CharSet = NULL;
 
 static float Rotation = 0.0f;
 
-#define maxSize 100
-
 static char string[4096] = { 0 };
-static char FPSCountBuffer[10] = { 0 };
 static unsigned int stringCursor = 0;
 
 void NeuralInit()
 {   
-    unsigned int width = 1280, height = 720;
-    ApplicationCreateWindow(width, height, "Test Window"); 
+    ApplicationCreateWindow(1280, 720, "Test Window"); 
 
     camera = NewOrthographicCameraController(CameraMouseDragController | CameraMouseScrollSensitive);
 
@@ -31,7 +27,14 @@ void NeuralInit()
     texture2 = NewTexture2D("res/textures/firstImage.jpg");
 }
 
-void NeuralOnUpdate(float deltaTime, const Window* window)
+void NeuralGUIUpdate(float deltaTime)
+{
+    GUIBoxBegin("Test", V2(-100, -10000));
+
+        GUIText("TestString %f", 14.7345f);
+}
+
+void NeuralOnUpdate(float deltaTime)
 {
     Profile(NeuralOnUpdate)
     {
@@ -67,18 +70,18 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
                 .tiling = 10.0f,
                 .width = 50.0f,
                 .height = 50.0f,
-                .color = v4(1.0, 0.3, 0.1, 1.0),
+                .color = V4(1.0, 0.3, 0.1, 1.0),
             });
 
             Renderer2DDrawQuad((Quad2D) {
                 .position = V2(-1.0f, -0.5f),
-                .color = v4(0.0f, 1.0f, 1.0f, 1.0f),
+                .color = V4(0.0f, 1.0f, 1.0f, 1.0f),
                 .width = 1000 nu,
                 .height = 200 nu,
                 .text = (TextElement []) {
                     (TextElement) {
                         .string = string,
-                        .color = v3(1.0, 1.0, 1.0)
+                        .color = V3(1.0, 1.0, 1.0)
                     }
                 }
             });
@@ -86,10 +89,11 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
             Renderer2DEndScene();
 
 
-            static char buffer[100];
+            static char buffer[300];
             static float TimeBuffer = 0;
-            if(TimeBuffer > 0.05){
-                snprintf(buffer, 100, "FrameTime : %fms", deltaTime * 1000,3);
+
+            if(TimeBuffer > 0.01){
+                snprintf(buffer, 300, "FrameTime : %.2fms\nFPS : %.2f", deltaTime * 1000, 1 / deltaTime);
                 TimeBuffer = 0;
             }else {
                 TimeBuffer += deltaTime;
@@ -108,13 +112,14 @@ void NeuralOnUpdate(float deltaTime, const Window* window)
 
                 Renderer2DDrawQuad((Quad2D) {
                     .position = V2(-1.75f, 0.0f),
-                    .color = v4(1.0, 1.0, 1.0, 0.1),
+                    .color = V4(1.0, 1.0, 1.0, 0.1),
                     .width = 1000 nu,
                     .height = 200 nu,
                     .text = (TextElement []) {
                         (TextElement) {
                             .string = buffer,
-                            .color = v3(1.0, 1.0, 1.0)
+                            .color = V3(1.0, 1.0, 1.0),
+                            .fontSize = .5
                         }
                     }
                 });
@@ -154,7 +159,8 @@ bool NeuralOnEvent(const Event* event)
                     string[--stringCursor] = 0;
                     break;    
                 case NL_KEY_ENTER:
-                    string[stringCursor++] = '\n';   
+                    if(event->KeyPressedEvent.action == 0)
+                        string[stringCursor++] = '\n';   
             }   
 
         }break;
@@ -182,5 +188,13 @@ void NeuralDelete()
 void Start()
 {
     NewApplication("Test Game");
-    ApplicationPushLayer(NewLayer(NeuralInit, NeuralOnUpdate, NeuralOnEvent, NeuralDelete));
+    ApplicationPushLayer(NewLayer(
+        (Layer){
+            .Init = NeuralInit, 
+            .OnUpdate = NeuralOnUpdate, 
+            .OnEvent = NeuralOnEvent, 
+            .Delete = NeuralDelete,
+            .GUIUpdate = NeuralGUIUpdate
+        })
+    );
 }

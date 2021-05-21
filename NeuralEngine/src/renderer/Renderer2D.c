@@ -38,10 +38,10 @@ static QuadVertex QuadVertexBufferBase[MaxVertices] = { 0 };
 static QuadVertex* QuadVertexBufferPtr = NULL;
 
 static const vec4s QuadVertexPositions[4] = {
-    { -0.5f, -0.5f, 0.0f, 1.0f },
-	{  0.5f, -0.5f, 0.0f, 1.0f },
-	{  0.5f,  0.5f, 0.0f, 1.0f },
-	{ -0.5f,  0.5f, 0.0f, 1.0f },
+    {{ -0.5f, -0.5f, 0.0f, 1.0f }},
+	{{  0.5f, -0.5f, 0.0f, 1.0f }},
+	{{  0.5f,  0.5f, 0.0f, 1.0f }},
+	{{ -0.5f,  0.5f, 0.0f, 1.0f }},
 };
 
 // TextureSlot Array
@@ -101,11 +101,11 @@ void Renderer2DInit()
     Texture2DSetData(IdentityTexture, &WhiteTextureData, sizeof(uint32_t));
 
     // Setup text texture atlas
-    FontTexture = NewFontTexture("res/fonts/Roboto-Regular.ttf");
+    FontTexture = NewFontTexture("res/fonts/Roboto-Black.ttf");
 
 
     // Setup sampler array
-    u32 samplers[MaxTextureSlots];
+    int samplers[MaxTextureSlots];
     for(u32 i = 0; i < MaxTextureSlots; i++)
         samplers[i] = i;
 
@@ -177,50 +177,68 @@ static inline void PushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4
 
 static void Renderer2DRenderText(char* string, float scale, v3 color, v2 position, float zIndex, float maxWidth, float height)
 {
+    static const float padding = 0.02f;
+    static const float letterSpacing = 0.01f;
+
+    float originalY = position.y;
     u16 Strlen = (u16)strlen(string);
-    float lineLength = 0;
+    
+    if(Strlen == 0)
+        return;
+
+    float lineLength = padding;
+
+    position.y -= FontTexture->lineHeight * scale + padding;
+
+    float baseline;
+    v2 textureCoords[4];
+    v2 Size;
+
+    printf("RenderingString '%s'\n", string);
 
     for(u16 i = 0; i < Strlen; i++)
     {
-
-        float baseline;
-        v2 textureCoords[4];
-        v2 Size;
-
         if(string[i] == '\n')
-            return;
+        {
+            if(height < originalY - (position.y - FontTexture->lineHeight + padding))
+                return; 
+            
+            position.y -= FontTexture->lineHeight * scale + padding;
+            lineLength = padding;
+            continue;
+        }
 
         if(string[i] == ' ')
         {
-            
             FontGetCharInfo(FontTexture, 'a', NULL, &Size, &baseline);
-            lineLength += Size.width;
+            lineLength += Size.width * scale;
+            continue;
         }
 
 
         FontGetCharInfo(FontTexture, string[i], textureCoords, &Size, &baseline);
 
         if(Size.width * scale + lineLength > maxWidth)
-            return;
+            return; // Linelength reached
 
-        float posx = lineLength + position.x;
+        const float posx = position.x + lineLength;
 
-        float posy = position.y - baseline;
+        const float posy = position.y - baseline  * scale;
 
 
         PushVertices((v3 [4]){
-            v3(posx,                          posy, zIndex),
-            v3(posx + Size.width  * scale    , posy, zIndex),
-            v3(posx + Size.width * scale    , posy + Size.height * scale, zIndex),
-            v3(posx,                          posy + Size.height * scale, zIndex),
+            V3(posx,                          posy, zIndex),
+            V3(posx + Size.width  * scale   , posy, zIndex),
+            V3(posx + Size.width * scale    , posy + Size.height * scale, zIndex),
+            V3(posx,                          posy + Size.height * scale, zIndex),
             }, 
-            v4(color.x, color.y, color.z, 1.0f), 
+            V4(color.x, color.y, color.z, 1.0f), 
             textureCoords, 
             1, 
             1.0f
         );
 
-        lineLength += Size.width * scale + 0.01f; // 0.01 = padding
+        lineLength += Size.width * scale + FontTexture->letterSpacing * scale;
 
     }
 }
@@ -228,7 +246,7 @@ static void Renderer2DRenderText(char* string, float scale, v3 color, v2 positio
 void Renderer2DDrawQuad(Quad2D initializer)
 {
 
-    if(QuadIndexCount + 6 >= MaxIndices || initializer.texture != NULL && TextureSlotIndex == 31)
+    if((QuadIndexCount + 6 >= MaxIndices) || (initializer.texture != NULL && TextureSlotIndex == 31))
         Renderer2DUploadBatch();
 
     // Set position
@@ -236,7 +254,7 @@ void Renderer2DDrawQuad(Quad2D initializer)
 
     // Check color
     v4 color = (initializer.color.x != 0 || initializer.color.y != 0 || initializer.color.z != 0 || initializer.color.w != 0) // Check for a non defined Color
-         ? color = initializer.color :  v4(1.0f, 1.0f, 1.0f, 1.0f);
+         ? color = initializer.color :  V4(1.0f, 1.0f, 1.0f, 1.0f);
 
     // Set Image if defined
     float TextureID = 0;
@@ -247,16 +265,14 @@ void Renderer2DDrawQuad(Quad2D initializer)
             if(TextureSlots[i]->id == initializer.texture->id)
             {
                 TextureID = (float)i + 2;
-        
-                goto out;TextureID += 2;
+                goto out;
             }
         }
 
         TextureID = (float)TextureSlotIndex;
         TextureSlots[TextureSlotIndex++] = initializer.texture;
-        TextureID += 2;
     }
-    out:
+    out:;
 
     float width = (initializer.width ? initializer.width : 1.0f)   / 1000.0f;
     float height = (initializer.height ? initializer.height : 1.0f) / 1000.0f;
@@ -269,10 +285,10 @@ void Renderer2DDrawQuad(Quad2D initializer)
     if(initializer.rotation == 0)
     {
         PushVertices( (v3 [4]) {
-            v3(position.x,          position.y, zIndex),
-            v3(position.x + width,  position.y, zIndex),
-            v3(position.x + width,  position.y + height, zIndex),
-            v3(position.x,          position.y + height, zIndex)
+            V3(position.x,          position.y, zIndex),
+            V3(position.x + width,  position.y, zIndex),
+            V3(position.x + width,  position.y + height, zIndex),
+            V3(position.x,          position.y + height, zIndex)
         }, color, (v2 [4]) {
             V2(0, 0),
             V2(1, 0),
@@ -307,7 +323,7 @@ void Renderer2DDrawQuad(Quad2D initializer)
 
     if(initializer.text != NULL && initializer.text->string != NULL)
     {
-        v3 textcolor = v3(0.0f, 0.0f, 0.0f);
+        v3 textcolor = V3(0.0f, 0.0f, 0.0f);
 
         if( initializer.text->color.x != 0 ||
             initializer.text->color.y != 0 ||
@@ -320,7 +336,7 @@ void Renderer2DDrawQuad(Quad2D initializer)
             initializer.text->string,
             (initializer.text->fontSize ? initializer.text->fontSize : 1.0f),
             textcolor,
-            V2(position.x, position.y),
+            V2(position.x, position.y + 1.0f * height),
             zIndex + 0.01f,
             width,
             height
@@ -371,7 +387,7 @@ void PushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4], float iText
 v3 Mat4MulVec4(mat4s matrix, vec4s vec)
 {
     vec3s temp = glms_mat4_mulv3(matrix, vec3s(vec.x, vec.y, vec.z), vec.w);
-    return v3(temp.x, temp.y, temp.z);
+    return V3(temp.x, temp.y, temp.z);
 };
 
 void Renderer2DEndSceneCallback()

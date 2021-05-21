@@ -5,9 +5,10 @@
 
 #include <math.h>
 
-Vector *NewVector(unsigned int count, unsigned int type_size, VECTOR_FLAGS flags)
+void NewVector(Vector *this, unsigned int count, unsigned int type_size, VECTOR_FLAGS flags)
 {
-    Vector* this = CreateObject(Vector);
+    *this = (Vector){ 0 };
+
     this->capacity = count;
     this->used = 0;
 
@@ -15,8 +16,6 @@ Vector *NewVector(unsigned int count, unsigned int type_size, VECTOR_FLAGS flags
     this->flags = flags;
 
     this->data = Memory.Alloc(type_size * count);
-
-    return this;
 }
 
 void VectorAdd(Vector* this, void *element)
@@ -96,16 +95,40 @@ void* VectorGet(Vector* this, unsigned int index)
     return (byte*)this->data + index * this->type_size;
 }
 
-void DeleteVector(Vector *this)
+void VectorClear(Vector *this)
 {
-    if(this->flags & VECTOR_FREE)
+    if(this->flags & VECTOR_FREE && this->flags & VECTOR_POINTER)
     {
         void **temp = this->data;
         for(unsigned int i= 0; i < this->used; i++)
         {
-            Memory.Free(temp[i]);
+            if(temp[i] != NULL)
+                Memory.Free(temp[i]);
+
+            temp[i] = NULL;
+        }
+    } else
+    {
+        for(unsigned int i = 0; i < this->used * this->type_size; i++)
+            *((byte *)(this->data) + i) = 0;
+    }
+
+    this->used = 0;
+}
+
+void DeleteVector(Vector *this)
+{
+    if(this->flags & VECTOR_FREE && this->flags & VECTOR_POINTER)
+    {
+        void **temp = this->data;
+        for(unsigned int i= 0; i < this->used; i++)
+        {
+            if(temp[i] != NULL)
+                Memory.Free(temp[i]);
+
+            temp[i] = NULL;
         }
     }
+
     Memory.Free(this->data);
-    Memory.Free(this);
 }

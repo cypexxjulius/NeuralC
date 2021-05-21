@@ -8,16 +8,19 @@
 #include "src/renderer/timestep.h"
 #include "src/events/keycode.h"
 #include "src/renderer/renderer.h"
+#include "src/gui/GUI.h"
 
-static Application App = { 0 };
+static Application App;
 
 extern void NewApplication(char *ApplicationName)
 {
+    App =  (Application){ 0 };
+
     u32 NameLength = sizeof(ApplicationName) + 1;
-    App.name = Memory.Alloc(NameLength);
+    Assert(NameLength >= APPLICATION_NAME_LENGTH, "ApplicationName too long");
     Memory.Copy(App.name, ApplicationName, NameLength);
     
-    App.layerStack = NewVector(2, sizeof(Layer *), VECTOR_POINTER | VECTOR_FREE);
+    NewVector(&App.layerStack, 2, sizeof(Layer *), VECTOR_POINTER | VECTOR_FREE);
 }
 
 static void ApplicationOnWindowResizedEvent(const Event* event)
@@ -45,9 +48,12 @@ static void ApplicationOnEvent(Event* event)
         ApplicationOnWindowResizedEvent(event);
 
     Layer* layer;
-    for(unsigned int i = 0; i < App.layerStack->used; i++)
+    for(unsigned int i = 0; i < App.layerStack.used; i++)
     {       
-        layer = VectorGet(App.layerStack, i);
+        layer = VectorGet(&App.layerStack, i);
+        if(layer->OnEvent == NULL)
+            continue;
+
         if(layer->OnEvent(event) && event->Cancable)
             break;
     }
@@ -61,11 +67,12 @@ void ApplicationCreateWindow(int width, int height, char* title)
     InitEventSystem(App.window);
     InitError();
     RendererInit();
+    InitGUI();
 }
 
 void ApplicationLoop()
 {
-    Assert(!App.window, "Window does not exist");
+    Assert(!App.window, "ApplicationCreateWindow must be called before leaving the Init function");
 
 
     Layer* activeLayer = NULL;
@@ -79,37 +86,52 @@ void ApplicationLoop()
 
         RendererStartCallback();
 
-        for(unsigned int i = 0; i < App.layerStack->used; i++)
-        {
-            activeLayer = VectorGet(App.layerStack, i);
-            activeLayer->OnUpdate(GetDeltaTime(), App.window);
-        }
+            for(unsigned int i = 0; i < App.layerStack.used; i++)
+            {
+                activeLayer = VectorGet(&App.layerStack, i);
+
+                if(activeLayer->OnUpdate != NULL)
+                    activeLayer->OnUpdate(GetDeltaTime());
+            }
+
+            GUIBegin();
+
+                for(unsigned int i = 0; i < App.layerStack.used; i++)
+                {
+                    activeLayer = VectorGet(&App.layerStack, i);
+
+                    if(activeLayer->GUIUpdate != NULL)
+                        activeLayer->GUIUpdate(GetDeltaTime());
+                }
+                        
+            GUIEnd();
+            
         RendererEndCallback();
 
         WindowUpdate(App.window, !App.minimized);
     }
 
     // Cleanup
-    for(unsigned int i = 0; i < App.layerStack->used; i++)
+    for(unsigned int i = 0; i < App.layerStack.used; i++)
     {
-        activeLayer = VectorGet(App.layerStack, i);
+        activeLayer = VectorGet(&App.layerStack, i);
         activeLayer->Delete();
     }
-
-    Memory.Free(App.name);
     
     // Shutdown Renderer
     RendererShutdown();
+    DeinitGUI();
 
-
-    DeleteVector(App.layerStack);
+    DeleteVector(&App.layerStack);
     DeleteWindow(App.window);
 }
 
 void ApplicationPushLayer(Layer* layer)
 {
-    VectorAdd(App.layerStack, layer);
-    layer->Init();
+    VectorAdd(&App.layerStack, layer);
+    
+    if(layer->Init != NULL)
+        layer->Init();
 }
 
 const Window* ApplicationGetWindow()
@@ -120,6 +142,7 @@ const Window* ApplicationGetWindow()
 
 void ApplicationTerminate()
 {
+    Assert(!App.window, "Window object does not exist");
     App.shouldClose = 1;
 }
 

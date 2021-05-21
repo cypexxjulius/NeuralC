@@ -12,7 +12,7 @@
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h" /* http://nothings.org/stb/stb_image_write.h */
-
+#include "src/utils/Logger.h"
 
 
 Font* NewFontTexture(const char *filepath)
@@ -20,36 +20,37 @@ Font* NewFontTexture(const char *filepath)
    Font* this = CreateObject(Font);
    String fileContent = ReadStringFromFile(filepath);
     
-   stbtt_fontinfo font;
+   stbtt_fontinfo font = { 0 };
    int errorCode = stbtt_InitFont(&font, (u8 *)fileContent.string, 0);
 
-   Assert(!errorCode, "Failed to load font");   
+   Assert(errorCode != 1, "Failed to load font");   
 
    this->width = 1024;
-   this->height = 1024;
+   this->height = 2024;
 
    float fontHeight = 64;
-
+   float fontScaleDownRatio = fontHeight * 10.0f;
 
 
    this->bitmap = Memory.Calloc(this->width * this->height, sizeof(byte));
 
    float scale = stbtt_ScaleForPixelHeight(&font, fontHeight);
 
-   stbtt_pack_context PackContext;
-   stbtt_packedchar charData[CHAR_COUNT];
+   stbtt_pack_context PackContext = { 0 };
+   stbtt_packedchar charData[CHAR_COUNT] = { 0 };
 
-   stbtt_PackBegin(&PackContext, this->bitmap, this->width, this->height, 0, 1, NULL);
+
+   stbtt_PackBegin(&PackContext, this->bitmap, this->width, this->height, 0, 0, NULL);
    
    stbtt_PackSetOversampling(&PackContext, 2, 2);
 
    stbtt_PackFontRange(&PackContext, fileContent.string, 0, fontHeight, ' ', CHAR_COUNT, charData);
    stbtt_PackEnd(&PackContext);
 
-   stbtt_aligned_quad quad;
+   stbtt_aligned_quad quad = { 0 };
    for(u8 i = 0; i < CHAR_COUNT; i++)
    {
-      float xpos, ypos;
+      float xpos = 1, ypos = 1;
       stbtt_GetPackedQuad(charData, this->width, this->height, i, &xpos, &ypos, &quad, true);
 
       this->charData[i].x0 = quad.s0;
@@ -58,11 +59,15 @@ Font* NewFontTexture(const char *filepath)
       this->charData[i].y0 = quad.t0;
       this->charData[i].y1 = quad.t1;
 
-      this->charData[i].width  = (quad.x1 - quad.x0) / (float)this->height;
-      this->charData[i].height = (quad.y1 - quad.y0) / (float)this->height;
+      this->charData[i].width  = (quad.x1 - quad.x0) / fontScaleDownRatio;
+      this->charData[i].height = (quad.y1 - quad.y0) / fontScaleDownRatio;
       
-      this->charData[i].baseline = (quad.y1 - fontHeight) / this->height;
+      this->charData[i].baseline = quad.y1 / fontScaleDownRatio;
    }
+
+   this->lineHeight = this->charData['[' - ' '].height - this->charData['[' - ' '].baseline;
+   this->letterSpacing = this->charData['.' - ' '].height / 5.0f;
+
 
    this->FontTexture = NewTexture2DEmpty(this->width, this->height, Image_TypeALPHA);
    Texture2DSetData(this->FontTexture, this->bitmap, this->width * this->height);
@@ -93,9 +98,10 @@ void FontGetCharInfo(Font* this, char character, v2 outVertices[4], v2 *outSize,
 
    if(outbaseline != NULL)
    {
-      outbaseline[0] = this->charData[character].baseline + this->charData['a'].height;
+      *outbaseline = this->charData[character].baseline;
    }
 }
+
 
 void DeleteFont(Font *this)
 {

@@ -5,13 +5,15 @@
 #include "window.h"
 #include "src/utils/types.h"
 
+#define APPLICATION_NAME_LENGTH 128
+
 typedef struct Application
 {   
     Window* window;
-    Vector* layerStack;
+    Vector layerStack;
 
     float deltaTime;
-    char *name;
+    char name[APPLICATION_NAME_LENGTH];
 
     unsigned int shouldClose;
     volatile u8 minimized;

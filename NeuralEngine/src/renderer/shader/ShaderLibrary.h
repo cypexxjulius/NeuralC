@@ -8,7 +8,7 @@
 
 typedef struct ShaderLibrary 
 {   
-    Vector* ShaderCollection;
+    Vector ShaderCollection;
 } ShaderLibrary;
 
 

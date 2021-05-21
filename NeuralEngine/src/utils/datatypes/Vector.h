@@ -12,7 +12,7 @@ typedef enum VECTOR_FLAGS
 
 typedef struct Vector
 {  
-    unsigned int capacity, type_size, used, isContiguesFilled;
+    unsigned int capacity, type_size, used;
     char flags;
     void *data;
 } Vector;
@@ -26,7 +26,7 @@ VECTOR_POINTER sets the type_size to 8, only pointers can be stored now.
 VECTOR_FREE frees the pointers on the Vector's destruction.
 Pass in 0 if none of these flags should be set.
 */
-Vector *NewVector(unsigned int count, unsigned int type_size, VECTOR_FLAGS flags);
+void NewVector(Vector* this, unsigned int count, unsigned int type_size, VECTOR_FLAGS flags);
 
 /*
 Stores a New element in the Vector,
@@ -59,7 +59,10 @@ void VectorReplace(Vector* this, unsigned int index, void* element);
 
 
 /*
-Returns the length of the Vector.
+Clears all elements of the vector, 
+if pointers where stored and the VECTOR_FREE flag was enabled,
+ they also will be freed
 */
+void VectorClear(Vector *this);
 
 #endif // __VECTOR_H_

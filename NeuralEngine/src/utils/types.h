@@ -54,15 +54,13 @@ typedef struct v4 {
 }v4; 
 
 
-#define V2(x, y)       (v2){x, y}
-#define v3(x, y, z)    (v3){x, y, z}
-#define v4(x, y, z, w) (v4){x, y, z, w}
+#define V2(x, y)        (v2){{{x, y}}}
+#define V3(x, y, z)     (v3){{{x, y, z}}}
+#define V4(x, y, z, w)  (v4){{{x, y, z, w}}}
 
 
 #define nu
 
-
-void mat4print(mat4s mat);
 
 float GetUnsignedFloat(float x);
 

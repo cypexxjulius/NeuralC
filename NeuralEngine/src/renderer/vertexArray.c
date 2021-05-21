@@ -11,7 +11,7 @@ extern VertexArray* NewVertexArray()
     VertexArray* this = CreateObject(VertexArray);
     this->index = 0;
     glGenVertexArrays(1, &this->rendererID); 
-    this->vertexBuffer = NewVector(2, sizeof(VertexBuffer), VECTOR_POINTER);
+    NewVector(&this->vertexBuffer, 2, sizeof(VertexBuffer), VECTOR_POINTER);
     return this;
 }
 
@@ -22,9 +22,9 @@ void VertexArrayAddVertexBuffer
     VertexBufferBind(vertexBuffer);
 
     this->index = 0;
-    for(unsigned int i = 0; i < vertexBuffer->elements->used; i++)
+    for(unsigned int i = 0; i < vertexBuffer->elements.used; i++)
     {
-        VertexBufferElement* element = VectorGet(vertexBuffer->elements, i);
+        VertexBufferElement* element = VectorGet(&vertexBuffer->elements, i);
 
         
         glEnableVertexAttribArray(this->index);
@@ -37,7 +37,7 @@ void VertexArrayAddVertexBuffer
         
         this->index++;
     }
-    VectorAdd(this->vertexBuffer, vertexBuffer);
+    VectorAdd(&this->vertexBuffer, vertexBuffer);
 }
 
 void DeleteVertexArray(VertexArray* this)
@@ -45,13 +45,13 @@ void DeleteVertexArray(VertexArray* this)
     glDeleteVertexArrays(1, &this->rendererID);
 
     VertexBuffer* vb;
-    for(unsigned int i = 0; i < this->vertexBuffer->used; i++)
+    for(unsigned int i = 0; i < this->vertexBuffer.used; i++)
     {
-        vb = VectorGet(this->vertexBuffer, i);
+        vb = VectorGet(&this->vertexBuffer, i);
         DeleteVertexBuffer(vb);
     }
 
-    DeleteVector(this->vertexBuffer);
+    DeleteVector(&this->vertexBuffer);
     DeleteIndexBuffer(this->indexBuffer);
     Memory.Free(this);
 }
@@ -71,7 +71,7 @@ void VertexArrayBind(VertexArray* this)
 
 VertexBuffer* VertexArrayGetVertexBuffer(VertexArray* this, u32 index)
 {
-    return VectorGet(this->vertexBuffer, index);
+    return VectorGet(&this->vertexBuffer, index);
 }
 
 void VertexArrayUnbind()
