@@ -64,6 +64,10 @@ void RendererClearScreen()
     glClearColor(0.1f,0.2f, 0.1f,1.0f);
 }
 
+void RendererOnUpdate(const Event* event)
+{
+    Renderer2DOnUpdate(event);
+}
 
 void RendererDrawIndexed(VertexArray* va, u32 indexCount)
 {

@@ -9,6 +9,6 @@ extern float GUIBoxCalculateHeight(GUIBox* box, Font* font, float widgetMargin);
 
 extern float GUIBoxCalculateWidth(GUIBox* box, Font* font, float widgetMargin);
 
-extern void GUIBoxPrepare(GUIBox* box, Font * font, float widgetPadding, float fontPadding);
+extern void GUIBoxPrepare(GUIBox* box, Font * font, float widgetPadding, float fontPadding, float fontSize);
 
 #endif // __GUIITEMS_H_

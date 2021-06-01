@@ -5,6 +5,14 @@
 #include "src/utils/types.h"
 #include "src/renderer/font/font.h"
 
+typedef enum STYLE_VARS
+{
+    FONT_SIZE,
+    FONT_PADDING,
+    WIDGET_MARGIN,
+    WIDGET_PADDING
+} STYLE_VARS;
+
 extern void InitGUI();
 
 extern void DeinitGUI();
@@ -15,7 +23,7 @@ extern void GUIEnd();
 
 extern Font* GUIGetFont();
 
-extern void GUIStyleGet(float *outWidgetPadding, float *outFontPadding, float *widgetMargin);
+extern void GUIStyleGet(STYLE_VARS var, void *outvariable);
 
 extern GUIBox* GUIGetActiveBox();
 

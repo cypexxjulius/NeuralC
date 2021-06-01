@@ -6,6 +6,9 @@
 #include "src/core/Application.h"
 #include "src/utils/Logger.h"
 
+#define ZoomIntensity 2.0f
+
+
 CameraController* NewOrthographicCameraController(CameraControllerType controllertype)
 {
     CameraController* this = CreateObject(CameraController);
@@ -86,21 +89,18 @@ void CameraControllerOnEvent(CameraController* this, const Event* event)
         case ScrolledEventType :
         {
             float scrollDistance = event->PosEvent.pos.y;
-            if((this->OrthoCamAssets.controllerType & CameraMouseScrollSensitive) == 0)
+
+            if((this->OrthoCamAssets.controllerType & CameraMouseScrollSensitive) == 0 || scrollDistance == 0)
                 return;
 
-            if(scrollDistance == 0)
-                return;
-
-            static const float zoomIntensity = 2.0f;
 
             if(scrollDistance < 0)
-                this->OrthoCamAssets.zoomLevel *=  GetUnsignedFloat(scrollDistance) * zoomIntensity;
+                this->OrthoCamAssets.zoomLevel *=  (-scrollDistance) * ZoomIntensity;
             else 
-                this->OrthoCamAssets.zoomLevel /= scrollDistance * zoomIntensity; 
+                this->OrthoCamAssets.zoomLevel /= scrollDistance * ZoomIntensity; 
 
 
-            this->OrthoCamAssets.zoomLevel = C_Max(this->OrthoCamAssets.zoomLevel, 0.01f);
+            this->OrthoCamAssets.zoomLevel = max(this->OrthoCamAssets.zoomLevel, 0.01f);
 
             OrthographicCameraSetProjection(this->camera,   -this->OrthoCamAssets.aspectRatio * this->OrthoCamAssets.zoomLevel, 
                                                             this->OrthoCamAssets.aspectRatio * this->OrthoCamAssets.zoomLevel, 

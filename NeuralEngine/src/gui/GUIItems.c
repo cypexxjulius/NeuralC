@@ -6,6 +6,7 @@
 #include "src/utils/types.h"
 #include "src/platform/memory.h"
 #include "src/renderer/font/font.h"
+#include "src/core/Application.h"
 #include <stdarg.h>
 
 float GUIBoxCalculateHeight(GUIBox* box, Font* font, float widgetMargin)
@@ -13,7 +14,7 @@ float GUIBoxCalculateHeight(GUIBox* box, Font* font, float widgetMargin)
     if(box->Widgets.used == 0)
         return 0;
 
-    float height = 2 * widgetMargin;
+    float height = box->NameHeight + widgetMargin;
 
     GUIWidget* widget = NULL;
     for(u32 i = 0; i < box->Widgets.used; i++)
@@ -23,7 +24,7 @@ float GUIBoxCalculateHeight(GUIBox* box, Font* font, float widgetMargin)
         if(widget->String == NULL || widget->textLength == 0)
             continue;
 
-        height += widget->height + widgetMargin;
+        height += widget->height + widgetMargin * 2;
     }
 
     return height;
@@ -34,7 +35,7 @@ float GUIBoxCalculateWidth(GUIBox* box, Font* font, float widgetMargin)
     if(box->Widgets.used == 0)
         return 0;
 
-    float width = widgetPadding  * 2;
+    float width = box->NameWidth;
 
     GUIWidget* widget = NULL;
     for(u32 i = 0; i < box->Widgets.used; i++)
@@ -43,17 +44,15 @@ float GUIBoxCalculateWidth(GUIBox* box, Font* font, float widgetMargin)
 
         if(widget->String == NULL || widget->textLength == 0)
             continue;
-
-        float tempWidth = widget->width;
-
-        width = max(width, tempWidth);
+        
+        width = max(width, widget->width);
     }
     
 
-    return width;
+    return( width + widgetMargin  * 2 );
 }
 
-void GUIBoxPrepare(GUIBox* box, Font * font, float widgetPadding, float fontPadding)
+void GUIBoxPrepare(GUIBox* box, Font * font, float widgetPadding, float fontPadding, float fontSize)
 {
     
     GUIWidget *widget = NULL;
@@ -61,15 +60,25 @@ void GUIBoxPrepare(GUIBox* box, Font * font, float widgetPadding, float fontPadd
     {
         widget = VectorGet(&box->Widgets, i);
 
-        widget->height = font->lineHeight + 2 * fontPadding;
+        widget->height = font->lineHeight * fontSize + 2 * fontPadding;
         widget->width = 2 * fontPadding;
 
         for(u16 i = 0; i < widget->textLength; i++)
         {
-            v2 Scale;
-            FontGetCharInfo(font, widget->String[i], NULL, &Scale, NULL);
-            widget->width += Scale.width + font->letterSpacing;
+            float GlyphWidth = font->charData[CharToGlyph(widget->String[i])].width;
+            widget->width += GlyphWidth * fontSize + font->letterSpacing;
         }
+    }
+
+    box->NameHeight = font->lineHeight * fontSize + 2 * fontPadding;
+    box->NameWidth = 2 * fontPadding;
+
+    u16 NameLength = (u16)strlen(box->BoxName);    
+    for(u16 i = 0; i < NameLength; i++)
+    {
+        
+        float GlyphWidth = font->charData[CharToGlyph(box->BoxName[i])].width;
+        box->NameWidth += GlyphWidth * fontSize + font->letterSpacing; 
     }
 }
 
@@ -77,9 +86,20 @@ void GUIBoxBegin(const char *boxName, v2 Position)
 {
     GUIBox *box = CreateObject(GUIBox);
     
-    u16 boxNameLength = strlen(boxName);
+    u16 boxNameLength = (u16)strlen(boxName);
     Assert(boxNameLength >= 50, "boxName length too long");
     Memory.Copy(box->BoxName, boxName, 50);
+
+    
+    v2 WindowSize = GetWindowSize();
+    float aspectRatio = WindowSize.width / WindowSize.height;
+
+    Position.x *= aspectRatio;
+    Position.y *= -aspectRatio;
+
+    Position.x -= aspectRatio;
+    Position.y += 1.0f;
+
 
     box->Position = Position;
 
@@ -97,7 +117,7 @@ void GUIText(const char *format, ...)
 
     GUIWidget* widget = CreateObject(GUIWidget);
 
-    widget->textLength = vsnprintf(NULL, 0, format, args);
+    widget->textLength = vsnprintf(NULL, 0, format, args) + 1;
     
     widget->String = GUIAlloca(widget->textLength);
 

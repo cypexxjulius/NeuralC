@@ -7,7 +7,7 @@
 #include "src/utils/types.h"
 #include "src/renderer/timestep.h"
 #include "src/events/keycode.h"
-#include "src/renderer/renderer.h"
+#include "src/renderer/Renderer.h"
 #include "src/gui/GUI.h"
 
 static Application App;
@@ -47,6 +47,8 @@ static void ApplicationOnEvent(Event* event)
     if(event->type == WindowResizeEventType)
         ApplicationOnWindowResizedEvent(event);
 
+    RendererOnUpdate(event);
+
     Layer* layer;
     for(unsigned int i = 0; i < App.layerStack.used; i++)
     {       
@@ -84,6 +86,8 @@ void ApplicationLoop()
             continue;
         }
 
+        float deltaTime = GetDeltaTime();
+
         RendererStartCallback();
 
             for(unsigned int i = 0; i < App.layerStack.used; i++)
@@ -91,7 +95,7 @@ void ApplicationLoop()
                 activeLayer = VectorGet(&App.layerStack, i);
 
                 if(activeLayer->OnUpdate != NULL)
-                    activeLayer->OnUpdate(GetDeltaTime());
+                    activeLayer->OnUpdate(deltaTime);
             }
 
             GUIBegin();
@@ -101,7 +105,7 @@ void ApplicationLoop()
                     activeLayer = VectorGet(&App.layerStack, i);
 
                     if(activeLayer->GUIUpdate != NULL)
-                        activeLayer->GUIUpdate(GetDeltaTime());
+                        activeLayer->GUIUpdate(deltaTime);
                 }
                         
             GUIEnd();

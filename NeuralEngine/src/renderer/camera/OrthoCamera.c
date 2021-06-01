@@ -5,6 +5,9 @@
 
 #include <string.h>
 
+#define NEAR_VAL -100.0f
+#define FAR_VAL   100.0f
+
 static inline void orthographicCameraRecalculate(Camera *this)
 {
     Assert(this->camType != OrthographicCameraType, "Wrong camera type"); 
@@ -14,22 +17,16 @@ static inline void orthographicCameraRecalculate(Camera *this)
 Camera* NewOrthographicCamera(float left, float right, float bottom, float top)
 {
     Camera* this = CreateObject(Camera);
-
     this->camType = OrthographicCameraType;
 
-    this->orthoCam.view_proj.proj = glms_ortho(left, right, bottom, top, -100.0f, 100.0f);
-    orthographicCameraRecalculate(this);
-
-    this->orthoCam.height = GetUnsignedFloat(top) + GetUnsignedFloat(bottom);
-    this->orthoCam.width  = GetUnsignedFloat(left) + GetUnsignedFloat(right);
-
+    OrthographicCameraSetProjection(this, left, right, bottom, top);
     return this;
 } 
 
 void OrthographicCameraSetProjection(Camera* this, float left, float right, float bottom, float top)
 {
     Assert(this->camType != OrthographicCameraType, "Wrong camera type");
-    this->orthoCam.view_proj.proj = glms_ortho(left, right, bottom, top, -1.0f, 1.0f);
+    this->orthoCam.view_proj.proj = glms_ortho(left, right, bottom, top, NEAR_VAL, FAR_VAL);
 
     orthographicCameraRecalculate(this);
 

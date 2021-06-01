@@ -14,11 +14,6 @@
 #define PAGE_NAME_LENGTH 50
 #define BOX_NAME_LENGTH 50
 
-static const float widgetPadding = 0.75;
-
-static const float fontHeight = 1;
-static const float fontPadding = 0.5;
-
 typedef enum WidgetType
 {
     WidgetTypePlain,
@@ -38,7 +33,8 @@ typedef struct GUIBox
 
     v2 Position;
     Vector Widgets;
-    u8 height, width;
+    float height, width;
+    float NameWidth, NameHeight;
     char BoxName[BOX_NAME_LENGTH];
 
 } GUIBox;

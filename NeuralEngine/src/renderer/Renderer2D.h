@@ -4,6 +4,8 @@
 #include "camera/Camera.h"
 #include "textures/Texture2D.h"
 #include "src/utils/types.h"
+#include "src/events/eventStructs.h"
+#include "src/renderer/font/font.h"
 
 typedef struct TextQuadElement 
 {   
@@ -15,14 +17,13 @@ typedef struct TextQuadElement
 
 typedef struct Renderer2DQuadInitializer
 {
+    v4 color;
     v2 position;
     float width;
-    float height;
-    v4 color;
-    float zIndex;
     float tiling;
+    float height;
+    float zIndex;
     float rotation;
-    TextElement* text;
     Texture2D* texture;
 } Quad2D;
 
@@ -32,14 +33,18 @@ extern void Renderer2DShutdown();
 
 extern void Renderer2DBeginScene(Camera* camera);
 
-extern void Renderer2DDrawQuad(Quad2D initializer);
+extern void Renderer2DDrawQuad(Quad2D* initializer);
 
 extern void Renderer2DEndScene();
 
 extern void Renderer2DEndSceneCallback();
 
+extern void Renderer2DOnUpdate(const Event* event);
+
 extern void Renderer2DStartSceneCallback();
 
+extern void Renderer2DPushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4], float iTextureID, float itiling);
 
+extern void Renderer2DText(Font* font, char* string, u16 textLength, float scale, v3 color, v2 position, float zIndex, float maxWidth, float maxHeight);
 
 #endif // __RENDERER2D_H_

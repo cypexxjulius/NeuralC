@@ -32,7 +32,7 @@ Font* NewFontTexture(const char *filepath)
    float fontScaleDownRatio = fontHeight * 10.0f;
 
 
-   this->bitmap = Memory.Calloc(this->width * this->height, sizeof(byte));
+   byte* bitmap = Memory.Calloc(this->width * this->height, sizeof(byte));
 
    float scale = stbtt_ScaleForPixelHeight(&font, fontHeight);
 
@@ -40,7 +40,7 @@ Font* NewFontTexture(const char *filepath)
    stbtt_packedchar charData[CHAR_COUNT] = { 0 };
 
 
-   stbtt_PackBegin(&PackContext, this->bitmap, this->width, this->height, 0, 0, NULL);
+   stbtt_PackBegin(&PackContext, bitmap, this->width, this->height, 0, 0, NULL);
    
    stbtt_PackSetOversampling(&PackContext, 2, 2);
 
@@ -65,43 +65,18 @@ Font* NewFontTexture(const char *filepath)
       this->charData[i].baseline = quad.y1 / fontScaleDownRatio;
    }
 
-   this->lineHeight = this->charData['[' - ' '].height - this->charData['[' - ' '].baseline;
-   this->letterSpacing = this->charData['.' - ' '].height / 5.0f;
+   this->lineHeight = this->charData[CharToGlyph('[')].height - this->charData[CharToGlyph('[')].baseline;
+   this->letterSpacing = this->charData[CharToGlyph('.')].height / 5.0f;
 
 
    this->FontTexture = NewTexture2DEmpty(this->width, this->height, Image_TypeALPHA);
-   Texture2DSetData(this->FontTexture, this->bitmap, this->width * this->height);
+   Texture2DSetData(this->FontTexture, bitmap, this->width * this->height);
+
+   Memory.Free(bitmap);
+   this->fontSize = fontHeight;
 
    return this;
 }
-
-
-
-void FontGetCharInfo(Font* this, char character, v2 outVertices[4], v2 *outSize, float *outbaseline)
-{
-   
-   character -= ' ';
-
-   if(outVertices != NULL)
-   {
-      outVertices[0] = V2(this->charData[character].x0, this->charData[character].y1);
-      outVertices[1] = V2(this->charData[character].x1, this->charData[character].y1);
-      outVertices[2] = V2(this->charData[character].x1, this->charData[character].y0);
-      outVertices[3] = V2(this->charData[character].x0, this->charData[character].y0);   
-   }
-
-   if(outSize != NULL)
-   {
-      outSize->width = this->charData[character].width;
-      outSize->height = this->charData[character].height;
-   }
-
-   if(outbaseline != NULL)
-   {
-      *outbaseline = this->charData[character].baseline;
-   }
-}
-
 
 void DeleteFont(Font *this)
 {

@@ -1,9 +1,8 @@
 #ifndef __NEURAL_H_
 #define __NEURAL_H_
 
-#include "src/renderer/renderer.h"
 #include "src/events/keycode.h"
-   #include "src/core/Application.h"
+#include "src/core/Application.h"
 #include "src/renderer/Renderer2D.h"
 
 // Textures

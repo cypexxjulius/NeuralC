@@ -38,10 +38,10 @@ static QuadVertex QuadVertexBufferBase[MaxVertices] = { 0 };
 static QuadVertex* QuadVertexBufferPtr = NULL;
 
 static const vec4s QuadVertexPositions[4] = {
-    {{ -0.5f, -0.5f, 0.0f, 1.0f }},
-	{{  0.5f, -0.5f, 0.0f, 1.0f }},
-	{{  0.5f,  0.5f, 0.0f, 1.0f }},
-	{{ -0.5f,  0.5f, 0.0f, 1.0f }},
+    {{  0.0f,  0.0f, 0.0f, 1.0f }},
+	{{  1.0f,  0.0f, 0.0f, 1.0f }},
+	{{  1.0f,  -1.0f, 0.0f, 1.0f }},
+	{{  0.0f,  -1.0f, 0.0f, 1.0f }},
 };
 
 // TextureSlot Array
@@ -50,7 +50,7 @@ static const vec4s QuadVertexPositions[4] = {
 static Texture2D* TextureSlots[MaxTextureSlots];
 static u32 TextureSlotIndex = 0;
 
-static double ZINDEX_STEPS = 1.0f / (float)MaxQuads;
+static float ZINDEX_STEPS = 1.0f / (float)MaxQuads;
 static float RendererScenezIndex = 0; 
 
 void Renderer2DInit()
@@ -128,11 +128,13 @@ void Renderer2DShutdown()
     DeleteFont(FontTexture);
 }
 
-
 void Renderer2DBeginScene(Camera* camera)
 {
-    
-    ShaderSetMat4(TextureShader, "u_ViewProj", ((camera != NULL) ? OrthographicCameraGetViewProjMat(camera).raw : OrthographicCameraGetViewProjMat(ViewPortCamera->camera).raw));
+    ShaderSetMat4(
+        TextureShader, 
+        "u_ViewProj", 
+        ((camera != NULL) ? OrthographicCameraGetViewProjMat(camera).raw : OrthographicCameraGetViewProjMat(ViewPortCamera->camera).raw)
+    );
 
     QuadIndexCount = 0;
     QuadVertexBufferPtr = QuadVertexBufferBase;
@@ -173,179 +175,68 @@ void Renderer2DEndScene()
 
 static inline v3 Mat4MulVec4(mat4s matrix, vec4s vec);
 
-static inline void PushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4], float iTextureID, float itiling);
-
-static void Renderer2DRenderText(char* string, float scale, v3 color, v2 position, float zIndex, float maxWidth, float height)
-{
-    static const float padding = 0.02f;
-    static const float letterSpacing = 0.01f;
-
-    float originalY = position.y;
-    u16 Strlen = (u16)strlen(string);
-    
-    if(Strlen == 0)
-        return;
-
-    float lineLength = padding;
-
-    position.y -= FontTexture->lineHeight * scale + padding;
-
-    float baseline;
-    v2 textureCoords[4];
-    v2 Size;
-
-    printf("RenderingString '%s'\n", string);
-
-    for(u16 i = 0; i < Strlen; i++)
-    {
-        if(string[i] == '\n')
-        {
-            if(height < originalY - (position.y - FontTexture->lineHeight + padding))
-                return; 
-            
-            position.y -= FontTexture->lineHeight * scale + padding;
-            lineLength = padding;
-            continue;
-        }
-
-        if(string[i] == ' ')
-        {
-            FontGetCharInfo(FontTexture, 'a', NULL, &Size, &baseline);
-            lineLength += Size.width * scale;
-            continue;
-        }
-
-
-        FontGetCharInfo(FontTexture, string[i], textureCoords, &Size, &baseline);
-
-        if(Size.width * scale + lineLength > maxWidth)
-            return; // Linelength reached
-
-        const float posx = position.x + lineLength;
-
-        const float posy = position.y - baseline  * scale;
-
-
-        PushVertices((v3 [4]){
-            V3(posx,                          posy, zIndex),
-            V3(posx + Size.width  * scale   , posy, zIndex),
-            V3(posx + Size.width * scale    , posy + Size.height * scale, zIndex),
-            V3(posx,                          posy + Size.height * scale, zIndex),
-            }, 
-            V4(color.x, color.y, color.z, 1.0f), 
-            textureCoords, 
-            1, 
-            1.0f
-        );
-
-        lineLength += Size.width * scale + FontTexture->letterSpacing * scale;
-
-    }
-}
-
-void Renderer2DDrawQuad(Quad2D initializer)
+void Renderer2DDrawQuad(Quad2D* initializer)
 {
 
-    if((QuadIndexCount + 6 >= MaxIndices) || (initializer.texture != NULL && TextureSlotIndex == 31))
+    if((QuadIndexCount + 6 >= MaxIndices) || (initializer->texture != NULL && TextureSlotIndex == 31))
         Renderer2DUploadBatch();
 
     // Set position
-    v2 position = initializer.position;
 
-    // Check color
-    v4 color = (initializer.color.x != 0 || initializer.color.y != 0 || initializer.color.z != 0 || initializer.color.w != 0) // Check for a non defined Color
-         ? color = initializer.color :  V4(1.0f, 1.0f, 1.0f, 1.0f);
+    // Set color
+    v4 color = initializer->color;
 
     // Set Image if defined
     float TextureID = 0;
-    if(initializer.texture != NULL)
+    if(initializer->texture != NULL)
     {
         for(u32 i = 0; i < TextureSlotIndex; i++)
         {
-            if(TextureSlots[i]->id == initializer.texture->id)
+            if(TextureSlots[i]->id == initializer->texture->id)
             {
                 TextureID = (float)i + 2;
                 goto out;
             }
         }
 
-        TextureID = (float)TextureSlotIndex;
-        TextureSlots[TextureSlotIndex++] = initializer.texture;
+        TextureID = (float)TextureSlotIndex + 2;
+        TextureSlots[TextureSlotIndex++] = initializer->texture;
     }
     out:;
 
-    float width = (initializer.width ? initializer.width : 1.0f)   / 1000.0f;
-    float height = (initializer.height ? initializer.height : 1.0f) / 1000.0f;
+    float width = initializer->width;
+    float height = initializer->height;
+
+    v2 position = V2(initializer->position.x, initializer->position.y);
 
 
-    float tiling = initializer.tiling ? initializer.tiling : 1.0f;
-    float zIndex = RendererScenezIndex + initializer.zIndex;
-    RendererScenezIndex += (float)ZINDEX_STEPS;
 
-    if(initializer.rotation == 0)
-    {
-        PushVertices( (v3 [4]) {
-            V3(position.x,          position.y, zIndex),
-            V3(position.x + width,  position.y, zIndex),
-            V3(position.x + width,  position.y + height, zIndex),
-            V3(position.x,          position.y + height, zIndex)
-        }, color, (v2 [4]) {
-            V2(0, 0),
-            V2(1, 0),
-            V2(1, 1),
-            V2(0, 1)
-        }, TextureID, tiling);
-    } else {
-
+    float tiling = initializer->tiling ? initializer->tiling : 1.0f;
+    float zIndex = RendererScenezIndex + initializer->zIndex;
+    RendererScenezIndex += ZINDEX_STEPS;
     
-        mat4s transform =   glms_mat4_mul(
-                                glms_translate_make(vec3s(position.x, position.y, zIndex)), // Position transform
-                                glms_mat4_mul(  
-                                    glms_scale_make(vec3s(width, height, 1.0f)), // Scale Transform
-                                    glms_rotate_make(initializer.rotation, vec3s(0.0f, 0.0f, 1.0f)) // Rotation Transform
-                                )
-                            );
+    mat4s transform =  glms_mat4_mul(
+        glms_translate_make(vec3s(position.x, position.y, zIndex)), // Position transform
+        glms_mat4_mul(  
+            glms_rotate_make(glm_rad(initializer->rotation), vec3s(0.0f, 0.0f, 1.0f)), // Rotation Transform
+            glms_scale_make(vec3s(width, height, 1.0f)) // Scale Transform
+        )
+    );
 
-        PushVertices( (v3 []) {
-            Mat4MulVec4(transform, QuadVertexPositions[0]),
-            Mat4MulVec4(transform, QuadVertexPositions[1]),
-            Mat4MulVec4(transform, QuadVertexPositions[2]),
-            Mat4MulVec4(transform, QuadVertexPositions[3])
-        }, color, (v2 []) {
-            V2(0, 0),
-            V2(1, 0),
-            V2(1, 1),
-            V2(0, 1)
-        }, TextureID, tiling);    
-        
-    }
-
-
-    if(initializer.text != NULL && initializer.text->string != NULL)
-    {
-        v3 textcolor = V3(0.0f, 0.0f, 0.0f);
-
-        if( initializer.text->color.x != 0 ||
-            initializer.text->color.y != 0 ||
-            initializer.text->color.z != 0)
-        {
-            textcolor = initializer.text->color;
-        }
-        
-        Renderer2DRenderText(
-            initializer.text->string,
-            (initializer.text->fontSize ? initializer.text->fontSize : 1.0f),
-            textcolor,
-            V2(position.x, position.y + 1.0f * height),
-            zIndex + 0.01f,
-            width,
-            height
-        );
-    }
-
+    Renderer2DPushVertices( (v3 [4]) {
+        Mat4MulVec4(transform, QuadVertexPositions[0]),
+        Mat4MulVec4(transform, QuadVertexPositions[1]),
+        Mat4MulVec4(transform, QuadVertexPositions[2]),
+        Mat4MulVec4(transform, QuadVertexPositions[3])
+    }, color, (v2 [4]) {
+        V2(0, 0),
+        V2(1, 0),
+        V2(1, 1),
+        V2(0, 1)
+    }, TextureID, tiling);    
 } 
 
-void PushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4], float iTextureID, float itiling) {                                                                         
+void Renderer2DPushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4], float iTextureID, float itiling) {                                                                         
     
     // Dont put this in a for loop it will slow down the rendering process
     // Bottom left 
@@ -388,7 +279,7 @@ v3 Mat4MulVec4(mat4s matrix, vec4s vec)
 {
     vec3s temp = glms_mat4_mulv3(matrix, vec3s(vec.x, vec.y, vec.z), vec.w);
     return V3(temp.x, temp.y, temp.z);
-};
+}
 
 void Renderer2DEndSceneCallback()
 {
@@ -397,5 +288,10 @@ void Renderer2DEndSceneCallback()
 void Renderer2DStartSceneCallback()
 {
     RendererScenezIndex = 0;
+}
+
+void Renderer2DOnUpdate(const Event* event)
+{
+    CameraControllerOnEvent(ViewPortCamera, event);
 }
 

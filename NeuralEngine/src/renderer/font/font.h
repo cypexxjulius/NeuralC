@@ -4,7 +4,10 @@
 #include "src/utils/types.h" 
 #include "src/renderer/textures/Texture2D.h"
 
-#define CHAR_COUNT 255 - ' ' + 1
+
+#define CharToGlyph(character) ((character) - ' ')
+
+#define CHAR_COUNT CharToGlyph(255) + 1
 
 typedef struct FontCharData
 {
@@ -18,14 +21,13 @@ typedef struct Font
     u16 width, height;
     float lineHeight;
     float letterSpacing;
-    byte* bitmap;
+    float fontSize;
     Texture2D *FontTexture;
     FontCharData charData[CHAR_COUNT];
 } Font;
 
-extern Font* NewFontTexture(const char *filepath);
 
-extern void FontGetCharInfo(Font* this, char character, v2 outVertices[4], v2 *outSize, float *outbaseline);
+extern Font* NewFontTexture(const char *filepath);
 
 extern void DeleteFont(Font *this);
 

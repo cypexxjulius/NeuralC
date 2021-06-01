@@ -10,7 +10,7 @@ typedef struct GUIAssetManager
 {
     Font* Font;
     float widgetPadding, widgetMargin; 
-    float fontPadding;
+    float fontPadding, fontSize;
 } GUIAssetManager;
 
 static GUIController Controller;
@@ -26,9 +26,10 @@ void InitGUI()
 
     AssetManager.Font = NewFontTexture("res/fonts/Roboto-Black.ttf");
 
-    AssetManager.widgetPadding = 1.0f;
-    AssetManager.fontPadding = 0.25f;
-    AssetManager.widgetMargin = 2.0f;
+    AssetManager.widgetPadding = 0.01f;
+    AssetManager.fontPadding = 0.01f;
+    AssetManager.widgetMargin = 0.01f;
+    AssetManager.fontSize = 0.3f;
 }
 
 void DeinitGUI()
@@ -62,16 +63,26 @@ Font* GUIGetFont()
     return AssetManager.Font;
 }
 
-void GUIStyleGet(float *outWidgetPadding, float *outFontPadding, float *widgetMargin)
+void GUIStyleGet(STYLE_VARS var, void *outvariable)
 {
-    if(outFontPadding != NULL)
-        *outFontPadding = AssetManager.fontPadding;
-
-    if(outWidgetPadding != NULL)
-        *outWidgetPadding = AssetManager.widgetPadding;
-
-    if(widgetMargin != NULL)
-        *widgetMargin = AssetManager.widgetMargin;
+    switch(var)
+    {
+        case FONT_SIZE:
+            *(float *)outvariable = AssetManager.fontSize;
+            return;
+        
+        case FONT_PADDING:
+            *(float *)outvariable = AssetManager.fontPadding;
+            return;
+        
+        case WIDGET_MARGIN:
+            *(float *)outvariable = AssetManager.widgetMargin;
+            return;
+        
+        case WIDGET_PADDING:
+            *(float *)outvariable = AssetManager.widgetPadding;
+            return;
+    }
 }
 
 GUIBox* GUIGetActiveBox()
