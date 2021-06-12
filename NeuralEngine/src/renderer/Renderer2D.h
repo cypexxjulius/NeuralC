@@ -32,7 +32,7 @@ extern void Renderer2DInit();
 
 extern void Renderer2DShutdown();
 
-extern void Renderer2DBeginScene(Camera* camera, Shader* shader);
+extern void Renderer2DBeginScene(Camera* camera, Shader* shader, Font* font);
 
 extern void Renderer2DDrawQuad(Quad2D* initializer);
 

@@ -27,7 +27,7 @@ static Application App;
 
 extern void NewApplication(char *ApplicationName)
 {
-    App =  (Application){ 0 };
+    App = (Application){ 0 };
 
     u32 NameLength = sizeof(ApplicationName) + 1;
     Assert(NameLength >= APPLICATION_NAME_LENGTH, "ApplicationName too long");

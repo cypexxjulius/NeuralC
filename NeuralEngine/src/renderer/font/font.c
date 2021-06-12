@@ -51,12 +51,18 @@ Font* NewFontTexture(const char *filepath)
    stbtt_GetFontVMetrics(&font, &ascent, &descent, &linegap);
 
    // Packing the font into the bitmap
-   stbtt_PackBegin(&packContext, bitmap, this->width, this->height, this->width, 0, NULL);
-   
+   errorCode = stbtt_PackBegin(&packContext, bitmap, this->width, this->height, this->width, 0, NULL);
+   Assert(errorCode != 1, "Failed to pack glyphs");
+
    stbtt_PackSetOversampling(&packContext, 2, 2);
-   stbtt_PackFontRange(&packContext, (u8 *)fileContent.string, 0, fontHeight, FIRST_CHAR_IN_FONT, CHAR_COUNT, charData);
+
+   errorCode = stbtt_PackFontRange(&packContext, (u8 *)fileContent.string, 0, fontHeight, FIRST_CHAR_IN_FONT, CHAR_COUNT, charData);   
+   Assert(errorCode != 1, "Failed to pack glyphs");
+
 
    stbtt_PackEnd(&packContext);
+   
+   LOG("Loading font %s", filepath);
 
    // Converting the stbtt_aligned_quad data to my own struct for each glyp
    for(u16 i = 0; i < CHAR_COUNT; i++)
@@ -73,12 +79,9 @@ Font* NewFontTexture(const char *filepath)
       this->charData[i].y1 = quad.t0;
 
       
-      float width = this->charData[i].width  = (quad.x1 - quad.x0) * scale;
-      float height = this->charData[i].height = (quad.y1 - quad.y0) * scale;
-      
-      LOG("%c : { %f %f }", i + FIRST_CHAR_IN_FONT, width, height);
-
-      
+      this->charData[i].width  = (quad.x1 - quad.x0) * scale;
+      this->charData[i].height = (quad.y1 - quad.y0) * scale;
+   
       this->charData[i].baseline = quad.y1 * scale;
    }
 

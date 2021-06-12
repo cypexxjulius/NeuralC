@@ -15,7 +15,6 @@ static Shader* TextureShader = NULL;
 
 static VertexArray* QuadVertexArray = NULL; 
 static Texture2D* IdentityTexture = NULL;
-static Font* FontTexture;
 
 
 #define MaxQuads 30000
@@ -102,9 +101,6 @@ void Renderer2DInit()
     uint32_t WhiteTextureData = 0xffffffff;
     Texture2DSetData(IdentityTexture, &WhiteTextureData, sizeof(uint32_t));
 
-    // Setup text texture atlas
-    FontTexture = NewFontTexture("res/fonts/Roboto-Black.ttf");
-
 
     // Setup sampler array
     for(u32 i = 0; i < MaxTextureSlots; i++)
@@ -122,14 +118,14 @@ void Renderer2DShutdown()
     DeleteVertexArray(QuadVertexArray);
     DeleteShader(TextureShader);
     DeleteTexture2D(IdentityTexture);
-    DeleteFont(FontTexture);
 }
 
-void Renderer2DBeginScene(Camera* camera, Shader* shader)
+void Renderer2DBeginScene(Camera* camera, Shader* shader, Font* font)
 {
     if(shader == NULL)
         shader = TextureShader; 
     
+    FontBind(font, 1);
     
     ShaderBind(shader);
     
@@ -152,7 +148,6 @@ static inline void Renderer2DUploadBatch()
 {
     // Bindung all Textures
     Texture2DBind(IdentityTexture, 0);
-    FontBind(FontTexture, 1);
 
     for(u32 i = 0; i < TextureSlotIndex; i++)
         Texture2DBind(TextureSlots[i], i + 2);

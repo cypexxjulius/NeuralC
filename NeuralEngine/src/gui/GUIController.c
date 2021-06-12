@@ -20,8 +20,6 @@ void InitGUI()
 
     NewVector(&Controller.boxes, 2, sizeof(GUIBox * ), VECTOR_POINTER | VECTOR_FREE);
     AssetManager.CameraController = NewOrthographicCameraController(CameraNoControls);
-
-    // AssetManager.Font = NewFontTexture("c:/windows/fonts/times.ttf");
     
     AssetManager.Font = NewFontTexture("res/fonts/Roboto-Black.ttf");
 
@@ -44,8 +42,7 @@ void GUIBegin()
 
 void GUIEnd()
 {    
-    Renderer2DBeginScene(AssetManager.CameraController->camera, NULL);
-
+    Renderer2DBeginScene(AssetManager.CameraController->camera, NULL, AssetManager.Font);
 
     for(u16 i = 0; i < Controller.boxes.used; i++)
     {
@@ -65,9 +62,9 @@ void GUIEnd()
     for(u32 i = 0; i < Controller.boxes.used; i++)
     {
         GUIBox* box = VectorGet(&Controller.boxes, i);
-
         DeleteVector(&box->Widgets);
     }
+
     VectorClear(&Controller.boxes);
 }
 
