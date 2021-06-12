@@ -5,6 +5,13 @@
 
 struct Window;
 
+typedef enum KeyState
+{
+    KeyState_Released,
+    KeyState_Pressed,
+    KeyState_Repeated
+} KeyState;
+
 
 void InitEventSystem(struct Window* this);
 

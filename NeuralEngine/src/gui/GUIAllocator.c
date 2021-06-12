@@ -1,10 +1,9 @@
 #include "GUIAllocator.h"
 #include "src/core/error.h"
 
-#define MEMORY_SIZE 2048
+#define MEMORY_SIZE 4096
 
 static u32 GUIMemoryCount;
-
 static u8 GUIMemory[MEMORY_SIZE];
 
 void GUIAllocatorReset()

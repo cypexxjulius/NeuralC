@@ -16,16 +16,20 @@
 
 typedef enum WidgetType
 {
-    WidgetTypePlain,
-    WidgetTypeText,
+    GUIWidgetTypePlain,
+    GUIWidgetTypeText,
+    GUIWidgetTypeButton,
 } WidgetType;
 
 typedef struct GUIWidget
 {
+    float width, height;
     WidgetType type;
+
     u16 textLength;
     char *String;
-    float width, height;
+
+    u8 isPressed;
 } GUIWidget;
 
 typedef struct GUIBox
@@ -42,12 +46,19 @@ typedef struct GUIBox
 
 typedef struct GUIController {
     Vector boxes;
+
+    
+    struct MousePressedEvent
+    {   
+        v2 Position;
+    } MousePressedEvent;
 } GUIController;
 
-void GUIBoxBegin(const char *boxName, v2 Position);
+extern void WindowToGUISpace(v2 *Position);
 
-void GUIText(const char *format, ...);
+extern void GUItoRenderSpace(v2 *Position);
 
 #include "GUIController.h"
+#include "GUIItems.h"
 
 #endif // __GUIMODULES_H_

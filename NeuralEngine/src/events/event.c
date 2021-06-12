@@ -59,7 +59,7 @@ static void _MouseButtonCallback(GLFWwindow* glWindow, int button, int action, i
 {
     Window* window = glfwGetWindowUserPointer(glWindow);
 
-    window->state.mouse.buttons[button].down = (action == GLFW_PRESS) ? 1 : (action == GLFW_REPEAT) ? 2 : 0;
+    window->state.mouse.buttons[button].down = action;
 
     Event event = Event(MouseButtonPressedEventType, .KeyPressedEvent = KeyPressedEvent(button, action, mods), true);
     event.id = id++;

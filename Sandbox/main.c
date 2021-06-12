@@ -18,6 +18,8 @@ static char string[4096] = { 0 };
 static unsigned int stringCursor = 0;
 static v2 MousePressedPosition = { 0 };
 
+static unsigned int lastPressedButton = 0;
+static u8 showMessage = 0;
 
 void NeuralInit()
 {   
@@ -27,22 +29,6 @@ void NeuralInit()
 
     texture = NewTexture2D("res/textures/Checkerboard.png");
     texture2 = NewTexture2D("res/textures/firstImage.jpg");
-}
-
-void NeuralGUIUpdate(float deltaTime)
-{
-    GUIBoxBegin("Test", V2(0, 0));
-
-        GUIText("FrameTime %.2fms", 1000.0f * deltaTime);
-        GUIText("FPS %.2f", 1.0f / deltaTime);
-
-
-
-    GUIBoxBegin("Mouse", V2(1.0, 0.9));
-
-        GUIText("Mouse Position");
-        GUIText("     X %f", MousePressedPosition.x);
-        GUIText("     Y %f", MousePressedPosition.y);
 }
 
 void NeuralOnUpdate(float deltaTime)
@@ -62,35 +48,26 @@ void NeuralOnUpdate(float deltaTime)
 
         Profile(RendererDraw)
         {
-            Renderer2DBeginScene(camera->camera);
-                        
-            
-            Renderer2DDrawQuad(&(Quad2D) {
-                .position = V2(0.0f, 0.0f),
-                .width = 0.1f,
-                .height = 0.1f,
-                .color = V4(1.0, 0.3, 0.1, 1.0),
-            });
+                GUIBoxBegin("Performance", V2(0, 0));
+                    GUIText("FrameTime %.2fms", 1000.0f * deltaTime);
+                    GUIText("FPS %.2f", 1.0f / deltaTime);
+                    GUIText("Memory Allocated %u", GetMemoryCount());
 
+                GUIBoxBegin("Mouse", V2(0.7, 0));
+                    GUIText("Mouse Position");
+                    GUIText("     X %f", MousePressedPosition.x);
+                    GUIText("     Y %f", MousePressedPosition.y);
+                    
+                GUIBoxBegin("Hello World", V2(0, 0.5));
+                    GUIText("Hello World out there");
+                    GUIText(string);
+                    GUIText("Last Pressed Button %u : %c", lastPressedButton, lastPressedButton);
 
-            static float lineThickness = 0.001;
+                    if(GUIButton("X"))
+                        showMessage = !showMessage;
 
-            
-            Renderer2DDrawQuad(&(Quad2D) {
-                .position = V2(0, 0),
-                .color = V4(1.0f, 1.0f, 1.0f, 1.0f),
-                .width = lineThickness * 500,
-                .height = lineThickness,
-            });
-
-            Renderer2DDrawQuad(&(Quad2D) {
-                .position = V2(0, 0),
-                .color = V4(1.0f, 1.0f, 1.0f, 1.0f),
-                .width = lineThickness,
-                .height = lineThickness * 500,
-            });
-
-            Renderer2DEndScene();
+                    if(showMessage)
+                        GUIText("Secret Message");
         }
     }
 }
@@ -133,13 +110,14 @@ bool NeuralOnEvent(const Event* event)
 
         case(CharEventType) :
             char keycode = (char)event->KeyPressedEvent.keyCode;
-
+            lastPressedButton = keycode;
             string[stringCursor++] = keycode;
             string[stringCursor] = 0;
             break;
         
-        case (MouseMovedEventType):
+        case(MouseMovedEventType):
             MousePressedPosition = event->PosEvent.pos;
+            WindowToGUISpace(&MousePressedPosition);
             break;
     }
     return 0;
@@ -161,8 +139,7 @@ void Start()
             .Init = NeuralInit, 
             .OnUpdate = NeuralOnUpdate, 
             .OnEvent = NeuralOnEvent, 
-            .Delete = NeuralDelete,
-            .GUIUpdate = NeuralGUIUpdate
+            .Delete = NeuralDelete
         })
     );
 }

@@ -8,7 +8,6 @@ typedef struct Layer
     void (*Init)();
     void (*OnUpdate)(float deltaTime);
     bool (*OnEvent)(const Event* event);
-    void (*GUIUpdate)(float deltaTime);
     void (*Delete)();
 } Layer;
 

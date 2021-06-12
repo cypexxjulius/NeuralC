@@ -12,7 +12,8 @@ int main()
 
     ApplicationLoop();
     
-    return 0;
+    printf("Memory Count %u\n", GetMemoryCount());
+    return (0);
 }
 
 #endif // __ENTRYPOINT_H_

@@ -6,9 +6,6 @@
 #include "src/utils/types.h"
 
 
-unsigned int GetMemoryCount();
-
-
 struct memoryPointers
 {
     void*(*Alloc)(size_t size);
@@ -21,6 +18,8 @@ struct memoryPointers
 };
 
 extern struct memoryPointers Memory;
+
+extern unsigned int GetMemoryCount();
 
 /*
 Creating New Object

@@ -9,7 +9,7 @@
 #include "src/platform/memory.h"
 
 
-extern Window* NewWindow(int width, int height, char *title)
+Window* NewWindow(int width, int height, char *title)
 {
     // Initalizing the Window struct
     Window *window = CreateObject(Window);
@@ -55,18 +55,20 @@ extern Window* NewWindow(int width, int height, char *title)
     return window;
 }
 
-extern void DeleteWindow(Window* window)
+void DeleteWindow(Window* window)
 {
     glfwTerminate();
     Memory.Free(window->state.title);
     Memory.Free(window);
 }
 
-extern void WindowUpdate(Window* window, unsigned int SwapBuffers)
+void WindowSwapBuffers(Window* window)
 {
-    if(SwapBuffers)
-        glfwSwapBuffers(window->windowHandle);
+    glfwSwapBuffers(window->windowHandle);
+}
 
+void WindowPollEvents()
+{
     // Poll Events
     glfwPollEvents();
 }

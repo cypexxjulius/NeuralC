@@ -9,6 +9,19 @@
 #include "src/events/keycode.h"
 #include "src/renderer/Renderer.h"
 #include "src/gui/GUI.h"
+#include "src/utils/Logger.h"
+
+typedef struct Application
+{   
+    Window* window;
+    Vector layerStack;
+
+    float deltaTime;
+    char name[APPLICATION_NAME_LENGTH];
+
+    volatile u8 shouldClose;
+    volatile u8 minimized;
+} Application;
 
 static Application App;
 
@@ -47,7 +60,8 @@ static void ApplicationOnEvent(Event* event)
     if(event->type == WindowResizeEventType)
         ApplicationOnWindowResizedEvent(event);
 
-    RendererOnUpdate(event);
+    if(GUIOnEvent(event) && event->Cancable)
+        return;
 
     Layer* layer;
     for(unsigned int i = 0; i < App.layerStack.used; i++)
@@ -80,39 +94,35 @@ void ApplicationLoop()
     Layer* activeLayer = NULL;
     while(!App.shouldClose)
     {
+        int MemoryCount = GetMemoryCount();
+
         if(App.minimized == true)
         {
-            WindowUpdate(App.window, !App.minimized);
+            WindowPollEvents();
             continue;
         }
 
-        float deltaTime = GetDeltaTime();
-
+        App.deltaTime = GetDeltaTime();
         RendererStartCallback();
 
-            for(unsigned int i = 0; i < App.layerStack.used; i++)
-            {
-                activeLayer = VectorGet(&App.layerStack, i);
+        GUIBegin();
 
-                if(activeLayer->OnUpdate != NULL)
-                    activeLayer->OnUpdate(deltaTime);
-            }
+        for(unsigned int i = 0; i < App.layerStack.used; i++)
+        {
+            activeLayer = VectorGet(&App.layerStack, i);
 
-            GUIBegin();
+            if(activeLayer->OnUpdate != NULL)
+                activeLayer->OnUpdate(App.deltaTime);
+        }
 
-                for(unsigned int i = 0; i < App.layerStack.used; i++)
-                {
-                    activeLayer = VectorGet(&App.layerStack, i);
-
-                    if(activeLayer->GUIUpdate != NULL)
-                        activeLayer->GUIUpdate(deltaTime);
-                }
-                        
-            GUIEnd();
-            
+        GUIEnd();
         RendererEndCallback();
 
-        WindowUpdate(App.window, !App.minimized);
+        WindowSwapBuffers(App.window);
+        WindowPollEvents();
+
+        if((int)GetMemoryCount() - (int)MemoryCount > 0)
+            LOG("[WARNING] Allocation Loss %i", (int)GetMemoryCount() - (int)MemoryCount);
     }
 
     // Cleanup

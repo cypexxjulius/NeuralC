@@ -23,6 +23,11 @@ typedef int8_t i8;
 
 typedef float_t f32;
 
+
+#define persist static
+
+#define local static
+
 #define vec3s(x, y, z)       (vec3s){{x, y, z}}
 #define vec4s(x, y, z, w)    (vec4s){{x, y, z, w}}
 
@@ -58,20 +63,11 @@ typedef struct v4 {
 #define V3(x, y, z)     (v3){{{x, y, z}}}
 #define V4(x, y, z, w)  (v4){{{x, y, z, w}}}
 
-
-#define nu
-
-
 float GetUnsignedFloat(float x);
 
 int RoundFloat(float num);
 
 #define ArraySize(array, type) (sizeof(array) / sizeof(type))
-
-inline static float C_Max(float x , float y)
-{
-    return (x < y) ? y : x;
-}
 
 
 #define IsBitSet(variable, bit) (variable & (1 << bit))

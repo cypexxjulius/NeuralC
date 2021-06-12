@@ -6,22 +6,18 @@
 #include "src/events/eventStructs.h"
 #include "src/utils/types.h"
 
-struct Button {
+struct ButtonData {
     u32 down, last, last_tick, pressed, pressed_tick;
 };
 
-struct n_Mouse {
-    struct Button buttons[GLFW_MOUSE_BUTTON_LAST];
+struct MouseData {
+    struct ButtonData buttons[GLFW_MOUSE_BUTTON_LAST];
     v2 position; 
     float delta[2], scrollOffset[2];
 };
 
-struct n_Keyboard {
-    struct Button keys[GLFW_KEY_LAST];
-};
-
-struct n_Char {
-    u32 key[256];
+struct KeyboardData {
+    struct ButtonData keys[GLFW_KEY_LAST];
 };
 
 typedef struct Window
@@ -36,8 +32,8 @@ typedef struct Window
         unsigned int height;
 
         // State 
-        struct n_Mouse mouse;
-        struct n_Keyboard keyboard;
+        struct MouseData mouse;
+        struct KeyboardData keyboard;
     } state;
 
 } Window;
@@ -47,7 +43,8 @@ extern Window* NewWindow(int width, int height, char *title);
 
 extern void DeleteWindow(Window* window);
 
+extern void WindowSwapBuffers(Window* window);
 
-extern void WindowUpdate(Window* window, unsigned int SwapBuffers);
+extern void WindowPollEvents();
 
 #endif // __WINDOW_H_

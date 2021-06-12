@@ -3,8 +3,6 @@
 #include "src/platform/memory.h"
 #include "src/core/error.h"
 
-#include <math.h>
-
 void NewVector(Vector *this, unsigned int count, unsigned int type_size, VECTOR_FLAGS flags)
 {
     *this = (Vector){ 0 };
@@ -18,17 +16,18 @@ void NewVector(Vector *this, unsigned int count, unsigned int type_size, VECTOR_
     this->data = Memory.Alloc(type_size * count);
 }
 
+void VectorResize(Vector* this, unsigned int newSize)
+{
+    this->data = Memory.Realloc(this->data, this->type_size * newSize);
+    this->capacity = newSize;
+}
+
 void VectorAdd(Vector* this, void *element)
 {
     if(this->capacity <= this->used)
-    {
-        unsigned int newAllocSize = this->capacity * 2;
-        this->data = Memory.Realloc(this->data, this->type_size * newAllocSize);
-        this->capacity = newAllocSize;
-    }
+        VectorResize(this, this->capacity * 2);
 
-    VectorReplace(this, this->used, element);
-    this->used++;
+    VectorReplace(this, this->used++, element);
 }
 
 void VectorReplace(Vector* this, unsigned int index, void* element)
@@ -42,11 +41,9 @@ void VectorReplace(Vector* this, unsigned int index, void* element)
         return;
     }
 
-    Memory.Copy(
-        (byte*)this->data + this->type_size * index, 
-        element, 
-        this->type_size
-    );
+    
+    byte* valuePtr = (byte*)this->data + index * this->type_size;
+    Memory.Copy(valuePtr, element, this->type_size);
 }
 
 void VectorRemove(Vector* this, unsigned int index)
@@ -65,13 +62,14 @@ void VectorRemove(Vector* this, unsigned int index)
         if(this->flags & VECTOR_NOREFILL)
             return; 
 
-        for(unsigned int i = index; i < (unsigned int)this->used; i++)
+        for(unsigned int i = index; i < (unsigned int)this->used - 1; i++)
             temp[i] = temp[i+1];
         
         return;
     }
     if(this->flags & VECTOR_NOREFILL)
         return; 
+
 
     Memory.Copy( 
         (byte*)this->data + index * this->type_size,  
@@ -84,13 +82,9 @@ void VectorRemove(Vector* this, unsigned int index)
 void* VectorGet(Vector* this, unsigned int index)
 {
     Assert(this->used <= index, "Invalid vector index accessed");
-
     
     if(this->flags & VECTOR_POINTER)
-    {
-        void **temp = this->data;
-        return temp[index];
-    }
+        return ((byte **)(this->data))[index];
 
     return (byte*)this->data + index * this->type_size;
 }
@@ -99,19 +93,12 @@ void VectorClear(Vector *this)
 {
     if(this->flags & VECTOR_FREE && this->flags & VECTOR_POINTER)
     {
-        void **temp = this->data;
         for(unsigned int i= 0; i < this->used; i++)
-        {
-            if(temp[i] != NULL)
-                Memory.Free(temp[i]);
+            Memory.Free(VectorGet(this, i));
 
-            temp[i] = NULL;
-        }
-    } else
-    {
-        for(unsigned int i = 0; i < this->used * this->type_size; i++)
-            *((byte *)(this->data) + i) = 0;
-    }
+    } 
+    else
+        memset(this->data, 0, this->used * this->type_size);
 
     this->used = 0;
 }
@@ -120,14 +107,8 @@ void DeleteVector(Vector *this)
 {
     if(this->flags & VECTOR_FREE && this->flags & VECTOR_POINTER)
     {
-        void **temp = this->data;
         for(unsigned int i= 0; i < this->used; i++)
-        {
-            if(temp[i] != NULL)
-                Memory.Free(temp[i]);
-
-            temp[i] = NULL;
-        }
+            Memory.Free(VectorGet(this, i));
     }
 
     Memory.Free(this->data);

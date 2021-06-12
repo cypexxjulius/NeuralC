@@ -3,12 +3,10 @@
 
 #include "GUI.h"
 
-extern void GUIBoxAddWidget(GUIBox* box, WidgetType type, void* data);
+extern void GUIText(const char *format, ...);
 
-extern float GUIBoxCalculateHeight(GUIBox* box, Font* font, float widgetMargin);
+extern void GUIBoxBegin(const char *boxName, v2 Position);
 
-extern float GUIBoxCalculateWidth(GUIBox* box, Font* font, float widgetMargin);
-
-extern void GUIBoxPrepare(GUIBox* box, Font * font, float widgetPadding, float fontPadding, float fontSize);
+extern bool GUIButton(const char *name);
 
 #endif // __GUIITEMS_H_

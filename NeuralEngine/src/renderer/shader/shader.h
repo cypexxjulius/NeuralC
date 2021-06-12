@@ -11,8 +11,14 @@ struct Window;
 typedef struct Shader
 {
     unsigned int ShaderID;
+    u64 flags;
     char name[50];
 } Shader;
+
+typedef enum SHADER_FLAGS
+{
+    SHADER_FLAGS_imageArraySet = (1 << 1),
+} SHADER_FLAGS;
 
 
 Shader *NewShaderFromString(const String ShaderName, const char* fragmentShader, const char* vertexShader);

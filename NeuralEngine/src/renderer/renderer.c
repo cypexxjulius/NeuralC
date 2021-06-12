@@ -64,14 +64,10 @@ void RendererClearScreen()
     glClearColor(0.1f,0.2f, 0.1f,1.0f);
 }
 
-void RendererOnUpdate(const Event* event)
-{
-    Renderer2DOnUpdate(event);
-}
-
 void RendererDrawIndexed(VertexArray* va, u32 indexCount)
 {
-    u32 count = indexCount ? indexCount : va->indexBuffer->count;
+    u32 count = indexCount != 0 ? indexCount : va->indexBuffer->count;
+    
     // Draw Elements
     glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, NULL);
 }

@@ -4,14 +4,9 @@
 #include <stdlib.h>
 #include <assert.h>
 
-
-void InitError();
-
-void ASSERTImpl(char *message, char *file, unsigned int line);
-
+extern void InitError();
 
 #define Assert(boolean, string) assert(!(boolean))
-
 
 #define CoreWarn(...) fprintf(stderr, __VA_ARGS__)
 

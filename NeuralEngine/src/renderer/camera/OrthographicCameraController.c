@@ -3,7 +3,7 @@
 #include "src/events/keycode.h"
 #include "src/core/Application.h"
 #include "src/utils/types.h"
-#include "src/core/Application.h"
+#include "src/core/Input.h"
 #include "src/utils/Logger.h"
 
 #define ZoomIntensity 2.0f

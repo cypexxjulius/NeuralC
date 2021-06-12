@@ -22,7 +22,7 @@ typedef enum ShaderType
 
 extern void ShaderBind(Shader *this)
 {
-    static u32 BoundShaderID = 0;
+    persist u32 BoundShaderID = 0;
     if (this->ShaderID == BoundShaderID)
         return;
 

@@ -4,6 +4,7 @@
 #include "camera/Camera.h"
 #include "textures/Texture2D.h"
 #include "src/utils/types.h"
+#include "src/renderer/shader/shader.h"
 #include "src/events/eventStructs.h"
 #include "src/renderer/font/font.h"
 
@@ -31,7 +32,7 @@ extern void Renderer2DInit();
 
 extern void Renderer2DShutdown();
 
-extern void Renderer2DBeginScene(Camera* camera);
+extern void Renderer2DBeginScene(Camera* camera, Shader* shader);
 
 extern void Renderer2DDrawQuad(Quad2D* initializer);
 
@@ -39,12 +40,12 @@ extern void Renderer2DEndScene();
 
 extern void Renderer2DEndSceneCallback();
 
-extern void Renderer2DOnUpdate(const Event* event);
-
 extern void Renderer2DStartSceneCallback();
 
 extern void Renderer2DPushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4], float iTextureID, float itiling);
 
-extern void Renderer2DText(Font* font, char* string, u16 textLength, float scale, v3 color, v2 position, float zIndex, float maxWidth, float maxHeight);
+extern void Renderer2DText(Font* font, char* string, float scale, v3 color, v2 position, float zIndex, float maxWidth, float maxHeight);
+
+extern float Renderer2DTextLength(Font* font, char* string, float scale);
 
 #endif // __RENDERER2D_H_

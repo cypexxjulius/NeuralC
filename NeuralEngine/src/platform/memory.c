@@ -19,6 +19,8 @@ typedef byte Page[PageSize];
 static Page MemoryBuffer[BufferSize];
 static u16 BufferLedger[LedgerLength] = { 0 };
 
+static u64 MemoryCount = 0;
+
 
 
 static void* AllocateMemoryArea(u16 pageSize)
@@ -179,6 +181,7 @@ static inline void *MemAllocImpl(size_t size)
 {
     // void*temp = MemoryAllocate(size);
     void* temp = malloc(size);
+    MemoryCount++;
     Assert(!temp, "Memory Allocation failed");
     return temp;
 };
@@ -187,6 +190,7 @@ static inline void* MemCallocImpl(size_t count,size_t size)
 { 
     // void*temp = MemoryCalloc(count, size); 
     void* temp = calloc(count, size);
+    MemoryCount++;
     Assert(!temp, "Memory Allocation failed");
     return temp;
 };
@@ -204,6 +208,7 @@ static inline void MemFreeImpl(void *pointer)
     if(MemoryFree(pointer) < 0)
         fprintf(stderr, "[ALLOC ERROR] Failed to Free Memory\n");
 #endif 
+    MemoryCount--;
     free(pointer);
 };
 
@@ -222,6 +227,10 @@ static inline void *MemReallocImpl(void* pointer,size_t size)
     void* temp = realloc(pointer, size);
     Assert(!temp, "Memory Reallocation failed");
     return temp;
+}
+unsigned int GetMemoryCount()
+{
+    return (unsigned int)MemoryCount;
 }
 
 

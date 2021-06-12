@@ -6,41 +6,16 @@
 
 void GUIRenderBox(GUIBox* box)
 {
-    // Get GUI font
-    Font *font = GUIGetFont();
+    // Get GUI asset manager
+    GUIAssetManager* AssetManager = GUIGetAssetManager();
 
-    float widgetPadding, widgetMargin;
-    float fontPadding;
-    float fontSize;
-
-    // Recieve paddings for widgets and font elements
-    GUIStyleGet(WIDGET_PADDING, &widgetPadding);
-    GUIStyleGet(FONT_PADDING, &fontPadding);
-    GUIStyleGet(WIDGET_MARGIN, &widgetMargin);
-    GUIStyleGet(FONT_SIZE, &fontSize);
-
-
-    // Prepare widgets, copy text to buffer, calculate height and width
-    GUIBoxPrepare(box, font, widgetPadding, fontPadding, fontSize);
-
-    // Calculate box height
-    float height = box->height;
-    if(height == 0)
-        height = GUIBoxCalculateHeight(box, font, widgetMargin);
-    
-    // Calculate the box width
-    float width = box->width;
-    if(width == 0)
-        width = GUIBoxCalculateWidth(box, font, widgetMargin);
-
-    Renderer2DBeginScene(NULL);
 
     // Drawing the box Canvas
     Renderer2DDrawQuad(
         &(Quad2D){
             .color = V4(0.01f, 0.1f, 0.2f, 1.0f),
-            .height = height,
-            .width = width,
+            .height = box->height,
+            .width = box->width,
             .position = box->Position
         }
     );
@@ -48,21 +23,20 @@ void GUIRenderBox(GUIBox* box)
 
     Renderer2DDrawQuad(
         &(Quad2D){
-            .color = V4(0.0f, 0.0f, 0.0f, 1.0f),
+            .color = V4(0.0f, 0.0f, 0.3f, 1.0f),
             .height = box->NameHeight,
-            .width = width,
+            .width = box->width,
             .position = box->Position
         }
     );
 
     
     Renderer2DText(
-        font, 
-        box->BoxName, 
-        (u16)strlen(box->BoxName),
-        fontSize, 
+        AssetManager->Font, 
+        box->BoxName,
+        AssetManager->fontSize, 
         V3(1.0, 1.0, 1.0), 
-        V2(box->Position.x + fontPadding, box->Position.y - fontPadding),
+        V2(box->Position.x + AssetManager->fontPadding, box->Position.y - AssetManager->fontPadding),
         1, 
         box->NameWidth, 
         box->NameHeight
@@ -70,40 +44,41 @@ void GUIRenderBox(GUIBox* box)
 
 
 
-    float renderHeight = box->NameHeight + widgetMargin;
+    float renderHeight = box->NameHeight + AssetManager->widgetMargin;
     GUIWidget* widget = NULL;
     for(u16 i = 0; i < box->Widgets.used; i++)
     {
         widget = VectorGet(&box->Widgets, i);
         
-        v2 widgetPosition = V2(box->Position.x + widgetMargin, box->Position.y - (renderHeight + widgetMargin)); 
+        v2 widgetPosition = V2(box->Position.x + AssetManager->widgetMargin, box->Position.y - (renderHeight + AssetManager->widgetMargin)); 
 
-        Renderer2DDrawQuad(
-            &(Quad2D){
-                .color = V4(1.0, 1.0, 1.0, 1.0),
-                .height = widget->height,
-                .width = width - 2 * widgetMargin,
-                .position = widgetPosition,
-            }
-        );
-            
-
+        if(widget->type == GUIWidgetTypeButton)
+        {
+            Renderer2DDrawQuad(
+                &(Quad2D) {
+                    .color = V4(0.3f, 0.2f * widget->isPressed, 0.8f, 1.0f),
+                    .position = widgetPosition,
+                    .width = widget->width,
+                    .height = widget->height
+                }
+            );
+        }
+        
         Renderer2DText(
-            font, 
-            widget->String, 
-            widget->textLength,
-            fontSize, 
-            V3(0.0, 0.0, 0.0), 
-            V2(widgetPosition.x + fontPadding, widgetPosition.y - fontPadding),
+            AssetManager->Font, 
+            widget->String,
+            AssetManager->fontSize, 
+            V3(1.0, 1.0, 1.0), 
+            V2(widgetPosition.x + AssetManager->fontPadding, widgetPosition.y - AssetManager->fontPadding),
             1, 
-            width - 2 * widgetMargin, 
+            box->width - 2 * AssetManager->widgetMargin, 
             widget->height
-        );        
+        );     
 
 
-        renderHeight += widget->height + 2 * widgetMargin;
 
+
+        renderHeight += widget->height + 2 * AssetManager->widgetMargin;
     }
 
-    Renderer2DEndScene();
 }

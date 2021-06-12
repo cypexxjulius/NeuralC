@@ -57,6 +57,10 @@ Replaces the element at the index with the new one
 */
 void VectorReplace(Vector* this, unsigned int index, void* element);
 
+/*
+Resizes the vector to the specified size
+*/
+void VectorResize(Vector* this, unsigned int newSize);
 
 /*
 Clears all elements of the vector, 

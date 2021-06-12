@@ -15,13 +15,13 @@ static Shader* TextureShader = NULL;
 
 static VertexArray* QuadVertexArray = NULL; 
 static Texture2D* IdentityTexture = NULL;
-static CameraController* ViewPortCamera = NULL;
 static Font* FontTexture;
 
 
 #define MaxQuads 30000
 #define MaxVertices MaxQuads * 4
 #define MaxIndices MaxQuads * 6
+
 
 typedef struct QuadVertex
 {
@@ -45,8 +45,10 @@ static const vec4s QuadVertexPositions[4] = {
 };
 
 // TextureSlot Array
-
 #define MaxTextureSlots 30
+int samplers[MaxTextureSlots];
+
+
 static Texture2D* TextureSlots[MaxTextureSlots];
 static u32 TextureSlotIndex = 0;
 
@@ -105,19 +107,14 @@ void Renderer2DInit()
 
 
     // Setup sampler array
-    int samplers[MaxTextureSlots];
     for(u32 i = 0; i < MaxTextureSlots; i++)
         samplers[i] = i;
-
-
-    // Setup ViewPortCamera
-    ViewPortCamera = NewOrthographicCameraController(CameraNoControls);
 
     TextureShader   = NewShaderFromFile(String("TextureShader"), "res/shader/TextureShader.glsl");
     
     ShaderBind(TextureShader);
     ShaderSetIntArray(TextureShader, "u_Textures", samplers, MaxTextureSlots);
-
+    TextureShader->flags |= SHADER_FLAGS_imageArraySet;
 }
 
 void Renderer2DShutdown()
@@ -128,12 +125,21 @@ void Renderer2DShutdown()
     DeleteFont(FontTexture);
 }
 
-void Renderer2DBeginScene(Camera* camera)
+void Renderer2DBeginScene(Camera* camera, Shader* shader)
 {
+    if(shader == NULL)
+        shader = TextureShader; 
+    
+    
+    ShaderBind(shader);
+    
+    if(!(shader->flags & SHADER_FLAGS_imageArraySet))
+       ShaderSetIntArray(TextureShader, "u_Textures", samplers, MaxTextureSlots); 
+
     ShaderSetMat4(
-        TextureShader, 
+        shader, 
         "u_ViewProj", 
-        ((camera != NULL) ? OrthographicCameraGetViewProjMat(camera).raw : OrthographicCameraGetViewProjMat(ViewPortCamera->camera).raw)
+        ((camera != NULL) ? OrthographicCameraGetViewProjMat(camera).raw : GLMS_MAT4_IDENTITY.raw)
     );
 
     QuadIndexCount = 0;
@@ -289,9 +295,3 @@ void Renderer2DStartSceneCallback()
 {
     RendererScenezIndex = 0;
 }
-
-void Renderer2DOnUpdate(const Event* event)
-{
-    CameraControllerOnEvent(ViewPortCamera, event);
-}
-

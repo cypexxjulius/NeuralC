@@ -5,9 +5,10 @@
 #include "src/renderer/textures/Texture2D.h"
 
 
-#define CharToGlyph(character) ((character) - ' ')
+#define FIRST_CHAR_IN_FONT ' '
+#define CharToGlyph(character) ((character) - FIRST_CHAR_IN_FONT)
 
-#define CHAR_COUNT CharToGlyph(255) + 1
+#define CHAR_COUNT CharToGlyph('~')
 
 typedef struct FontCharData
 {

@@ -24,7 +24,5 @@ extern void RendererStartCallback();
 
 extern void RendererEndCallback();
 
-extern void RendererOnUpdate(const Event* event);
-
 
 #endif // __RENDERER_H_

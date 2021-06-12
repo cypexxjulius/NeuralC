@@ -2,8 +2,9 @@
 #define __NEURAL_H_
 
 #include "src/events/keycode.h"
-#include "src/core/Application.h"
+#include "src/core/Input.h"
 #include "src/renderer/Renderer2D.h"
+#include "src/platform/memory.h"
 
 // Textures
 #include "src/renderer/textures/Texture2D.h"
