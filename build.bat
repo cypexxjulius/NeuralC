@@ -6,7 +6,7 @@ set OperatingDirectory=%~dp0
 
 :: Setting settings Variables
 
-set CompilerFlags=/W3 /Z7 /wd4201 /wd5045 /D "_CRT_SECURE_NO_WARNINGS" /c /TC /MP
+set CompilerFlags=/W3 /Z7 /wd4201 /wd5045 /D "_CRT_SECURE_NO_WARNINGS" /c /MP
 
 set NeuralOutputDir=!%~d0%cd%\NeuralEngine\bin\!
 
