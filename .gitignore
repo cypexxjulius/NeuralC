@@ -1,0 +1,13 @@
+**.obj
+**.lib
+
+**.o
+**.a
+
+**.exe 
+**.ilk
+**.pdb
+
+NeuralEngine/bin/**.*
+
+.vscode
