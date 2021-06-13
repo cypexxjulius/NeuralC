@@ -48,7 +48,7 @@ void GUIEnd()
     {
         GUIBox* box = VectorGet(&Controller.boxes, i);
 
-        if(box != NULL && box->Widgets.used != 0)
+        if(box != NULL)
             GUIRenderBox(box);
 
 

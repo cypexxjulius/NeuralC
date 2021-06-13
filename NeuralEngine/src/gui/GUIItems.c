@@ -105,12 +105,13 @@ bool GUIButton(const char *name)
 
         v2 WidgetPosition = V2(
             box->Position.x + AssetManager->widgetMargin,  
-            box->Position.y // - (box->NameHeight)
+            box->Position.y  - (box->height)
         );
 
         widget->isPressed = (MousePosition.x >= WidgetPosition.x) 
                             && (MousePosition.x <= (WidgetPosition.x + widget->width))
-                            && (MousePosition.y <= WidgetPosition.y);//&& (MousePosition.y >= WidgetPosition.y);
+                            && (MousePosition.y <= WidgetPosition.y)
+                            && (MousePosition.y >= WidgetPosition.y  - widget->height);
     }
 
 

@@ -1,10 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set CC =cl
+set CC =cl.exe
 set OperatingDirectory=%~dp0
 
-:: Sets settings Variables
+:: Setting settings Variables
 
 set CompilerFlags=/W3 /Z7 /wd4201 /wd5045 /D "_CRT_SECURE_NO_WARNINGS" /c /TC /MP
 

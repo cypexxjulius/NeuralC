@@ -13,9 +13,8 @@ String ReadStringFromFile(const char *filepath)
     if(!fp)
     {   
         // Display error message
-        char errorMessage[300];
-        snprintf(errorMessage, 300, "Could not open file : %s", filepath); 
-        Assert(1, errorMessage);                        
+        printf("Could not open file : %s", filepath); 
+        Assert(1, "Failed to read file");                        
     }
 
     fseek(fp, 0, SEEK_END);                     // Seeking to the EOF
