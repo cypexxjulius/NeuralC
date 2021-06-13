@@ -31,11 +31,11 @@ void GUIBoxBegin(const char *boxName, v2 Position)
 
     GUIAssetManager* AssetManager = GUIGetAssetManager();
 
-    box->NameHeight = AssetManager->Font->lineHeight * AssetManager->fontSize + 2 * AssetManager->fontPadding;
-    box->NameWidth += 2 * AssetManager->fontPadding * Renderer2DTextLength(AssetManager->Font, box->BoxName, AssetManager->fontSize); 
+    box->NameHeight     = AssetManager->Font->lineHeight * AssetManager->fontSize + 2 * AssetManager->fontPadding;
+    box->NameWidth      = 2 * AssetManager->fontPadding + Renderer2DTextLength(AssetManager->Font, box->BoxName, AssetManager->fontSize); 
 
-    box->width = box->NameWidth;
-    box->height = box->NameHeight + AssetManager->widgetMargin;
+    box->width          = box->NameWidth;
+    box->height         = box->NameHeight + AssetManager->widgetMargin;
 
 
     NewVector(&box->Widgets, 4, sizeof(GUIWidget *), VECTOR_POINTER | VECTOR_FREE);
@@ -68,12 +68,12 @@ void GUIText(const char *format, ...)
     va_end(args);
 
 
-    widget->height = AssetManager->Font->lineHeight * AssetManager->fontSize + 2 * AssetManager->fontPadding;
-    widget->width = 2 * AssetManager->fontPadding + Renderer2DTextLength(AssetManager->Font, widget->String, AssetManager->fontSize);
+    widget->height  = AssetManager->Font->lineHeight * AssetManager->fontSize + 2 * AssetManager->fontPadding;
+    widget->width   = 2 * AssetManager->fontPadding + Renderer2DTextLength(AssetManager->Font, widget->String, AssetManager->fontSize);
 
 
-    box->height += widget->height + AssetManager->widgetMargin * 2;
-    box->width = max(box->width, widget->width + 2 * AssetManager->widgetMargin);
+    box->height     += widget->height + AssetManager->widgetMargin * 2;
+    box->width      = max(box->width, widget->width + 2 * AssetManager->widgetMargin);
 
 
     VectorAdd(&box->Widgets, widget);
@@ -96,6 +96,7 @@ bool GUIButton(const char *name)
     widget->width = 2 * AssetManager->fontPadding + Renderer2DTextLength(AssetManager->Font, widget->String, AssetManager->fontSize);
 
     GUIController* Controller = GUIGetController();
+    
     v2 MousePosition = Controller->MousePressedEvent.Position;
     if(MousePosition.x && MousePosition.y)
     {       
@@ -104,14 +105,12 @@ bool GUIButton(const char *name)
 
         v2 WidgetPosition = V2(
             box->Position.x + AssetManager->widgetMargin,  
-            box->Position.y - (box->height - box->NameHeight)
+            box->Position.y // - (box->NameHeight)
         );
-
 
         widget->isPressed = (MousePosition.x >= WidgetPosition.x) 
                             && (MousePosition.x <= (WidgetPosition.x + widget->width))
-                            && (MousePosition.y <= WidgetPosition.y + widget->height)
-                            && (MousePosition.y >= WidgetPosition.y);
+                            && (MousePosition.y <= WidgetPosition.y);//&& (MousePosition.y >= WidgetPosition.y);
     }
 
 

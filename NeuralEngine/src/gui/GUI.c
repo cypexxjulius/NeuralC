@@ -20,10 +20,4 @@ void WindowToGUISpace(v2 *Position)
 
     Position->x /= WindowSize.x;
     Position->y /= WindowSize.y;
-
-    Position->x *= aspectRatio * 2;
-    Position->y *= -aspectRatio;
-
-    Position->x -= aspectRatio;
-    Position->y += 1.0f;
 }

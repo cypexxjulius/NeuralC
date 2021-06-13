@@ -20,10 +20,10 @@ void GUIRenderBox(GUIBox* box)
         }
     );
 
-
+    // Box heading background
     Renderer2DDrawQuad(
         &(Quad2D){
-            .color = V4(0.0f, 0.0f, 0.3f, 1.0f),
+            .color = V4(0.2f, 0.1f, 0.3f, 1.0f),
             .height = box->NameHeight,
             .width = box->width,
             .position = box->Position
@@ -36,7 +36,10 @@ void GUIRenderBox(GUIBox* box)
         box->BoxName,
         AssetManager->fontSize, 
         V3(1.0, 1.0, 1.0), 
-        V2(box->Position.x + AssetManager->fontPadding, box->Position.y - AssetManager->fontPadding),
+        V2(
+            box->Position.x + AssetManager->fontPadding, 
+            box->Position.y - AssetManager->fontPadding
+        ),
         1, 
         box->NameWidth, 
         box->NameHeight

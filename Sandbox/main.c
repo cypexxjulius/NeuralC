@@ -57,11 +57,11 @@ void NeuralOnUpdate(float deltaTime)
                     GUIText("Mouse Position");
                     GUIText("     X %f", MousePressedPosition.x);
                     GUIText("     Y %f", MousePressedPosition.y);
-                    
+
                 GUIBoxBegin("Hello World", V2(0, 0.5));
-                    GUIText("Hello World out there");
-                    GUIText(string);
-                    GUIText("Last Pressed Button %u : %c", lastPressedButton, lastPressedButton);
+                    //GUIText("Hello World out there");
+                    //GUIText(string);
+                    // GUIText("Last Pressed Button %u : %c", lastPressedButton, lastPressedButton);
 
                     if(GUIButton("X"))
                         showMessage = !showMessage;

@@ -86,8 +86,8 @@ Font* NewFontTexture(const char *filepath)
    }
 
    // There is probably a better way to do this ... 
-   this->lineHeight = this->charData[CharToGlyph('[')].height - this->charData[CharToGlyph('[')].baseline;
-   this->letterSpacing = this->charData[CharToGlyph('.')].width;
+   this->lineHeight     = this->charData[CharToGlyph('[')].height - this->charData[CharToGlyph('[')].baseline;
+   this->letterSpacing  = this->charData[CharToGlyph('.')].width;
 
    // Creating the Texture 
    this->FontTexture = NewTexture2DEmpty(this->width, this->height, Image_TypeALPHA);
