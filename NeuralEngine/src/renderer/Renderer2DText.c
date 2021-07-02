@@ -4,11 +4,11 @@
 #include "src/utils/Logger.h"
 #include "src/core/error.h"
 
-void Renderer2DText(Font* font, char* string, float scale, v3 color, v2 position, float zIndex, float maxWidth, float maxHeight)
+float Renderer2DText(Font* font, char* string, float scale, v3 color, v2 position, float zIndex, float maxWidth, float maxHeight)
 {
    
     if(string == NULL)
-        return;
+        return 0.0f;
 
     float lineLength = 0.0f;
     
@@ -28,6 +28,11 @@ void Renderer2DText(Font* font, char* string, float scale, v3 color, v2 position
             font->charData[glyph].height * scale
         );
 
+        
+        if(maxWidth <= lineLength + Size.width + font->letterSpacing * scale)
+            return lineLength;
+        
+        
         baseline = font->charData[glyph].baseline;
 
         if(string[i] == ' ')
@@ -62,9 +67,11 @@ void Renderer2DText(Font* font, char* string, float scale, v3 color, v2 position
         lineLength += Size.width + font->letterSpacing * scale;
 
     }
+
+    return lineLength;
 }
 
-float Renderer2DTextLength(Font* font, char* string, float scale)
+float Renderer2DTextLength(Font* font, char* string, float scale, float maxWidth)
 {
     
     if(string == NULL)
@@ -77,6 +84,9 @@ float Renderer2DTextLength(Font* font, char* string, float scale)
         char glyph = CharToGlyph(string[i]);
 
         float width = (string[i] == ' ') ? font->charData[CharToGlyph('a')].width : font->charData[glyph].width;  
+        
+        if(maxWidth <= lineLength + width + font->letterSpacing * scale && maxWidth != 0)
+            return lineLength - font->letterSpacing * scale; 
 
         lineLength += (width + font->letterSpacing) * scale;
 

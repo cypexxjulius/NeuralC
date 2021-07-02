@@ -10,11 +10,11 @@ static CameraController* camera = NULL;
 
 static Texture2D* texture = NULL;
 static Texture2D* texture2 = NULL;
-static Texture2D* CharSet = NULL;
 
 static float Rotation = 0.0f;
 
-static char string[4096] = { 0 };
+#define STRING_SIZE 4096
+static char string[STRING_SIZE] = { 0 };
 static unsigned int stringCursor = 0;
 static v2 MousePressedPosition = { 0 };
 
@@ -53,25 +53,39 @@ void NeuralOnUpdate(float deltaTime)
                     GUIText("FPS %.2f", 1.0f / deltaTime);
                     GUIText("Memory Allocated %u", GetMemoryCount());
 
+                    persist bool isUsed = 0;
+                    persist int cursor = 0;
+                    GUITextEdit(string, STRING_SIZE, &isUsed, &cursor, 0.6);
+
 
                 GUIBoxBegin("Mouse", V2(0.7, 0));
                     GUIText("Mouse Position");
                     GUIText("     X %f", MousePressedPosition.x);
                     GUIText("     Y %f", MousePressedPosition.y);
 
-                GUIBoxBegin("Hello World", V2(0, 0.5));
-                    GUIText("Hello World out there");
-                    GUIText(string);
-                    GUIText("Last Pressed Button %u : %c", lastPressedButton, lastPressedButton);
-
-                    if(GUIButton("X"))
+                GUIBoxBegin("Debug Test", V2(0, 0.5));
+                
+                    if(GUIButton("Press me"))
                         showMessage = !showMessage;
-
+                    
                     if(showMessage)
                         GUIText("Secret Message");
 
-                GUIBoxBegin("Testbox", V2(0.99, 0.99));
-                    GUIText("Test");
+                    persist v3 Color = { 0 };
+                    GUIColorEdit3f(&Color, 0.3);
+
+                Renderer2DBeginScene(camera->camera, NULL, NULL);
+
+                Renderer2DDrawQuad(
+                    &(Quad2D){
+                        .color = V4(Color.x, Color.y, Color.z, 1.0f),
+                        .height = 1.0f,
+                        .width = 1.0f,
+                        .position = V2(0.0f, 0.0f)
+                    }
+                );
+
+                Renderer2DEndScene();
         }
     }
 }
@@ -83,42 +97,6 @@ bool NeuralOnEvent(const Event* event)
     
     switch(event->type)
     {
-        case (KeyPressedEventType) :
-            switch (event->KeyPressedEvent.keyCode)
-            {
-                case NL_KEY_ESCAPE :
-                    ApplicationTerminate();
-                    break;
-
-                case NL_KEY_BACKSPACE:
-
-                    if(stringCursor == 0 || event->KeyPressedEvent.action == 0)
-                        return true;
-
-                    if(event->KeyPressedEvent.mod == NL_SHIFT_MOD)
-                    {
-                        string[0] = 0;
-                        stringCursor = 0;
-                        return true;
-                    }
-
-                    string[--stringCursor] = 0;
-                    break;    
-                case NL_KEY_ENTER:
-                    if(event->KeyPressedEvent.action == 0)
-                        string[stringCursor++] = '\n';   
-                    
-                    break;
-            }
-            break;
-
-        case(CharEventType) :
-            char keycode = (char)event->KeyPressedEvent.keyCode;
-            lastPressedButton = keycode;
-            string[stringCursor++] = keycode;
-            string[stringCursor] = 0;
-            break;
-        
         case(MouseMovedEventType):
             MousePressedPosition = event->PosEvent.pos;
             WindowToGUISpace(&MousePressedPosition);

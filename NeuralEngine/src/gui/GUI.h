@@ -18,7 +18,9 @@ typedef enum WidgetType
 {
     GUIWidgetTypePlain,
     GUIWidgetTypeText,
+    GUIWidgetTypeTextEdit,
     GUIWidgetTypeButton,
+    GUIWidgetTypeColorEdit3f
 } WidgetType;
 
 typedef struct GUIWidget
@@ -27,7 +29,8 @@ typedef struct GUIWidget
     WidgetType type;
 
     u16 textLength;
-    char *String;
+    void *Data;
+    u16 cursorPos;
 
     u8 isPressed;
 } GUIWidget;
@@ -46,12 +49,7 @@ typedef struct GUIBox
 
 typedef struct GUIController {
     Vector boxes;
-
-    
-    struct MousePressedEvent
-    {   
-        v2 Position;
-    } MousePressedEvent;
+    float startTime;
 } GUIController;
 
 extern void WindowToGUISpace(v2 *Position);

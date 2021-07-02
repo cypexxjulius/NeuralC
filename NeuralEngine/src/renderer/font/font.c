@@ -62,7 +62,7 @@ Font* NewFontTexture(const char *filepath)
 
    stbtt_PackEnd(&packContext);
    
-   LOG("Loading font %s", filepath);
+   LOG("Loading font \"%s\"", filepath);
 
    // Converting the stbtt_aligned_quad data to my own struct for each glyp
    for(u16 i = 0; i < CHAR_COUNT; i++)

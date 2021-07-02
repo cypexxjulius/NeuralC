@@ -19,4 +19,6 @@ extern const Window* ApplicationGetWindow();
 
 extern void ApplicationLoop();
 
+extern bool ApplicationEventAfterGUI(const Event* event);
+
 #endif // __APPLICATION_H_

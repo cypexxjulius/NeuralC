@@ -6,7 +6,7 @@ set OperatingDirectory=%~dp0
 
 :: Setting settings Variables
 
-set CompilerFlags=/W3 /Z7 /wd4201 /wd5045 /D "_CRT_SECURE_NO_WARNINGS" /c /MP
+set CompilerFlags=/W3 /Z7 /wd4201 /wd5045 /D "_CRT_SECURE_NO_WARNINGS" /c /MP /nologo
 
 set NeuralOutputDir=!%~d0%cd%\NeuralEngine\bin\!
 
@@ -19,17 +19,32 @@ call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary
 echo --- Environment Configured
 
 IF NOT EXIST "NeuralEngine\lib\glfw\build\src\Release" (
-    cd NeuralEngine/lib/glfw && cmake .  -B build && cd build && msbuild ALL_BUILD.vcxproj -property:Platform=x64 -property:Configuration=Release
+    pushd "NeuralEngine/lib/glfw" 
+    
+        cmake .  -B build 
+        cd build && msbuild ALL_BUILD.vcxproj -property:Platform=x64 -property:Configuration=Release
+
+    popd
+
     echo --- glfw3.lib build
 )
 
 IF NOT EXIST "NeuralEngine/lib/cglm/build/Release/cglm.lib" (
-    cd NeuralEngine/lib/cglm && cmake . -DCGLM_STATIC=ON -B build && cd build && msbuild ALL_BUILD.vcxproj -property:Platform=x64 -property:Configuration=Release
+    pushd "NeuralEngine/lib/cglm" 
+        
+        cmake . -DCGLM_STATIC=ON -B build 
+        cd build && msbuild ALL_BUILD.vcxproj -property:Platform=x64 -property:Configuration=Release
+    
+    popd
+    
     echo --- cglm.lib build
 )
 
 IF NOT EXIST "NeuralEngine/lib/glad/glad.obj" (
-    cd NeuralEngine/lib/glad && call cl /Zi -I%NeuralLibPath%/glad/include/ -Ox -c src/glad.c
+    pushd "NeuralEngine/lib/glad" 
+        call cl /Foglad.obj !CompilerFlags! src/glad.c /Iinclude/ /c 
+
+    popd
     echo --- glad.obj build
 )
 
@@ -60,6 +75,7 @@ for /R %%f IN ("*.c") DO (
     set NeuralCompiledFiles=!!NeuralCompiledFiles! !outfile!!
 
     call cl /Fo!outfile! !CompilerFlags! !file! !NeuralIncludePath! 2> nul || (
+    
         echo --- Failed to compile %%~fsnxf aborting..
         goto end
     )

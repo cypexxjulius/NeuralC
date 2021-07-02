@@ -115,9 +115,9 @@ void Renderer2DInit()
 
 void Renderer2DShutdown()
 {
-    DeleteVertexArray(QuadVertexArray);
     DeleteShader(TextureShader);
     DeleteTexture2D(IdentityTexture);
+    DeleteVertexArray(QuadVertexArray);
 }
 
 void Renderer2DBeginScene(Camera* camera, Shader* shader, Font* font)
@@ -125,7 +125,8 @@ void Renderer2DBeginScene(Camera* camera, Shader* shader, Font* font)
     if(shader == NULL)
         shader = TextureShader; 
     
-    FontBind(font, 1);
+    if(font)
+        FontBind(font, 1);
     
     ShaderBind(shader);
     

@@ -195,6 +195,8 @@ static Shader *NewShader(const String ShaderName, const char *fragmentShader, co
 
         printf(errorMessage);
 
+        Memory.Free(errorMessage);
+
         return NULL;
     }
 
@@ -209,7 +211,7 @@ static Shader *NewShader(const String ShaderName, const char *fragmentShader, co
 Shader *NewShaderFromString(const String ShaderName, const char *fragmentShader, const char *vertexShader)
 {
     return NewShader(ShaderName, fragmentShader, vertexShader);
-};
+}
 
 Shader *NewShaderFromFile(const String ShaderName, char *ShaderPath)
 {
@@ -230,8 +232,8 @@ Shader *NewShaderFromFile(const String ShaderName, char *ShaderPath)
     Assert(shader == NULL, "Failed to create Shader");
 
 
-    Memory.Free(vertexShader);
-    Memory.Free(fragmentShader);
+    Memory.Free(ShaderSources[0].string);
+    Memory.Free(ShaderSources[1].string);
 
     return shader;
 }
@@ -239,6 +241,7 @@ Shader *NewShaderFromFile(const String ShaderName, char *ShaderPath)
 void DeleteShader(Shader *this)
 {
     glDeleteProgram(this->ShaderID);
+    Memory.Free(this);
 }
 
 /*

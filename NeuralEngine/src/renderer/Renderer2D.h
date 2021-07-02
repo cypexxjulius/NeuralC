@@ -44,8 +44,8 @@ extern void Renderer2DStartSceneCallback();
 
 extern void Renderer2DPushVertices(v3 ipositions[4], v4 icolor, v2 itextureCoords[4], float iTextureID, float itiling);
 
-extern void Renderer2DText(Font* font, char* string, float scale, v3 color, v2 position, float zIndex, float maxWidth, float maxHeight);
+extern float Renderer2DText(Font* font, char* string, float scale, v3 color, v2 position, float zIndex, float maxWidth, float maxHeight);
 
-extern float Renderer2DTextLength(Font* font, char* string, float scale);
+extern float Renderer2DTextLength(Font* font, char* string, float scale, float maxWidth);
 
 #endif // __RENDERER2D_H_

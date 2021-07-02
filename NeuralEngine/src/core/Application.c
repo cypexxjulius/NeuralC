@@ -60,9 +60,11 @@ static void ApplicationOnEvent(Event* event)
     if(event->type == WindowResizeEventType)
         ApplicationOnWindowResizedEvent(event);
 
-    if(GUIOnEvent(event) && event->Cancable)
-        return;
+    GUIOnEvent(event);
+}
 
+bool ApplicationEventAfterGUI(const Event* event)
+{
     Layer* layer;
     for(unsigned int i = 0; i < App.layerStack.used; i++)
     {       
@@ -71,8 +73,10 @@ static void ApplicationOnEvent(Event* event)
             continue;
 
         if(layer->OnEvent(event) && event->Cancable)
-            break;
+            return true;
     }
+
+    return false;
 }
 
 
@@ -105,7 +109,7 @@ void ApplicationLoop()
         App.deltaTime = GetDeltaTime();
         RendererStartCallback();
 
-        GUIBegin();
+        GUIBegin(App.deltaTime);
 
         for(unsigned int i = 0; i < App.layerStack.used; i++)
         {

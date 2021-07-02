@@ -21,13 +21,20 @@ typedef struct KeyPressedEvent
     u32 keyCode;
     u8 action;
     u8 mod;
+    v2 position;
 } KeyPressedEvent;
+
 
 typedef struct Event
 {
     byte type;
     byte Cancable;
-    u32 id;
+    union 
+    {
+        u32 id;
+        u32 valid;
+    };
+    
     union
     { 
         KeyPressedEvent KeyPressedEvent;
@@ -54,15 +61,5 @@ enum KeyMods
 {
     NL_SHIFT_MOD = 2
 };
-
-#define Event( _type, _event, _cancable) (Event){ .type=_type, _event, .Cancable = _cancable, }
-
-#define KeyPressedEvent( _keycode, _action, _mod) (KeyPressedEvent){ _keycode, _action, _mod,}
-
-#define WindowResizeEvent( _width, _height) (WindowResizeEvent) {_width, _height}
-
-#define PosEvent( _pos, _delta) (PosEvent) { _pos, _delta}
-
-
 
 #endif // __EVENT_STRUCTS_H_

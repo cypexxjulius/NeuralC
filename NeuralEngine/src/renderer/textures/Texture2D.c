@@ -16,7 +16,7 @@ Texture2D* NewTexture2D(const char * filepath)
 
     GLenum internalFormat = 0, dataFormat = 0;
 
-    LOG("File %s with channels %d", filepath, this->channels);
+    LOG("Loading texture \"%s\" with %d channels", filepath, this->channels);
 
 
     switch (this->channels)
